@@ -1,0 +1,27 @@
+﻿using DataAccessLayer.Configurations;
+using DataAccessLayer.Entities;
+using Microsoft.EntityFrameworkCore;
+
+namespace DataAccessLayer.Context;
+
+public class ApplicationDbContext : DbContext
+{
+    public DbSet<Project> Projects { get; set; }
+    public DbSet<ProjectUser> ProjectUsers { get; set; }
+    public DbSet<Entities.Task> Tasks { get; set; }
+    public DbSet<User> Users { get; set; }
+
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        : base(options)
+    {
+        
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfiguration(new TaskConfiguration());
+        modelBuilder.ApplyConfiguration(new UserConfiguration());
+        modelBuilder.ApplyConfiguration(new ProjectConfiguration());
+        modelBuilder.ApplyConfiguration(new ProjectUserConfiguration());
+    }
+}

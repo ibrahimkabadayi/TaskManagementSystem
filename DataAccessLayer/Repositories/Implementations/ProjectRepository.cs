@@ -9,7 +9,7 @@ namespace DataAccessLayer.Repositories.Implementations;
 
 public class ProjectRepository : Repository<Project>, IProjectRepository
 {
-    public ProjectRepository(AppDbContext context) : base(context)
+    public ProjectRepository(ApplicationDbContext context) : base(context)
     {
     }
 

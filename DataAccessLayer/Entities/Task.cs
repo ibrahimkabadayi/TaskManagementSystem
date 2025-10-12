@@ -1,15 +1,19 @@
-﻿using DataAccessLayer.Enums;
+﻿using System.ComponentModel.DataAnnotations;
+using DataAccessLayer.Enums;
 
 namespace DataAccessLayer.Entities;
 
 public class Task
 {
     public int Id { get; set; }
+    public required Project Project { get; set; }
     public int ProjectId { get; set; }
-    public Project Project { get; set; }
+    [Required]
+    [MaxLength(100)]
     public required string Title { get; set; }
+    [MaxLength(1000)]
     public string? Description { get; set; }
-    
+    [Required, DataType("datetime")]
     public DateTime StartDate { get; set; }
     public DateTime? DueDate { get; set; }
     public DateTime? CompletedDate { get; set; }

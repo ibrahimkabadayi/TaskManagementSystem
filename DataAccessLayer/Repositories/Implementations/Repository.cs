@@ -7,10 +7,10 @@ namespace DataAccessLayer.Repositories.Implemantations;
 
 public class Repository<T> : IRepository<T> where T : class
 {
-    protected readonly AppDbContext _context;
+    protected readonly ApplicationDbContext _context;
     protected readonly DbSet<T> _dbSet;
 
-    protected Repository(AppDbContext context)
+    protected Repository(ApplicationDbContext context)
     {
         _context = context;
         _dbSet = context.Set<T>();

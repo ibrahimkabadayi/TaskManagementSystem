@@ -9,7 +9,7 @@ namespace DataAccessLayer.Repositories.Implementations;
 
 public class TaskRepository : Repository<Task>, ITaskRepository
 {
-    protected TaskRepository(AppDbContext context) : base(context)
+    protected TaskRepository(ApplicationDbContext context) : base(context)
     {
     }
 
