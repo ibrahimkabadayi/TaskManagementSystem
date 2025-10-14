@@ -8,7 +8,7 @@ namespace DataAccessLayer.Repositories.Implementations;
 
 public class UserRepository : Repository<User>, IUserRepository
 {
-    protected UserRepository(ApplicationDbContext context) : base(context)
+    public UserRepository(ApplicationDbContext context) : base(context)
     {
     }
 

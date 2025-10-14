@@ -1,0 +1,44 @@
+﻿@page
+@model TaskManagementSystem.Views.Index
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <title>ToraSignIn</title>
+    <link rel="stylesheet" href="~/css/IndexStyleSheet.css"/>
+</head>
+<body>
+<div class="container">
+    <h2>Welcome To Tora</h2>
+    <div class="Input-Area">
+        <div class="Input-Row">
+            <label for="Email-Input" class="input-label">Email:</label><br>
+            <input type="text" id="Email-Input" class="txt-input">
+        </div>
+        <div class="Input-Row">
+            <label for="password-Input" class="input-label">Password:</label><br>
+            <input type="text" id="password-Input" class="txt-input">
+        </div>
+        <div class="Input-Row">
+            <label for="name-Input" class="input-label">Name and Surname:</label><br>
+            <input type="text" id="name-Input" class="txt-input">
+        </div>
+    </div>
+        
+    <div class="privacy-text">
+        <p>By signing in you agree to our <strong onclick="PrivacyPolicy()">privacy policy</strong></p>
+    </div>
+        
+    <div class="button-container">
+        <button class="left-button" onclick="CreateAccount()">Create Account</button>
+        <button class="right-button" onclick="SignIn()">Sign In</button>
+    </div>
+</div>
+<script src="~/js/Index.js"></script>
+</body>
+</html>

@@ -6,8 +6,7 @@ namespace DataAccessLayer.Entities;
 public class Task
 {
     public int Id { get; set; }
-    public required Project Project { get; set; }
-    public int ProjectId { get; set; }
+    
     [Required]
     [MaxLength(100)]
     public required string Title { get; set; }
@@ -21,10 +20,16 @@ public class Task
     public TaskState State { get; set; }
     public TaskPriority Priority { get; set; }
     
-    public required User CreatedBy { get; set; }
-    public User? AssignedTo { get; set; }
-    public User? FinishedBy { get; set; }
+    public int ProjectId { get; set; }
+    public virtual required Project Project { get; set; }
+    
     public int CreatedById { get; set; }
+    public virtual required User CreatedBy { get; set; }
+    
     public int AssignedToId { get; set; }
+    public virtual User? AssignedTo { get; set; }
+    
     public int? FinishedById { get; set; }
+    public virtual User? FinishedBy { get; set; }
+    
 }
