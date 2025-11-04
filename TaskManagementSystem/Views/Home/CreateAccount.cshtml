@@ -1,11 +1,12 @@
 ﻿@page
-@model TaskManagementSystem.Views.Index
+@model TaskManagementSystem.Views.CreateAccount
 
 @{
     Layout = "Layout";
 }
-   
-<link rel="stylesheet" href="~/css/IndexStyleSheet.css"/>
+
+<link rel="stylesheet" href="~/css/CreateAccountPageStyleSheet.css"/>
+
 <p id="sign-in-text">Sign In</p>
 <div class="Input-Area">
     <div class="Input-Row">
@@ -13,27 +14,23 @@
         <input type="text" id="name-Input" class="txt-input">
     </div>
     <div class="Input-Row">
-        <label for="password-Input" class="input-label">Password:</label><br>
-        <input type="text" id="password-Input" class="txt-input">
-    </div>
-    <div class="Input-Row">
-        
         <label for="Email-Input" class="input-label">Email:</label><br>
         <input type="text" id="Email-Input" class="txt-input">
     </div>
 </div>
-        
+
 <div class="privacy-text">
     <div class="information-container">
         <div class="information">
             i
         </div>
     </div>
-    <p id="information-text">By signing in you agree to our <strong onclick="PrivacyPolicy()">privacy policy</strong></p>
+    <div>
+        <p id="information-text">This site is protected by reCAPTCHA and the
+            Google<strong onclick=""> Privacy Policy </strong>and<strong onclick=""> Terms of Service </strong>apply</p>
+    </div>
 </div>
-        
+
 <div class="button-container">
-    <button class="left-button" onclick="CreateAccount()">Create Account</button>
-    <button class="right-button" onclick="SignIn()">Sign In</button>
+    <button class="next-button" onclick="">Next</button>
 </div>
-<script src="~/js/IndexScript.js"></script>   

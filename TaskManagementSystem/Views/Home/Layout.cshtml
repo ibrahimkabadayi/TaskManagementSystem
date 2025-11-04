@@ -1,0 +1,34 @@
+﻿@model TaskManagementSystem.Views.Layout
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="~/css/LayoutStyleSheet.css"/>
+</head>
+<body>
+    <div class="container">
+        <h2>Welcome to Planner</h2>
+        <main>
+            @RenderBody()
+        </main>
+    </div>
+    
+    <footer>
+        <div class="row-align-items-start">
+            <ul class="list-inline" id="footernav">
+                <li class="list-inline-item"><a href="">Trust Center</a></li>
+                <li class="list-inline-item"><a href="">Protocols</a></li>
+                <li class="list-inline-item"><a href="">About Us</a></li>
+                <li class="list-inline-item"><a href="">Privacy Policy</a></li>
+            </ul>
+        </div>
+        <p class="copyright">2025 Asp.Net WebApplication</p>
+    </footer>
+</body>
+</html>

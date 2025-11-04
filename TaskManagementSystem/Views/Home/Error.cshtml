@@ -1,0 +1,43 @@
+﻿@{
+    Layout = null;
+    var backPage = TempData["BackPage"]?.ToString() ?? "Index";
+}
+
+<!DOCTYPE html>
+
+<html lang="eng">
+<head>
+    <title>title</title>
+    <link rel="stylesheet" href="~/css/ErrorStyleSheet.css"/>
+</head>
+<body>
+<div class="container">
+    <h1>An Error Occurred</h1>
+
+    <div class="error-info">
+        <div class="error-row">
+            <span class="label">Message</span>
+            <div class="value">@ViewBag.ErrorMessage</div>
+        </div>
+        <div class="error-row">
+            <span class="label">Type</span>
+            <div class="value">@ViewBag.ErrorType</div>
+        </div>
+        <div class="error-row">
+            <span class="label">Status Code</span>
+            <div class="value">@ViewBag.ErrorStatusCode</div>
+        </div>
+        <div class="error-row">
+            <span class="label">Time</span>
+            <div class="value">@ViewBag.ErrorTimeStamp</div>
+        </div>
+    </div>
+
+    <div class="buttons">
+        <button class="go-back-button" onclick="GoBack(@backPage)">Go Back</button>
+        <button class="return-to-menu-button" onclick="ReturnToMenu()">Return to Menu</button>
+    </div>
+</div>
+<script src="~/js/ErrorScript.js"></script>
+</body>
+</html>

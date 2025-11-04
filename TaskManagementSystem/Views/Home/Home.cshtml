@@ -1,0 +1,128 @@
+﻿@page
+@model TaskManagementSystem.Views.Home
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planner - Smart Work Management</title>
+    <style rel="stylesheet" href="~/css/HomeStyleSheet"></style>
+</head>
+<body>
+<nav id="navbar">
+    <div class="nav-container">
+        <div class="logo">
+            Planner
+        </div>
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#solutions">Solutions</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <div class="nav-buttons">
+            <button class="btn btn-signin">Sign In</button>
+            <button class="btn btn-signup">Get Started Free</button>
+        </div>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="hero-container">
+        <div class="hero-content">
+            <h1>Manage Your Work Smartly</h1>
+            <p>Manage all your projects, tasks, and team in one platform. Maximize your productivity with Planner.</p>
+            <div class="hero-buttons">
+                <button class="btn-primary">Get Started Now</button>
+                <button class="btn-secondary">Watch Demo</button>
+            </div>
+        </div>
+        <div class="hero-image">
+            <div class="mockup">
+                <svg viewBox="0 0 400 300" style="width: 100%;">
+                    <rect x="20" y="20" width="360" height="260" rx="10" fill="#f5f7fa"/>
+                    <rect x="30" y="40" width="340" height="40" rx="5" fill="#667eea" opacity="0.8"/>
+                    <rect x="30" y="90" width="340" height="40" rx="5" fill="#764ba2" opacity="0.6"/>
+                    <rect x="30" y="140" width="340" height="40" rx="5" fill="#667eea" opacity="0.4"/>
+                    <rect x="30" y="190" width="340" height="40" rx="5" fill="#764ba2" opacity="0.3"/>
+                    <circle cx="50" cy="60" r="8" fill="white"/>
+                    <circle cx="50" cy="110" r="8" fill="white"/>
+                    <circle cx="50" cy="160" r="8" fill="white"/>
+                    <circle cx="50" cy="210" r="8" fill="white"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="features" id="features">
+    <div class="features-container">
+        <div class="section-title">
+            <h2>Powerful Features</h2>
+            <p>Everything you need in one place</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📋</div>
+                <h3>Smart Task Management</h3>
+                <p>Easily create, prioritize, and track your tasks. Work more efficiently with AI-powered suggestions.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">👥</div>
+                <h3>Team Collaboration</h3>
+                <p>Collaborate with your team in real-time. Keep everyone in sync with comments, tags, and notifications.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Visual Reports</h3>
+                <p>Track your progress with detailed analytics and charts. Make data-driven decisions to achieve success.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔄</div>
+                <h3>Automation</h3>
+                <p>Automate repetitive tasks. Save time and focus on what matters most.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔔</div>
+                <h3>Smart Notifications</h3>
+                <p>Get instant updates on important changes. Never miss anything with customizable notifications.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Secure Infrastructure</h3>
+                <p>Your data is protected with state-of-the-art security measures. Run it in the cloud or on your own server.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="cta">
+    <h2>Get Started Today</h2>
+    <p>Thousands of teams are already working more efficiently with Planner. Join them!</p>
+    <button class="btn-primary">Try Free - No Credit Card Required</button>
+</section>
+
+<footer>
+    <div class="footer-container">
+        <ul class="footer-links">
+            <li><a href="#trust">Trust Center</a></li>
+            <li><a href="#protocols">Protocols</a></li>
+            <li><a href="#about">About Us</a></li>
+            <li><a href="#privacy">Privacy Policy</a></li>
+            <li><a href="#terms">Terms of Service</a></li>
+            <li><a href="#api">API</a></li>
+            <li><a href="#careers">Careers</a></li>
+        </ul>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Planner. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+<script src="~/js/HomeScript.js"></script>
+</body>
+</html>

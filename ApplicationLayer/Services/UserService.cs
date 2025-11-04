@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using Application.DTOs;
 using DataAccessLayer.Context;
 using DataAccessLayer.Entities;
 using DataAccessLayer.Repositories.Implementations;
@@ -17,85 +18,31 @@ public class UserService
         _userRepository = new UserRepository(context);
     }
 
-    public async void AddUser(User user)
+    public async Task<UserDto> GiveAccessToUser(string name, string email, string password)
     {
         try
         {
-            if (user.Name.Length < 5)
+            var user = await _userRepository.GetByEmailAsync(email);
+            List<int> projectUserIdList = new List<int>();
+
+            
+            if(user.ProjectUsers != null)
             {
-                throw new ArgumentException("User name is too short.");
+                foreach (var projectUser in user.ProjectUsers)
+                {
+                    projectUserIdList.Add(projectUser.Id);
+                }
             }
             
-            if (user.Password.Length < 6)
-            {
-                throw new ArgumentException("Password is too short.");
-            }
-
-            if (user.Password.Contains(' '))
-            {
-                throw new ArgumentException("Password must not contain spaces.");
-            }
-
-            if (LengthOfLongestSubstring(user.Password) < 3)
-            {
-                throw new ArgumentException("Password must contain more than 3 non repeat substrings.");
-            }
+            var userDto = new UserDto{id = user.Id, name =  name, email = email, password = password,  projectUserIds = projectUserIdList};
             
-            if (user.Password.Length < 11)
-            {
-                throw new ArgumentException("Email is too short.");
-            }
-
-            if (!user.Password.Contains("@gmail.com"))
-            {
-                throw new ArgumentException("Email must contain \"@gmail.com\".");
-            }
-            
-            await _userRepository.AddAsync(user);
+            return userDto;
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            Console.WriteLine(e.InnerException?.Message);
+            Console.WriteLine(ex.Message);
+            return null;
         }
-    }
-
-    public async Task<List<User>> GetAllUsers()
-    {
-        return await _userRepository.GetAllAsync();
-    }
-
-    public async void DeleteUser(User user)
-    {
-        try
-        {
-            await _userRepository.DeleteAsync(user.Id);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
-    }
-
-    public async void UpdateUser(User user)
-    {
-        try
-        {
-            await _userRepository.UpdateAsync(user);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
-    }
-
-    public async Task<List<User>> GetUser(Expression<Func<User, bool>> predicate)
-    {
-       return await _userRepository.FindAsync(predicate);
-    }
-
-    public async Task<bool> CheckUserExists(Expression<Func<User, bool>> predicate)
-    {
-        return await _userRepository.ExistsAsync(predicate);
     }
     
     private static int LengthOfLongestSubstring(string s)

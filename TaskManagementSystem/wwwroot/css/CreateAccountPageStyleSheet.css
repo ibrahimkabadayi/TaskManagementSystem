@@ -1,13 +1,13 @@
-﻿#sign-in-text{
+#sign-in-text{
     margin-left: 10px;
     font-weight: bold;
     font-size: 20px;
-    font-family: 'Roboto Light', sans-serif;
 }
 strong{
     color: #0ba1e1;
     cursor: pointer;
 }
+
 .input-label{
     color: black;
 }
@@ -51,27 +51,18 @@ strong{
 .button-container{
     width: 100%;
     display: flex;
+    justify-content: right;
     flex-wrap: wrap;
     margin-top: 10px;
 }
-.left-button{
-    text-align: left;
-    border: none;
-    background: white;
-    padding: 10px;
-    flex: 20%;
-    color: #0ba1e1;
-    cursor: pointer;
-    font-size: 16px;
-}
-.right-button{
+.next-button{
     border: none;
     border-radius: 5px;
     background: #0ba1e1;
     color: white;
     padding: 10px;
     width: 20%;
-    margin-right: 10px;
+    margin-right: 5px;
     cursor: pointer;
     font-size: 16px;
 }
