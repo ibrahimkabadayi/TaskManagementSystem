@@ -34,7 +34,7 @@ public class UserService
                 }
             }
             
-            var userDto = new UserDto{id = user.Id, name =  name, email = email, password = password,  projectUserIds = projectUserIdList};
+            var userDto = new UserDto{Id = user.Id, Name =  name, Email = email, Password = password,  ProjectUserIds = projectUserIdList};
             
             return userDto;
         }
@@ -42,6 +42,20 @@ public class UserService
         {
             Console.WriteLine(ex.Message);
             return null;
+        }
+    }
+
+    public async Task<bool> CheckUserExists(string name, string email)
+    {
+        try
+        {
+            await _userRepository.GetByEmailAsync(email);
+            return true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return false;
         }
     }
     

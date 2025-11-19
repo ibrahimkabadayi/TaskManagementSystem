@@ -1,5 +1,6 @@
 ﻿@page
-@model TaskManagementSystem.Views.Home
+@using Application.DTOs
+@model UserDto
 
 @{
     Layout = null;
@@ -10,14 +11,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planner - Smart Work Management</title>
+    <title>TaskFlow - Smart Work Management</title>
     <style rel="stylesheet" href="~/css/HomeStyleSheet"></style>
 </head>
 <body>
 <nav id="navbar">
     <div class="nav-container">
         <div class="logo">
-            Planner
+            TaskFlow
         </div>
         <ul class="nav-links">
             <li><a href="#features">Features</a></li>
@@ -25,9 +26,9 @@
             <li><a href="#about">About</a></li>
             <li><a href="#contact">Contact</a></li>
         </ul>
-        <div class="nav-buttons">
-            <button class="btn btn-signin">Sign In</button>
-            <button class="btn btn-signup">Get Started Free</button>
+        <div class="nav-buttons" id="nav-buttons">
+            <button class="btn btn-signin" id="sign-in-button" onclick="SignIn()">Sign In</button>
+            <button class="btn btn-signup" onclick="CreateAccount()">Get Started Free</button>
         </div>
     </div>
 </nav>
@@ -36,7 +37,7 @@
     <div class="hero-container">
         <div class="hero-content">
             <h1>Manage Your Work Smartly</h1>
-            <p>Manage all your projects, tasks, and team in one platform. Maximize your productivity with Planner.</p>
+            <p>Manage all your projects, tasks, and team in one platform. Maximize your productivity with TaskFlow.</p>
             <div class="hero-buttons">
                 <button class="btn-primary">Get Started Now</button>
                 <button class="btn-secondary">Watch Demo</button>
@@ -97,14 +98,24 @@
                 <h3>Secure Infrastructure</h3>
                 <p>Your data is protected with state-of-the-art security measures. Run it in the cloud or on your own server.</p>
             </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Lightning Fast</h3>
+                <p>Experience blazing-fast performance with optimized workflows. Get things done in record time with our efficient platform.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>Goal Tracking</h3>
+                <p>Set clear objectives and track progress towards your goals. Stay motivated with visual milestone achievements and insights.</p>
+            </div>
         </div>
     </div>
 </section>
 
 <section class="cta">
     <h2>Get Started Today</h2>
-    <p>Thousands of teams are already working more efficiently with Planner. Join them!</p>
-    <button class="btn-primary">Try Free - No Credit Card Required</button>
+    <p>Thousands of teams are already working more efficiently with TaskFlow. Join them!</p>
+    <button class="btn-primary" onclick="CreateAccount()">Try Free - No Credit Card Required</button>
 </section>
 
 <footer>
@@ -119,10 +130,16 @@
             <li><a href="#careers">Careers</a></li>
         </ul>
         <div class="footer-bottom">
-            <p>&copy; 2025 Planner. All rights reserved.</p>
+            <p>&copy; 2025 TaskFlow. All rights reserved.</p>
         </div>
     </div>
 </footer>
+<script>
+    window.UserData = {
+        userName: "@Model.Name",
+        userEmail: "@Model.Email"
+    };
+</script>
 <script src="~/js/HomeScript.js"></script>
 </body>
 </html>

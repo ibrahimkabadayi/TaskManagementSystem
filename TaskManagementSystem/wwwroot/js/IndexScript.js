@@ -35,7 +35,7 @@ async function SignIn(){
                 Password: password,
             })
         }.then((response) => response.json()).then((data) => {
-            if (data.success === true) {
+            if (data.success) {
                 const params = data.Data;
                 window.location.href = `Home/SignIn?${params}`;
             } else {

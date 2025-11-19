@@ -423,9 +423,9 @@
             <li><a href="#about">About</a></li>
             <li><a href="#contact">Contact</a></li>
         </ul>
-        <div class="nav-buttons">
-            <button class="btn btn-signin">Sign In</button>
-            <button class="btn btn-signup">Get Started Free</button>
+        <div class="nav-buttons" id="nav-buttons">
+            <button class="btn btn-signin" onclick="SignIn()" id="sign-in-button">Sign In</button>
+            <button class="btn btn-signup" onclick="SignUp()">Get Started Free</button>
         </div>
     </div>
 </nav>
@@ -495,6 +495,16 @@
                 <h3>Secure Infrastructure</h3>
                 <p>Your data is protected with state-of-the-art security measures. Run it in the cloud or on your own server.</p>
             </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Lightning Fast</h3>
+                <p>Experience blazing-fast performance with optimized workflows. Get things done in record time with our efficient platform.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>Goal Tracking</h3>
+                <p>Set clear objectives and track progress towards your goals. Stay motivated with visual milestone achievements and insights.</p>
+            </div>
         </div>
     </div>
 </section>
@@ -545,6 +555,14 @@
             }
         });
     });
+    
+    function SignIn(){
+        window.location.href = '/Home/Index'
+    }
+    
+    function SignUp(){
+        window.location.href = '/Home/CreateAccount'
+    }
 </script>
 </body>
 </html>

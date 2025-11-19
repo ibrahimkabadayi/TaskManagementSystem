@@ -115,7 +115,249 @@ nav.scrolled {
     transform: translateY(-2px);
     box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
 }
+/* Account Section */
+.accountSection {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    border-radius: 25px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    position: relative;
+}
 
+.accountSection:hover {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+    border-color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+/* Profile Picture */
+.profilePicture {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #667eea;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.accountSection:hover .profilePicture {
+    border-color: #764ba2;
+    box-shadow: 0 4px 12px rgba(118, 75, 162, 0.3);
+    transform: scale(1.05);
+}
+
+/* Placeholder için (eğer resim yoksa) */
+.profilePicture[src=""],
+.profilePicture:not([src]) {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* User Name */
+.userName {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+    transition: color 0.3s ease;
+}
+
+.accountSection:hover .userName {
+    color: #667eea;
+}
+
+/* Dropdown arrow */
+.accountSection::after {
+    content: '▾';
+    color: #667eea;
+    font-size: 12px;
+    margin-left: 4px;
+    transition: transform 0.3s ease;
+}
+
+.accountSection:hover::after {
+    transform: translateY(2px);
+}
+
+/* Dropdown Menu - Geniş ve Detaylı */
+.accountDropdown {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    min-width: 320px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.accountSection:hover .accountDropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Dropdown Header - Kullanıcı Bilgileri */
+.dropdownHeader {
+    padding: 24px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dropdownHeader .profilePicture {
+    width: 60px;
+    height: 60px;
+    border: 3px solid white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.dropdownUserInfo {
+    flex: 1;
+    color: white;
+}
+
+.dropdownUserInfo .userName {
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 4px;
+}
+
+.dropdownUserInfo .userEmail {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+    font-weight: 400;
+}
+
+/* Dropdown Links */
+.dropdownLinks {
+    padding: 8px 0;
+}
+
+.dropdownLinks a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.dropdownLinks a:hover {
+    background: #f5f7fa;
+    color: #667eea;
+    padding-left: 24px;
+}
+
+.dropdownLinks a::before {
+    font-size: 18px;
+}
+
+/* Icon'lar için (emoji kullanıyoruz) */
+.dropdownLinks a[href*="profile"]::before {
+    content: '👤';
+}
+
+.dropdownLinks a[href*="settings"]::before {
+    content: '⚙️';
+}
+
+.dropdownLinks a[href*="help"]::before {
+    content: '❓';
+}
+
+.dropdownLinks a[href*="logout"]::before {
+    content: '🚪';
+}
+
+/* Logout link özel stil */
+.dropdownLinks a[href*="logout"] {
+    border-top: 1px solid #eee;
+    color: #e74c3c;
+    margin-top: 4px;
+}
+
+.dropdownLinks a[href*="logout"]:hover {
+    background: #fee;
+    color: #c0392b;
+}
+
+/* Responsive - Mobil için */
+@media (max-width: 768px) {
+    .accountSection {
+        padding: 6px 12px;
+        gap: 8px;
+    }
+
+    .profilePicture {
+        width: 35px;
+        height: 35px;
+    }
+
+    .userName {
+        font-size: 14px;
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .accountDropdown {
+        min-width: 280px;
+        right: -20px;
+    }
+
+    .dropdownHeader {
+        padding: 20px 16px;
+    }
+
+    .dropdownHeader .profilePicture {
+        width: 50px;
+        height: 50px;
+    }
+
+    .dropdownUserInfo .userName {
+        font-size: 16px;
+    }
+
+    .dropdownUserInfo .userEmail {
+        font-size: 13px;
+    }
+}
+
+/* Arrow indicator için */
+.accountDropdown::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    right: 20px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid white;
+}
 /* Hero Section */
 .hero {
     min-height: 100vh;

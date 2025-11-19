@@ -9,7 +9,7 @@ namespace TaskManagementSystem.Controllers;
 public class HomeController : Controller
 {
     // GET
-    public IActionResult Index()
+    public IActionResult SignIn()
     {
         return View();
     }
@@ -23,9 +23,41 @@ public class HomeController : Controller
         
         return View();
     }
-    public IActionResult Home(UserDto user)
+    public IActionResult Home(UserDto? user)
     {
-        ViewBag.User = user;
+        var model = user ?? new UserDto
+        {
+            Id = 0,
+            Name = "default",
+            Email = "default"
+        };
+    
+        return View(model);
+    }
+
+    public async Task<IActionResult> CreateAccountCheck(CreateAccountRequest request)
+    {
+        var userService = new UserService();
+
+        var isUserExists = await userService.CheckUserExists(request.Username, request.Email);
+
+        return isUserExists ? Json(new {success = false, message = "User already exists", error = "User exists", errorCode = "0001"}) : Json(new {success = true}); 
+    }
+
+    public IActionResult PasswordCreation(CreateAccountRequest request)
+    {
+        ViewData["Name"] = request.Username;
+        ViewData["Email"] = request.Email;
+        
+        return View();
+    }
+    public IActionResult TaskFlow(UserDto user)
+    {
+        ViewData["User"] = user;
+        return View();
+    }
+    public IActionResult CreateAccount()
+    {
         return View();
     }
 
@@ -44,17 +76,10 @@ public class HomeController : Controller
     
     private static bool CheckInfo(string name, string password, string email)
     {
-        if (name.Length < 3 || string.IsNullOrEmpty(name) || string.IsNullOrEmpty(password) ||
-            string.IsNullOrEmpty(email)
-            || email.Length < 3 || password.Length < 3 || !email.Contains("@gmail.com"))
-        {
-            Console.WriteLine("Invalid name or surname");
-            return false;
-        }
-        else
-        {
-            return true;
-        }
+        if (name.Length >= 3 && !string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(password) &&
+            !string.IsNullOrEmpty(email)
+            && email.Length >= 3 && password.Length >= 3 && email.Contains("@gmail.com")) return true;
+        Console.WriteLine("Invalid name or surname");
+        return false;
     }
-
 }

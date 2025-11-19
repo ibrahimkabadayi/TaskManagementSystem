@@ -2,7 +2,7 @@
 
 namespace TaskManagementSystem.Views;
 
-public class Index : PageModel
+public class SignIn : PageModel
 {
     public void OnGet()
     {

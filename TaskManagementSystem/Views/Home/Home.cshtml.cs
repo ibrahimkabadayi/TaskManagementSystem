@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using Application.DTOs;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace TaskManagementSystem.Views;
 
