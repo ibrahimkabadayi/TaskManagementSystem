@@ -16,23 +16,16 @@ public class Repository<T> : IRepository<T> where T : class
         _dbSet = context.Set<T>();
     }
     
-    public async Task<T> GetByAsyncId(int id)
+    public async Task<T?> GetByAsyncId(int id)
     {
         var entity = await _dbSet.FindAsync(id);
-        return entity ?? throw new NullReferenceException("Entity with id " + id + " was not found");
+        return entity;
     }
 
-    public async Task<List<T>> GetAllAsync()
+    public async Task<List<T?>?> GetAllAsync()
     {
-        try
-        {
-            return await _dbSet.ToListAsync();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.InnerException?.Message);
-            throw;
-        }
+        List<T?> list = (await _dbSet.ToListAsync())!;
+        return list;
     }
 
     public async Task AddAsync(T entity)

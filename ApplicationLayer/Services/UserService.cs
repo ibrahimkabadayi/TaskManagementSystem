@@ -1,88 +1,46 @@
 ﻿using System.Linq.Expressions;
 using Application.DTOs;
+using Application.Interfaces;
+using AutoMapper;
 using DataAccessLayer.Context;
 using DataAccessLayer.Entities;
 using DataAccessLayer.Repositories.Implementations;
+using DataAccessLayer.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services;
 
-public class UserService
+public class UserService : IUserService
 {
-    ApplicationDbContext context;
-    UserRepository _userRepository;
-
-    public UserService()
-    {
-        context = new ApplicationDbContext(new DbContextOptions<ApplicationDbContext>());
-        _userRepository = new UserRepository(context);
-    }
-
-    public async Task<UserDto> GiveAccessToUser(string name, string email, string password)
-    {
-        try
-        {
-            var user = await _userRepository.GetByEmailAsync(email);
-            List<int> projectUserIdList = new List<int>();
-
-            
-            if(user.ProjectUsers != null)
-            {
-                foreach (var projectUser in user.ProjectUsers)
-                {
-                    projectUserIdList.Add(projectUser.Id);
-                }
-            }
-            
-            var userDto = new UserDto{Id = user.Id, Name =  name, Email = email, Password = password,  ProjectUserIds = projectUserIdList};
-            
-            return userDto;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-            return null;
-        }
-    }
-
-    public async Task<bool> CheckUserExists(string name, string email)
-    {
-        try
-        {
-            await _userRepository.GetByEmailAsync(email);
-            return true;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            return false;
-        }
-    }
+    private readonly IUserRepository _userRepository;
+    private readonly IMapper _mapper;
     
-    private static int LengthOfLongestSubstring(string s)
+    public UserService(IUserRepository userRepository, IMapper mapper)
     {
-        var lastIndex = new int[256];
-        for (var i = 0; i < 256; i++) lastIndex[i] = -1;
+        _userRepository = userRepository;
+        _mapper = mapper;
+    }
 
-        var maxLen = 0;
-        var left = 0;
+    public async Task<UserDto?> GetUserByIdAsync(int id)
+    {
+        var user = await _userRepository.GetByAsyncId(id);
+        
+        return user == null ? null : _mapper.Map<User, UserDto>(user);
+    }
 
-        for (var right = 0; right < s.Length; right++)
-        {
-            var ch = s[right];
-            if (lastIndex[ch] >= left)
-            {
-                left = lastIndex[ch] + 1;
-            }
+    public async Task<List<UserDto?>> GetAllUsersAsync(string email)
+    {
+        var users =  await _userRepository.GetAllAsync();
+        return users == null ? null : _mapper.Map<List<User>, List<UserDto>>(users);
+    }
 
-            lastIndex[ch] = right;
-            var windowLen = right - left + 1;
-            if (windowLen > maxLen)
-            {
-                maxLen = windowLen;
-            }
-        }
+    public async Task<UserDto> AuthenticateUserAsync(string name, string email, string password)
+    {
+        throw new NotImplementedException();
+    }
 
-        return maxLen;
+    public async Task<bool> CheckUserExistsAsync(string email)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -23,23 +23,16 @@ public class HomeController : Controller
         
         return View();
     }
-    public IActionResult Home(UserDto? user)
+    public IActionResult Home()
     {
-        var model = user ?? new UserDto
-        {
-            Id = 0,
-            Name = "default",
-            Email = "default"
-        };
-    
-        return View(model);
+        return View();
     }
 
     public async Task<IActionResult> CreateAccountCheck(CreateAccountRequest request)
     {
         var userService = new UserService();
 
-        var isUserExists = await userService.CheckUserExists(request.Username, request.Email);
+        var isUserExists = await userService.CheckUserExistsAsync(request.Email);
 
         return isUserExists ? Json(new {success = false, message = "User already exists", error = "User exists", errorCode = "0001"}) : Json(new {success = true}); 
     }
@@ -69,7 +62,7 @@ public class HomeController : Controller
         }
         
         var userService = new UserService();
-        var userDto = await userService.GiveAccessToUser(request.Name, request.Email, request.Password);
+        var userDto = await userService.AuthenticateUserAsync(request.Name, request.Email, request.Password);
         
         return Json(new ApiResponse<UserDto>{Data = userDto, Success = true, Message = "Successfully gave access to user"});
     }
