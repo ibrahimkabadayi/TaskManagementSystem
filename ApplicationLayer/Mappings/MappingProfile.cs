@@ -29,5 +29,9 @@ public class MappingProfile : Profile
         
         CreateMap<ProjectDto, Project>()
             .ForMember(src => src.ProjectUsers, opt => opt.Ignore());
+
+        CreateMap<ProjectUserDto, ProjectUser>();
+
+        CreateMap<ProjectUser, ProjectUserDto>();
     }
 }

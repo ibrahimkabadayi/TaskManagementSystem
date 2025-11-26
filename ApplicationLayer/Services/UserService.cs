@@ -34,13 +34,23 @@ public class UserService : IUserService
         return users == null ? null : _mapper.Map<List<User>, List<UserDto>>(users);
     }
 
-    public async Task<UserDto> AuthenticateUserAsync(string name, string email, string password)
+    public async Task<UserDto?> AuthenticateUserAsync(string name, string email, string password)
     {
-        throw new NotImplementedException();
+        var isUserReal = await CheckUserExistsAsync(email);
+
+        if (!isUserReal)
+        {
+            return null;
+        }
+
+        var user = await _userRepository.GetByEmailAsync(email);
+
+        return user!.Password != password ? throw new Exception("Wrong password") : _mapper.Map<User, UserDto>(user);
     }
 
     public async Task<bool> CheckUserExistsAsync(string email)
     {
-        throw new NotImplementedException();
+        var user = await _userRepository.GetByEmailAsync(email);
+        return user != null;
     }
 }

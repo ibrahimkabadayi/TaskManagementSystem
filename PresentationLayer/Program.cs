@@ -1,16 +1,17 @@
-using Application.Mappings;
-using DataAccessLayer.Context;
-using Microsoft.EntityFrameworkCore;
+using Application;
+using DataAccessLayer;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddAutoMapper(typeof(MappingProfile));
+// Application Layer services (AutoMapper + Services)
+builder.Services.AddApplicationServices();
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// Data Access Layer services (DbContext + Repositories)
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDataAccessServices(connectionString);
 
 var app = builder.Build();
 

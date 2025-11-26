@@ -13,12 +13,12 @@ public class UserRepository : Repository<User>, IUserRepository
         
     }
 
-    public async Task<User> GetByEmailAsync(string email)
+    public async Task<User?> GetByEmailAsync(string email)
     {
         var user = await _context.Users
             .FirstOrDefaultAsync(u => u.Email == email);
         
-        return user ?? throw new Exception("User not found");
+        return user;
     }
 
     public async Task<IEnumerable<User>> GetUsersByProjectAsync(int projectId)

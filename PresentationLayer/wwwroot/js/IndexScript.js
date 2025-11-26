@@ -24,7 +24,7 @@ async function SignIn(){
     
     try
     {
-        await fetch('Home/RegisterSignIn/', {
+        await fetch('Authenticate/RegisterSignIn/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -40,6 +40,9 @@ async function SignIn(){
                 window.location.href = `Home/SignIn?${params}`;
             } else {
                 alert(data.message);
+                if(data.message === "Wrong password"){
+                    return;
+                }
                 const params = new URLSearchParams({
                     Message: data.error,
                     Type: 'RegisterError',
