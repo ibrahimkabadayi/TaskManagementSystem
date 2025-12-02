@@ -7,6 +7,7 @@ using DataAccessLayer.Entities;
 using DataAccessLayer.Repositories.Implementations;
 using DataAccessLayer.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Task = System.Threading.Tasks.Task;
 
 namespace Application.Services;
 
@@ -28,13 +29,28 @@ public class UserService : IUserService
         return user == null ? null : _mapper.Map<User, UserDto>(user);
     }
 
+    public async Task<bool> RegisterUserAsync(UserDto user)
+    {
+        try
+        {
+            var newUser = _mapper.Map<UserDto, User>(user);
+            await _userRepository.AddAsync(newUser);
+            return true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return false;
+        }
+    }
+
     public async Task<List<UserDto?>> GetAllUsersAsync(string email)
     {
         var users =  await _userRepository.GetAllAsync();
         return users == null ? null : _mapper.Map<List<User>, List<UserDto>>(users);
     }
-
-    public async Task<UserDto?> AuthenticateUserAsync(string name, string email, string password)
+    
+    public async Task<UserDto?> AuthenticateUserAsync(string email, string password)
     {
         var isUserReal = await CheckUserExistsAsync(email);
 

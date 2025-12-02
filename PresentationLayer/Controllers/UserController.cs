@@ -1,4 +1,6 @@
-﻿using Application.Services;
+﻿using Application.DTOs;
+using Application.Interfaces;
+using Application.Services;
 using AutoMapper;
 using DataAccessLayer.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -8,13 +10,11 @@ namespace TaskManagementSystem.Controllers;
 
 public class UserController : Controller
 {
-    private readonly IUserRepository _userRepository;
-    private readonly IMapper _mapper;
-
-    public UserController(IUserRepository userRepository, IMapper mapper)
+    private readonly IUserService _userService;
+    
+    public UserController(IUserService userService)
     {
-        _userRepository = userRepository;
-        _mapper = mapper;
+        _userService = userService;
     }
     
     public IActionResult Error(ErrorRequest request)
@@ -26,20 +26,35 @@ public class UserController : Controller
         
         return View();
     }
-    
-    public async Task<IActionResult> CreateAccountCheck(CreateAccountRequest request)
-    {
-        var userService = new UserService(_userRepository, _mapper);
 
-        var isUserExists = await userService.CheckUserExistsAsync(request.Email);
+    [HttpPost]
+    public async Task<IActionResult> CreateAccount(CreateAccountRequest request)
+    {
+        var newUser = new UserDto{Name = request.Name, Email = request.Email, Password = request.Password};
+        var result = await _userService.RegisterUserAsync(newUser);
+
+        if (result)
+        {
+            var apiResponse = new ApiResponse<UserDto>{Data = newUser, Success = true, Message = "User Added Successfully"};
+            return Json(new {apiResponse});
+        }
+        else
+        {
+            var apiResponse = new ApiResponse<UserDto>{Data = newUser, Success = false, Message = "User Not Added"};
+            return Json(new {apiResponse});
+        }
+    }
+    public async Task<IActionResult> CreateAccountCheck(AccountCheckRequest checkRequest)
+    {
+        var isUserExists = await _userService.CheckUserExistsAsync(checkRequest.Email);
 
         return isUserExists ? Json(new {success = false, message = "User already exists", error = "User exists", errorCode = "0001"}) : Json(new {success = true}); 
     }
 
-    public IActionResult PasswordCreation(CreateAccountRequest request)
+    public IActionResult PasswordCreation(AccountCheckRequest checkRequest)
     {
-        ViewData["Name"] = request.Username;
-        ViewData["Email"] = request.Email;
+        ViewData["Name"] = checkRequest.Username;
+        ViewData["Email"] = checkRequest.Email;
         
         return View();
     }

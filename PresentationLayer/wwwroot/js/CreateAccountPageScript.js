@@ -23,7 +23,7 @@ async function nextButtonClick(){
     }
     
     try{
-        await fetch("/Home/CreateAccountCheck/",{
+        await fetch("/User/CreateAccountCheck/",{
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
@@ -37,7 +37,7 @@ async function nextButtonClick(){
                     Username: name,
                     Email: email
                 });
-                window.location.href = `/Home/PasswordCreation?${params.toString()}{`;
+                window.location.href = `/User/PasswordCreation?${params.toString()}{`;
             }else
             {
                 alert(data.message);

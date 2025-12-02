@@ -1,46 +1,114 @@
-﻿using Application.DTOs;
+﻿using System.Security.Claims;
+using Application.DTOs;
+using Application.Interfaces;
 using Application.Services;
 using AutoMapper;
 using DataAccessLayer.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using TaskManagementSystem.Models;
 
 namespace TaskManagementSystem.Controllers;
 
+[Route("Authenticate")]
 public class AuthenticateController : Controller
 {
-    private readonly IUserRepository _userRepository;
-    private readonly IMapper _mapper;
+    private readonly IUserService _userService;
 
-    public AuthenticateController(IUserRepository userRepository, IMapper mapper)
+    public AuthenticateController(IUserService userService)
     {
-        _userRepository = userRepository;
-        _mapper = mapper;
+        _userService = userService;
     }
     
-    public async Task<IActionResult> RegisterSignIn(SignInRequest request)
+    [HttpPost("RegisterSignIn")]
+    public async Task<IActionResult> RegisterSignIn([FromBody] SignInRequest request)
     {
-        if (!CheckInfo(request.Name, request.Password, request.Email))
-        {
-            return Json(new ApiResponse<UserDto>{Data = null, Success = false, Message = "Wrong input"});
-        }
-        
-        var userService = new UserService(_userRepository, _mapper);
         try
         {
-            var userDto = await userService.AuthenticateUserAsync(request.Name, request.Email, request.Password);
-            return Json(new ApiResponse<UserDto>{Data = userDto, Success = true, Message = "Successfully gave access to user"});
+            if (!CheckInfo(request.Password, request.Email))
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Wrong password",
+                    errorCode = 401
+                });
+            }
+         
+            var user = await _userService.AuthenticateUserAsync(request.Email, request.Password);
+
+            if (user == null)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Wrong password",
+                    errorCode = 401
+                });
+            }
+            
+            var claims = new List<Claim>
+            {
+                new (ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new (ClaimTypes.Name, user.Name),
+                new (ClaimTypes.Email, user.Email)
+            };
+
+            var claimsIdentity = new ClaimsIdentity(
+                claims,
+                CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var authProperties = new AuthenticationProperties
+            {
+                IsPersistent = request.RememberMe,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(request.RememberMe ? 30 : 1)
+            };
+            
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity),
+                authProperties);
+
+            return Json(new
+            {
+                success = true,
+                message = "Login successful",
+                data = new
+                {
+                    name = user.Name,
+                    email = user.Email,
+                    redirectUrl = "/Home"
+                }
+            });
         }
         catch (Exception ex)
         {
-            return Json(new ApiResponse<UserDto>{Data = null, Success = false, Message = ex.Message});
+            return Json(new
+            {
+                success = false,
+                message = "An error occurred during login",
+                error = ex.Message,
+                errorCode = 500
+            });
         }
     }
     
-    private static bool CheckInfo(string name, string password, string email)
+    [HttpPost("Logout")]
+    public async Task<IActionResult> Logout()
     {
-        if (name.Length >= 3 && !string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(password) &&
-            !string.IsNullOrEmpty(email)
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        
+        return Json(new
+        {
+            success = true,
+            message = "Logout successful",
+            redirectUrl = "/Home"
+        });
+    }
+    
+    private static bool CheckInfo(string password, string email)
+    {
+        if (!string.IsNullOrEmpty(password) && !string.IsNullOrEmpty(email)
             && email.Length >= 3 && password.Length >= 3 && email.Contains("@gmail.com")) return true;
         Console.WriteLine("Invalid name or surname");
         return false;

@@ -3,7 +3,10 @@
 @model UserDto
 
 @{
-    
+    Layout = null;
+    var userId = ViewBag.UserId as int?;
+    var userName = ViewBag.UserName as string;
+    var userEmail = ViewBag.UserEmail as string;
 }
 
 <!DOCTYPE html>
@@ -12,7 +15,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TaskFlow - Smart Work Management</title>
-    <style rel="stylesheet" href="~/css/HomeStyleSheet"></style>
+    <link rel="stylesheet" href="~/css/HomeStyleSheet.css">
 </head>
 <body>
 <nav id="navbar">
@@ -135,10 +138,10 @@
     </div>
 </footer>
 <script>
-    window.UserData = {
-        userName: "@Model.Name",
-        userEmail: "@Model.Email"
-    };
+    //window.UserData = {
+    //    userName: "Model.Name",
+    //    userEmail: "Model.Email"
+    //};
 </script>
 <script src="~/js/HomeScript.js"></script>
 </body>
