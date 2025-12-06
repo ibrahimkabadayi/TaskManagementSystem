@@ -1,116 +1,79 @@
-﻿using System.Security.Claims;
-using Application.DTOs;
-using Application.Interfaces;
-using Application.Services;
-using AutoMapper;
-using DataAccessLayer.Repositories.Interfaces;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Application.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using TaskManagementSystem.Models;
+using IAuthenticationService = Application.Interfaces.IAuthenticationService;
 
 namespace TaskManagementSystem.Controllers;
 
-[Route("Authenticate")]
-public class AuthenticateController : Controller
+[ApiController]
+[Route("api/[controller]")]
+public class AuthenticateController : ControllerBase
 {
-    private readonly IUserService _userService;
-
-    public AuthenticateController(IUserService userService)
-    {
-        _userService = userService;
-    }
+    private readonly IAuthenticationService _authenticationService;
     
-    [HttpPost("RegisterSignIn")]
-    public async Task<IActionResult> RegisterSignIn([FromBody] SignInRequest request)
+    public AuthenticateController(IAuthenticationService authenticationService)
     {
-        try
-        {
-            if (!CheckInfo(request.Password, request.Email))
-            {
-                return Json(new
-                {
-                    success = false,
-                    message = "Wrong password",
-                    errorCode = 401
-                });
-            }
-         
-            var user = await _userService.AuthenticateUserAsync(request.Email, request.Password);
-
-            if (user == null)
-            {
-                return Json(new
-                {
-                    success = false,
-                    message = "Wrong password",
-                    errorCode = 401
-                });
-            }
-            
-            var claims = new List<Claim>
-            {
-                new (ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new (ClaimTypes.Name, user.Name),
-                new (ClaimTypes.Email, user.Email)
-            };
-
-            var claimsIdentity = new ClaimsIdentity(
-                claims,
-                CookieAuthenticationDefaults.AuthenticationScheme);
-
-            var authProperties = new AuthenticationProperties
-            {
-                IsPersistent = request.RememberMe,
-                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(request.RememberMe ? 30 : 1)
-            };
-            
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(claimsIdentity),
-                authProperties);
-
-            return Json(new
-            {
-                success = true,
-                message = "Login successful",
-                data = new
-                {
-                    name = user.Name,
-                    email = user.Email,
-                    redirectUrl = "/Home"
-                }
-            });
-        }
-        catch (Exception ex)
-        {
-            return Json(new
-            {
-                success = false,
-                message = "An error occurred during login",
-                error = ex.Message,
-                errorCode = 500
-            });
-        }
+        _authenticationService = authenticationService;
     }
-    
-    [HttpPost("Logout")]
-    public async Task<IActionResult> Logout()
+
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
-        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
         
-        return Json(new
+        var result = await _authenticationService.RegisterAndLoginAsync(
+            request.Name,
+            request.Email,
+            request.Password,
+            HttpContext  
+        );
+        
+        if (!result.Success)
+        {
+            return BadRequest(new 
+            { 
+                success = false,
+                message = result.Message 
+            });
+        }
+        
+        return Ok(new
         {
             success = true,
-            message = "Logout successful",
-            redirectUrl = "/Home"
+            message = result.Message,
+            redirectUrl = result.RedirectUrl,
+            user = result.User
         });
     }
-    
-    private static bool CheckInfo(string password, string email)
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        if (!string.IsNullOrEmpty(password) && !string.IsNullOrEmpty(email)
-            && email.Length >= 3 && password.Length >= 3 && email.Contains("@gmail.com")) return true;
-        Console.WriteLine("Invalid name or surname");
-        return false;
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var result = await _authenticationService.LoginAsync(request.Email, request.Password, HttpContext);
+        
+        if (!result.Success)
+        {
+            return Unauthorized(new 
+            { 
+                success = false,
+                message = result.Message 
+            });
+        }
+        
+        return Ok(new
+        {
+            success = true,
+            message = result.Message,
+            redirectUrl = result.RedirectUrl,
+            user = result.User
+        });
     }
 }

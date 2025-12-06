@@ -31,9 +31,9 @@ public class UserController : Controller
     public async Task<IActionResult> CreateAccount(CreateAccountRequest request)
     {
         var newUser = new UserDto{Name = request.Name, Email = request.Email, Password = request.Password};
-        var result = await _userService.RegisterUserAsync(newUser);
+        var savedUser = await _userService.RegisterUserAsync(newUser);
 
-        if (result)
+        if (savedUser != null)
         {
             var apiResponse = new ApiResponse<UserDto>{Data = newUser, Success = true, Message = "User Added Successfully"};
             return Json(new {apiResponse});

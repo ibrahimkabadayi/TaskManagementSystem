@@ -29,18 +29,19 @@ public class UserService : IUserService
         return user == null ? null : _mapper.Map<User, UserDto>(user);
     }
 
-    public async Task<bool> RegisterUserAsync(UserDto user)
+    public async Task<UserDto?> RegisterUserAsync(UserDto user)
     {
         try
         {
             var newUser = _mapper.Map<UserDto, User>(user);
             await _userRepository.AddAsync(newUser);
-            return true;
+            var savedUserDto = _mapper.Map<User, UserDto>(newUser);
+            return savedUserDto;  
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
-            return false;
+            return null; 
         }
     }
 
@@ -49,7 +50,12 @@ public class UserService : IUserService
         var users =  await _userRepository.GetAllAsync();
         return users == null ? null : _mapper.Map<List<User>, List<UserDto>>(users);
     }
-    
+
+    public async Task<UserDto?> GetUserByEmailAsync(string email)
+    {
+        var user = await _userRepository.GetByEmailAsync(email);
+        return user == null ? null : _mapper.Map<User, UserDto>(user);
+    }
     public async Task<UserDto?> AuthenticateUserAsync(string email, string password)
     {
         var isUserReal = await CheckUserExistsAsync(email);

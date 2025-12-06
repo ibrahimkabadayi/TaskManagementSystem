@@ -5,8 +5,9 @@ namespace Application.Interfaces;
 public interface IUserService
 {
     Task<UserDto?> GetUserByIdAsync(int id);
-    Task<bool> RegisterUserAsync(UserDto user);
+    Task<UserDto?> RegisterUserAsync(UserDto user);
     Task<List<UserDto?>> GetAllUsersAsync(string email);
+    Task<UserDto?> GetUserByEmailAsync(string email);
     Task<UserDto?> AuthenticateUserAsync(string email, string password);
     Task<bool> CheckUserExistsAsync(string email);
 }

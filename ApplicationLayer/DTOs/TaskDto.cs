@@ -1,4 +1,4 @@
-﻿using Application.DTOs.Enums;
+﻿using DataAccessLayer.Enums;
 
 namespace Application.DTOs;
 
