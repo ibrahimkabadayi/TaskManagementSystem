@@ -30,16 +30,26 @@ async function nextButtonClick(){
                 Username: name,
                 Email: email
             })
-        }).then(response => response.json()).then(data => {
-            if(data.success)
-            {
+        }).then(response => response.json()).then(async data => {
+            if (data.success) {
+                await fetch('/Email/SendEmailVerificationCode', {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        Email: email
+                    })
+                }).then(response => response.json()).then(async data => {
+                    if (!data.success) {
+                        alert(data.message);
+                        return false;
+                    }
+                })
+                
                 const params = new URLSearchParams({
-                    Username: name,
                     Email: email
                 });
-                window.location.href = `/User/PasswordCreation?${params.toString()}{`;
-            }else
-            {
+                window.location.href = `/User/EmailCodeVerification?${params.toString()}`;
+            } else {
                 alert(data.message);
                 const params = new URLSearchParams({
                     Message: data.error,

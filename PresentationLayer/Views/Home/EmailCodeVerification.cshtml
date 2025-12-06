@@ -3,17 +3,31 @@
 
 @{
     Layout = null;
+    var email = ViewData["UserEmail"] as string;
 }
 
-<!DOCTYPE html>
-
-<html>
-<head>
-    <title></title>
-</head>
-<body>
-<div>
-    
+<div class="arrow-and-email-container">
+    <div class="back-arrow-container">
+        <p class= "back-arrow" style="color:blue">
+            ←
+        </p>
+    </div>
+    <div class="email-container">
+        <p class="email">@email</p>
+    </div>
 </div>
-</body>
-</html>
+    
+<p id="sign-in-text">Enter Email Code</p>
+<div class="Input-Area">
+    <div class="Input-Row">
+        <label for="code-Input" class="input-label">Code:</label>
+        <input type="text" id="code-Input" class="txt-input">
+    </div>
+</div>
+    
+<div class="button-container">
+    <button class="send-again-button" onclick="SendEmailCodeAgain(@email)">Send Again</button>
+    <button class="next-button" onclick="VerifyEmailCode(@email)">Next</button>
+</div>
+
+<script src="~/js/EmailVerificationScript.js"></script>

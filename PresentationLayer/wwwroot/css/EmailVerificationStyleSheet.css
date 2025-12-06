@@ -1,0 +1,109 @@
+.title-container{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.icon{
+    width: 20px;
+    height: 30px;
+    margin: 0 -0px;
+    padding: 0;
+}
+
+.arrow-and-email-container{
+    display: flex;
+    justify-content: left;
+    margin-left: 10px;
+    margin-bottom: 20px;
+}
+
+.back-arrow-container{
+    padding-top: 10px;
+    padding-right: 10px;
+}
+
+.email-container{
+    padding-top: 13px;
+}
+
+.back-arrow{
+    border: 1px solid transparent;
+    font-size: 20px;
+}
+
+.back-arrow:hover{
+    border: 1px solid rgba(128, 128, 128, 0.1);
+    background-color: rgba(128, 128, 128, 0.1);
+    border-radius: 100%;
+    font-size: 20px;
+}
+
+.email{
+    font-size: 16px;
+}
+
+h2{
+    text-align: center;
+    margin-top: 5px;
+    margin-bottom: 25px;
+    color: #0ba1e1;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    letter-spacing: -0.02em;
+}
+#sign-in-text{
+    margin-left: 10px;
+    font-weight: bold;
+    font-size: 20px;
+    font-family: 'Roboto Light', sans-serif;
+}
+strong{
+    color: #0ba1e1;
+    cursor: pointer;
+}
+.input-label{
+    color: black;
+}
+.Input-Row{
+    padding: 10px 5px;
+    margin: 5px;
+}
+.txt-input{
+    border: 1px solid #ccc;
+    margin-top: 10px;
+    width: 100%;
+    border-radius: 5px;
+    font-size: 16px;
+    padding: 5px 0;
+}
+
+.button-container{
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+.send-again-button{
+    text-align: left;
+    border: none;
+    background: white;
+    padding: 10px;
+    flex: 20%;
+    color: #0ba1e1;
+    cursor: pointer;
+    font-size: 16px;
+}
+.next-button{
+    border: none;
+    border-radius: 5px;
+    background: #0ba1e1;
+    color: white;
+    padding: 10px;
+    width: 20%;
+    margin-right: 10px;
+    cursor: pointer;
+    font-size: 16px;
+}

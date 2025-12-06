@@ -28,7 +28,7 @@ public class UserController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateAccount(CreateAccountRequest request)
+    public async Task<IActionResult> CreateAccount([FromBody] CreateAccountRequest request)
     {
         var newUser = new UserDto{Name = request.Name, Email = request.Email, Password = request.Password};
         var savedUser = await _userService.RegisterUserAsync(newUser);
@@ -44,14 +44,25 @@ public class UserController : Controller
             return Json(new {apiResponse});
         }
     }
-    public async Task<IActionResult> CreateAccountCheck(AccountCheckRequest checkRequest)
+    
+    [HttpPost]
+    public async Task<IActionResult> CreateAccountCheck([FromBody] AccountCheckRequest checkRequest)
     {
         var isUserExists = await _userService.CheckUserExistsAsync(checkRequest.Email);
 
         return isUserExists ? Json(new {success = false, message = "User already exists", error = "User exists", errorCode = "0001"}) : Json(new {success = true}); 
     }
 
-    public IActionResult PasswordCreation(AccountCheckRequest checkRequest)
+    [HttpPost]
+    public IActionResult EmailCodeVerification(EmailRequest request)
+    {
+        ViewData["Email"] = request.Email; 
+        
+        return View();
+    }
+
+    [HttpPost]
+    public IActionResult PasswordCreation([FromBody] AccountCheckRequest checkRequest)
     {
         ViewData["Name"] = checkRequest.Username;
         ViewData["Email"] = checkRequest.Email;
