@@ -3,6 +3,8 @@
 
 @{
     Layout = "Layout";
+    var email = ViewBag.Email as string;
+    var userName = ViewBag.UserName as string;
 }
 
 <link rel="stylesheet" href="~/css/CreateAccountPageStyleSheet.css"/>
@@ -11,11 +13,11 @@
 <div class="Input-Area">
     <div class="Input-Row">
         <label for="name-Input" class="input-label">Name and Surname:</label><br>
-        <input type="text" id="name-Input" class="txt-input">
+        <input type="text" id="name-Input" class="txt-input" value="@userName">
     </div>
     <div class="Input-Row">
         <label for="Email-Input" class="input-label">Email:</label><br>
-        <input type="text" id="Email-Input" class="txt-input">
+        <input type="text" id="Email-Input" class="txt-input" value="@email">
     </div>
 </div>
 
@@ -34,3 +36,4 @@
 <div class="button-container">
     <button class="next-button" onclick="nextButtonClick()">Next</button>
 </div>
+<script src="~/js/CreateAccountPageScript.js"></script>

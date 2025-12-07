@@ -42,7 +42,7 @@ public class EmailController : ControllerBase
         HttpContext.Session.SetString($"EmailCodeExpiry_{request.Email}", 
             DateTime.UtcNow.AddMinutes(10).ToString());
 
-        return Ok(new { success = true, Code = code });
+        return Ok(new { success = true });
     }
     
     [HttpPost("VerifyCode")]
@@ -58,17 +58,20 @@ public class EmailController : ControllerBase
                 return BadRequest(new { success = false, message = "Could not find email code." });
             }
             
-            if (DateTime.Parse(expiry) < DateTime.UtcNow)
+            if (DateTime.Parse(expiry!) < DateTime.UtcNow)
             {
                 return BadRequest(new { success = false, message = "Code time is up." });
             }
 
-            if (savedCode != request.Code) return BadRequest(new { success = false, message = "Incorrect Code" });
+            if (savedCode != request.EnteredCode) return BadRequest(new { success = false, message = "Incorrect Code" });
             HttpContext.Session.Remove($"EmailCode_{request.Email}");
             HttpContext.Session.Remove($"EmailCodeExpiry_{request.Email}");
             
-            return Ok(new { success = true, message = "Email confirmed" });
-
+            return Ok(new { 
+                success = true,
+                message = "Email confirmed",
+                email = request.Email, 
+                name = request.UserName});
         }
         catch (Exception ex)
         {

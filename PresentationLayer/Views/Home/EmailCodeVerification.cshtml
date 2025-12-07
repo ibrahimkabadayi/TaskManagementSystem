@@ -3,12 +3,13 @@
 
 @{
     Layout = null;
-    var email = ViewData["UserEmail"] as string;
+    var name = ViewData["Name"] as string;
+    var email = ViewData["Email"] as string;
 }
 
 <div class="arrow-and-email-container">
     <div class="back-arrow-container">
-        <p class= "back-arrow" style="color:blue">
+        <p class= "back-arrow" style="color:blue" onclick="BackArrowClick(@name, @email)">
             ←
         </p>
     </div>

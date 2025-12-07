@@ -13,11 +13,15 @@ async function VerifyEmailCode(email){
         },
         body: JSON.stringify({
             Email: email,
-            Code: userEnteredCode
+            EnteredCode: userEnteredCode
         })
     }).then(response => response.json()).then(data => {
         if(data.success) {
-            window.location.href = '/Account/PasswordCreation';
+            const params = new URLSearchParams({
+                UserName: data.name,
+                Email: data.email,
+            });
+            window.location.href = `/User/PasswordCreation?${params.toString()}`;
         } else {
             alert('Incorrect Code! Please try again or click Send Again button for another code.');
         }
@@ -39,4 +43,13 @@ async function SendEmailCodeAgain(email){
             return false;
         }
     })
+}
+
+function BackArrowClick(name, email){
+    const params = new URLSearchParams({
+        UserName : name,
+        Email : email
+    })
+
+    window.location.href = `/User/CreateAccount?${params.toString()}`;
 }

@@ -16,7 +16,16 @@ public class UserController : Controller
     {
         _userService = userService;
     }
+
+    public IActionResult CreateAccount([FromBody] BackToCreateAccountPageRequest request)
+    {
+        ViewBag.Username = request.Username;
+        ViewBag.Email = request.Email;
+        
+        return View();
+    }
     
+    [HttpPost]
     public IActionResult Error(ErrorRequest request)
     {
         ViewBag.Message = request.Message;
@@ -25,24 +34,6 @@ public class UserController : Controller
         ViewBag.Timestamp = request.Timestamp;
         
         return View();
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> CreateAccount([FromBody] CreateAccountRequest request)
-    {
-        var newUser = new UserDto{Name = request.Name, Email = request.Email, Password = request.Password};
-        var savedUser = await _userService.RegisterUserAsync(newUser);
-
-        if (savedUser != null)
-        {
-            var apiResponse = new ApiResponse<UserDto>{Data = newUser, Success = true, Message = "User Added Successfully"};
-            return Json(new {apiResponse});
-        }
-        else
-        {
-            var apiResponse = new ApiResponse<UserDto>{Data = newUser, Success = false, Message = "User Not Added"};
-            return Json(new {apiResponse});
-        }
     }
     
     [HttpPost]
@@ -56,7 +47,8 @@ public class UserController : Controller
     [HttpPost]
     public IActionResult EmailCodeVerification(EmailRequest request)
     {
-        ViewData["Email"] = request.Email; 
+        ViewData["Email"] = request.Email;
+        ViewData["Name"] = request.Name;
         
         return View();
     }

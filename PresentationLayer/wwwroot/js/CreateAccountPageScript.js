@@ -46,7 +46,8 @@ async function nextButtonClick(){
                 })
                 
                 const params = new URLSearchParams({
-                    Email: email
+                    Email: email,
+                    Name: name
                 });
                 window.location.href = `/User/EmailCodeVerification?${params.toString()}`;
             } else {
