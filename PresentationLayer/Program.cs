@@ -4,10 +4,14 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ============================================
+// SERVICES
+// ============================================
+
+// Controllers
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddApplicationServices();
-
+// Session (Email kod doğrulama için)
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -16,10 +20,23 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+// ============================================
+// DEPENDENCY INJECTION
+// ============================================
+
+// 1. DataAccess Layer (Repository, DbContext)
+builder.Services.AddDataAccessServices(builder.Configuration);
+
+// 2. Application Layer (Services)
+builder.Services.AddApplicationServices();
+
+// ============================================
+// AUTHENTICATION
+// ============================================
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/SignIn"; 
+        options.LoginPath = "/SignIn";
         options.LogoutPath = "/Logout";
         options.AccessDeniedPath = "/AccessDenied";
         options.ExpireTimeSpan = TimeSpan.FromDays(7);
@@ -29,10 +46,14 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     });
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDataAccessServices(connectionString);
-
+// ============================================
+// BUILD APP
+// ============================================
 var app = builder.Build();
+
+// ============================================
+// MIDDLEWARE PIPELINE
+// ============================================
 
 if (!app.Environment.IsDevelopment())
 {
@@ -44,12 +65,14 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
+// Session (Authentication'dan önce!)
 app.UseSession();
-app.UseAuthentication();
-app.UseAuthorization();
 
-app.UseStaticFiles();
-app.MapStaticAssets(); 
+// Authentication & Authorization
+app.UseAuthentication();  // ← Önce bu
+app.UseAuthorization();   // ← Sonra bu
+
+app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",

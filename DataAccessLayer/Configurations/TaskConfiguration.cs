@@ -12,47 +12,58 @@ public class TaskConfiguration : IEntityTypeConfiguration<Task>
         
         builder.HasKey(x => x.Id);
         
-        builder.Property(x => x.Title)
+        builder
+            .Property(x => x.Title)
             .IsRequired()
             .HasMaxLength(100);
         
-        builder.Property(x => x.Description)
+        builder
+            .Property(x => x.Description)
             .HasMaxLength(1000);
         
-        builder.Property(x => x.CompletedDate)
+        builder
+            .Property(x => x.CompletedDate)
             .HasColumnType("datetime");
         
-        builder.Property(x=> x.StartDate)
+        builder
+            .Property(x=> x.StartDate)
             .IsRequired()
             .HasColumnType("datetime");
 
-        builder.Property(x => x.State)
+        builder
+            .Property(x => x.State)
             .IsRequired();
         
-        builder.Property(x => x.Priority)
+        builder
+            .Property(x => x.Priority)
             .IsRequired();
         
-        builder.Property(x => x.DueDate)
+        builder
+            .Property(x => x.DueDate)
             .HasColumnType("datetime");
         
-        builder.HasOne(x => x.Project)
-            .WithMany()
+        builder
+            .HasOne(x => x.Project)
+            .WithMany(x => x.Tasks)
             .HasForeignKey(x => x.ProjectId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
         
-        builder.HasOne(x => x.CreatedBy)
+        builder
+            .HasOne(x => x.CreatedBy)
             .WithMany()
             .HasForeignKey(x => x.CreatedById)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
         
-        builder.HasOne(x => x.AssignedTo)
+        builder
+            .HasOne(x => x.AssignedTo)
             .WithMany()
             .HasForeignKey(x => x.AssignedToId)
             .OnDelete(DeleteBehavior.Restrict);
         
-        builder.HasOne(x => x.FinishedBy)
+        builder
+            .HasOne(x => x.FinishedBy)
             .WithMany()
             .HasForeignKey(x => x.FinishedById)
             .OnDelete(DeleteBehavior.Restrict);
