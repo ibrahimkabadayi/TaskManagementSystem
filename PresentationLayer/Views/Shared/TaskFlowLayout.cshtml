@@ -1,0 +1,34 @@
+﻿@model TaskManagementSystem.Views.TaskFlowLayout
+@Layout
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow Dashboard</title>
+</head>
+<body>
+<nav class="top-bar">
+    <div class="logo">
+        <span>📊 TaskFlow</span>
+    </div>
+    <div class="bar-account-section">
+        <div style="cursor: pointer;" title="Notifications">🔔</div>
+        <div class="account">
+            I
+        </div>
+    </div>
+</nav>
+
+<div class="main-container">
+    <main>
+        @RenderBody()
+    </main>
+</div>
+</body>
+</html>

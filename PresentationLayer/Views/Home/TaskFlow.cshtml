@@ -1,19 +1,67 @@
 ﻿@page
+@using Application.DTOs
+@using TaskManagementSystem.Views
 @model TaskManagementSystem.Views.TaskFlow
 
 @{
-    Layout = null;
+    Layout = "TaskFlowLayout";
+    var lastVisitedSections = ViewBag.LastVisitedSections;
 }
 
-<!DOCTYPE html>
+@model List<Application.DTOs.ProjectDto>
 
-<html>
-<head>
-    <title></title>
-</head>
-<body>
-<div>
-    
+<div class="recently-viewed-section">
+    <div class="section-header">
+        🕒 <span>Recently Viewed</span>
+    </div>
+
+    <div class="boards-grid">
+        @{
+            foreach (var visitedSection in lastVisitedSections)
+            {
+                <div class="board-card has-bg"
+                     style="background-image: url('@lastVisitedSections.ImageUrl');">
+                    @visitedSection.Name
+                </div>
+            }
+        }
+    </div>
 </div>
-</body>
-</html>
+
+
+<div class="workspaces-section">
+    <div class="section-header">
+        💼 <span>YOUR WORKSPACES</span>
+    </div>
+    @{
+        foreach (var project in Model)
+        {
+            <div class="workspace-item" style="margin-bottom: 50px;">
+                <div class="workspace-title-bar">
+                    <div class="ws-left">
+                        <div class="ws-icon">@project.Name.First()</div>
+                        <div class="ws-name">@project.Name</div>
+                    </div>
+                    <div class="ws-actions">
+                        <button>Boards</button>
+                        <button>Members</button>
+                        <button>Settings</button>
+                    </div>
+                </div>
+
+                <div class="boards-grid">
+                    @foreach (var projectSection in project.Sections)
+                    {
+                        <div class="board-card" style="@projectSection.ImageUrl">
+                            @projectSection.Name
+                        </div>
+                    }
+                    <div class="board-card new-board">
+                        Create New Board
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+

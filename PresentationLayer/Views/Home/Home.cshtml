@@ -14,135 +14,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskFlow - Smart Work Management</title>
-    <link rel="stylesheet" href="~/css/HomeStyleSheet.css">
+    <title>TaskFLow | Streamline Your Workflow</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/HomeStyleSheet.css"/>
+    <style></style>
 </head>
 <body>
-<nav id="navbar">
-    <div class="nav-container">
-        <div class="logo">
-            TaskFlow
-        </div>
-        <ul class="nav-links">
-            <li><a href="#features">Features</a></li>
-            <li><a href="#solutions">Solutions</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
-        <div class="nav-buttons" id="nav-buttons">
-            <button class="btn btn-signin" id="sign-in-button" onclick="SignIn()">Sign In</button>
-            <button class="btn btn-signup" onclick="CreateAccount()">Get Started Free</button>
+
+<nav>
+    <div class="container">
+        <div class="nav-inner">
+            <div class="logo">
+                <i class="ri-layout-grid-fill"></i> TaskFlow
+            </div>
+            <ul class="nav-links">
+                <li><a href="#">Product</a></li>
+                <li><a href="#">Solutions</a></li>
+                <li><a href="#">Enterprise</a></li>
+                <li><a href="#">Pricing</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="btn btn-signin" onclick="SignIn()" style="background:none; border:none; color:var(--text-muted); font-weight:600; cursor:pointer;">Sign In</button>
+                <button class="btn btn-primary" onclick="CreateAccount()">Get Started</button>
+            </div>
         </div>
     </div>
 </nav>
 
 <section class="hero">
-    <div class="hero-container">
-        <div class="hero-content">
-            <h1>Manage Your Work Smartly</h1>
-            <p>Manage all your projects, tasks, and team in one platform. Maximize your productivity with TaskFlow.</p>
-            <div class="hero-buttons">
-                <button class="btn-primary">Get Started Now</button>
-                <button class="btn-secondary">Watch Demo</button>
+    <div class="container">
+        <div class="hero-grid">
+            <div class="hero-content">
+                <h1>Organize work,<br><span>amplify results.</span></h1>
+                <p>The all-in-one workspace that helps teams plan, organize, and collaborate. From simple tasks to complex roadmaps.</p>
+                <div class="hero-btns" style="display:flex; gap:15px;">
+                    <button class="btn btn-primary">Start for free <i class="ri-arrow-right-line"></i></button>
+                    <button class="btn btn-outline"><i class="ri-play-circle-line"></i> Watch Demo</button>
+                </div>
             </div>
-        </div>
-        <div class="hero-image">
-            <div class="mockup">
-                <svg viewBox="0 0 400 300" style="width: 100%;">
-                    <rect x="20" y="20" width="360" height="260" rx="10" fill="#f5f7fa"/>
-                    <rect x="30" y="40" width="340" height="40" rx="5" fill="#667eea" opacity="0.8"/>
-                    <rect x="30" y="90" width="340" height="40" rx="5" fill="#764ba2" opacity="0.6"/>
-                    <rect x="30" y="140" width="340" height="40" rx="5" fill="#667eea" opacity="0.4"/>
-                    <rect x="30" y="190" width="340" height="40" rx="5" fill="#764ba2" opacity="0.3"/>
-                    <circle cx="50" cy="60" r="8" fill="white"/>
-                    <circle cx="50" cy="110" r="8" fill="white"/>
-                    <circle cx="50" cy="160" r="8" fill="white"/>
-                    <circle cx="50" cy="210" r="8" fill="white"/>
-                </svg>
+
+            <div class="hero-visual">
+                <div class="app-window">
+                    <div class="app-header">
+                        <div class="dot red"></div>
+                        <div class="dot yellow"></div>
+                        <div class="dot green"></div>
+                    </div>
+                    <div class="app-body">
+                        <div class="sidebar">
+                            <div style="padding:15px;">
+                                <div class="skeleton-bar" style="width:60%; margin-bottom:15px; background: #dbeafe;"></div>
+                                <div class="skeleton-bar" style="margin-bottom:8px;"></div>
+                                <div class="skeleton-bar" style="margin-bottom:8px;"></div>
+                                <div class="skeleton-bar" style="margin-bottom:8px;"></div>
+                            </div>
+                        </div>
+                        <div class="main-view">
+                            <div class="skeleton-bar" style="width:40%; height:20px; background: #bfdbfe;"></div>
+                            <div class="skeleton-card" style="display:flex; align-items:center; padding:0 15px; justify-content:space-between;">
+                                <div style="width: 30px; height: 30px; border-radius: 50%; background: #eff6ff;"></div>
+                                <div style="width: 60%; height: 8px; background: #f1f5f9; border-radius: 4px;"></div>
+                            </div>
+                            <div class="skeleton-card" style="display:flex; align-items:center; padding:0 15px; justify-content:space-between;">
+                                <div style="width: 30px; height: 30px; border-radius: 50%; background: #eff6ff;"></div>
+                                <div style="width: 50%; height: 8px; background: #f1f5f9; border-radius: 4px;"></div>
+                            </div>
+                            <div class="skeleton-card" style="display:flex; align-items:center; padding:0 15px; justify-content:space-between;">
+                                <div style="width: 30px; height: 30px; border-radius: 50%; background: #eff6ff;"></div>
+                                <div style="width: 70%; height: 8px; background: #f1f5f9; border-radius: 4px;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="floating-badge">
+                        <div class="check-circle"><i class="ri-check-line"></i></div>
+                        <div>
+                            <div style="font-weight:700; font-size:0.9rem; color:var(--text-main)">Project Done</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted)">Ahead of schedule</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </section>
+
+<div class="brands">
+    <div class="container">
+        <p>Trusted by innovative teams at</p>
+        <div class="brands-wrapper">
+            <h3>ACME</h3>
+            <h3>GlobalBank</h3>
+            <h3>TechCorp</h3>
+            <h3>Nebula</h3>
+        </div>
+    </div>
+</div>
 
 <section class="features" id="features">
-    <div class="features-container">
-        <div class="section-title">
-            <h2>Powerful Features</h2>
-            <p>Everything you need in one place</p>
+    <div class="container">
+        <div class="section-header">
+            <span class="badge">Why TaskFLow?</span>
+            <h2>Everything you need to ship faster</h2>
+            <p>Powerful features configured for your success. Manage everything from high-level planning to daily tasks.</p>
         </div>
+
         <div class="features-grid">
             <div class="feature-card">
-                <div class="feature-icon">📋</div>
-                <h3>Smart Task Management</h3>
-                <p>Easily create, prioritize, and track your tasks. Work more efficiently with AI-powered suggestions.</p>
+                <div class="icon-box">
+                    <i class="ri-kanban-view-2"></i>
+                </div>
+                <h3>Kanban Boards</h3>
+                <p>Visualize your workflow with flexible boards. Drag and drop tasks to keep everyone aligned on progress.</p>
             </div>
+
             <div class="feature-card">
-                <div class="feature-icon">👥</div>
+                <div class="icon-box">
+                    <i class="ri-group-line"></i>
+                </div>
                 <h3>Team Collaboration</h3>
-                <p>Collaborate with your team in real-time. Keep everyone in sync with comments, tags, and notifications.</p>
+                <p>Real-time comments, mentions, and file sharing ensure your team never misses a beat.</p>
             </div>
+
             <div class="feature-card">
-                <div class="feature-icon">📊</div>
-                <h3>Visual Reports</h3>
-                <p>Track your progress with detailed analytics and charts. Make data-driven decisions to achieve success.</p>
+                <div class="icon-box">
+                    <i class="ri-pie-chart-line"></i>
+                </div>
+                <h3>Smart Analytics</h3>
+                <p>Gain insights into team velocity and project health with automatically generated charts.</p>
             </div>
+
             <div class="feature-card">
-                <div class="feature-icon">🔄</div>
+                <div class="icon-box">
+                    <i class="ri-rocket-line"></i>
+                </div>
                 <h3>Automation</h3>
-                <p>Automate repetitive tasks. Save time and focus on what matters most.</p>
+                <p>Set up rules to automatically move tasks, assign owners, and send notifications. Save time for real work.</p>
             </div>
+
             <div class="feature-card">
-                <div class="feature-icon">🔔</div>
-                <h3>Smart Notifications</h3>
-                <p>Get instant updates on important changes. Never miss anything with customizable notifications.</p>
+                <div class="icon-box">
+                    <i class="ri-lock-password-line"></i>
+                </div>
+                <h3>Enterprise Security</h3>
+                <p>Bank-grade encryption, SSO, and advanced permission controls to keep your data safe.</p>
             </div>
+
             <div class="feature-card">
-                <div class="feature-icon">🔒</div>
-                <h3>Secure Infrastructure</h3>
-                <p>Your data is protected with state-of-the-art security measures. Run it in the cloud or on your own server.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">⚡</div>
-                <h3>Lightning Fast</h3>
-                <p>Experience blazing-fast performance with optimized workflows. Get things done in record time with our efficient platform.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🎯</div>
-                <h3>Goal Tracking</h3>
-                <p>Set clear objectives and track progress towards your goals. Stay motivated with visual milestone achievements and insights.</p>
+                <div class="icon-box">
+                    <i class="ri-smartphone-line"></i>
+                </div>
+                <h3>Mobile Ready</h3>
+                <p>Access your projects from anywhere. Our mobile apps for iOS and Android keep you connected on the go.</p>
             </div>
         </div>
     </div>
 </section>
 
-<section class="cta">
-    <h2>Get Started Today</h2>
-    <p>Thousands of teams are already working more efficiently with TaskFlow. Join them!</p>
-    <button class="btn-primary" onclick="CreateAccount()">Try Free - No Credit Card Required</button>
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-box">
+            <div class="circle-bg c1"></div>
+            <div class="circle-bg c2"></div>
+            <div class="cta-content">
+                <h2>Ready to boost your productivity?</h2>
+                <p>Join 20,000+ teams who use TaskFLow to deliver projects on time.</p>
+                <button class="btn btn-white" onclick="CreateAccount()">Get Started for Free</button>
+            </div>
+        </div>
+    </div>
 </section>
 
 <footer>
-    <div class="footer-container">
-        <ul class="footer-links">
-            <li><a href="#trust">Trust Center</a></li>
-            <li><a href="#protocols">Protocols</a></li>
-            <li><a href="#about">About Us</a></li>
-            <li><a href="#privacy">Privacy Policy</a></li>
-            <li><a href="#terms">Terms of Service</a></li>
-            <li><a href="#api">API</a></li>
-            <li><a href="#careers">Careers</a></li>
-        </ul>
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="logo">
+                    <i class="ri-layout-grid-fill"></i> Planner
+                </div>
+                <p>Making collaboration seamless for teams of all sizes. Built for speed, designed for clarity.</p>
+            </div>
+
+            <div class="footer-col">
+                <h4>Product</h4>
+                <ul>
+                    <li><a href="#">Features</a></li>
+                    <li><a href="#">Integrations</a></li>
+                    <li><a href="#">Pricing</a></li>
+                    <li><a href="#">Changelog</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="#">Documentation</a></li>
+                    <li><a href="#">API Reference</a></li>
+                    <li><a href="#">Community</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Legal</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+
         <div class="footer-bottom">
-            <p>&copy; 2025 TaskFlow. All rights reserved.</p>
+            &copy; 2025 TaskFLow Inc. All rights reserved.
         </div>
     </div>
 </footer>
-<script>
-    //window.UserData = {
-    //    userName: "Model.Name",
-    //    userEmail: "Model.Email"
-    //};
-</script>
 <script src="~/js/HomeScript.js"></script>
 </body>
 </html>
