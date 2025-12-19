@@ -12,26 +12,34 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
         
         builder.HasKey(x => x.Id);
         
-        builder.Property(x => x.Name)
+        builder
+            .Property(x => x.Name)
             .HasMaxLength(100)
             .IsRequired();
 
-        builder.Property(x => x.Description)
+        builder
+            .Property(x => x.Description)
             .HasMaxLength(1000);
         
-        builder.Property(x => x.StartDate)
+        builder
+            .Property(x => x.StartDate)
             .IsRequired()
             .HasColumnType("datetime");
         
-        builder.Property(x => x.EndDate)
+        builder
+            .Property(x => x.EndDate)
             .HasColumnType("datetime");
-        
-        builder.HasMany(x => x.ProjectUsers)
+
+        builder
+            .HasMany(x => x.ProjectUsers)
             .WithOne(x => x.Project)
-            .HasForeignKey(x => x.ProjectId);
+            .HasForeignKey(x => x.ProjectId)
+            .HasPrincipalKey(x => x.Id);
         
-        builder.HasMany(x => x.Tasks)
+        builder
+            .HasMany(x => x.Sections)
             .WithOne(x => x.Project)
-            .HasForeignKey(x => x.ProjectId);
+            .HasForeignKey(x => x.ProjectId)
+            .HasPrincipalKey(x => x.Id);
     }
 }

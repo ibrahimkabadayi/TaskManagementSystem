@@ -1,20 +1,60 @@
-using Application.Mappings;
-using DataAccessLayer.Context;
-using Microsoft.EntityFrameworkCore;
+using Application;
+using DataAccessLayer;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// ============================================
+// SERVICES
+// ============================================
+
+// Controllers
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddAutoMapper(typeof(MappingProfile));
+// Session (Email kod doğrulama için)
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// ============================================
+// DEPENDENCY INJECTION
+// ============================================
 
+// 1. DataAccess Layer (Repository, DbContext)
+builder.Services.AddDataAccessServices(builder.Configuration);
+
+// 2. Application Layer (Services)
+builder.Services.AddApplicationServices();
+
+// ============================================
+// AUTHENTICATION
+// ============================================
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/SignIn";
+        options.LogoutPath = "/Logout";
+        options.AccessDeniedPath = "/AccessDenied";
+        options.ExpireTimeSpan = TimeSpan.FromDays(7);
+        options.SlidingExpiration = true;
+        options.Cookie.Name = "TaskFlowAuth";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    });
+
+// ============================================
+// BUILD APP
+// ============================================
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// ============================================
+// MIDDLEWARE PIPELINE
+// ============================================
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -22,12 +62,17 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
 
-app.UseAuthorization();
+// Session (Authentication'dan önce!)
+app.UseSession();
 
-app.UseStaticFiles();
-app.MapStaticAssets(); 
+// Authentication & Authorization
+app.UseAuthentication();  // ← Önce bu
+app.UseAuthorization();   // ← Sonra bu
+
+app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",

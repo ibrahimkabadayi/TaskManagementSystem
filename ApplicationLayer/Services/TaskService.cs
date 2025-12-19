@@ -18,7 +18,6 @@ public class TaskService : ITaskService
     public async Task<TaskDto?> GetTaskByIdAsync(int id)
     {
         var task = await _taskRepository.GetByAsyncId(id);
-        
         return  task == null ? null : _mapper.Map<TaskDto>(task);
     }
 

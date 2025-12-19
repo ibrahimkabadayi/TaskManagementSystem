@@ -1,0 +1,139 @@
+﻿using System.Security.Claims;
+using Application.DTOs;
+using Application.Interfaces;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
+using IAuthenticationService = Application.Interfaces.IAuthenticationService;
+
+namespace Application.Services;
+
+public class AuthenticationService : IAuthenticationService
+{
+    private readonly IUserService _userService;
+
+    public AuthenticationService(IUserService userService)
+    {
+        _userService = userService;
+    }
+    
+    public async Task<AuthResult> RegisterAndLoginAsync(string name, string email, string password, HttpContext context)
+    {
+        var checkExists = await _userService.CheckUserExistsAsync(email);
+
+        if (checkExists)
+        {
+            return new AuthResult{Success = false, Message = "Email already exists"};
+        }
+        
+        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
+
+        var user = new UserDto
+        {
+            Name = name,
+            Email = email,
+            Password = hashedPassword,
+        };
+
+        var savedUser = await _userService.RegisterUserAsync(user);
+        
+        if (savedUser == null)
+            return new AuthResult{Success = false, Message = "User not found"};
+        
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, savedUser.Name!),
+            new Claim(ClaimTypes.Email, savedUser.Email!),
+            new Claim(ClaimTypes.NameIdentifier, savedUser.Id.ToString()),
+            new Claim(ClaimTypes.Role, "User")
+        };
+        
+        var claimsIdentity = new ClaimsIdentity(claims, 
+            CookieAuthenticationDefaults.AuthenticationScheme);
+
+        var authProperties = new AuthenticationProperties
+        {
+            IsPersistent = false,
+            ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30)   
+        };
+        
+        await context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+        
+        return new AuthResult
+        {
+            Success = true, 
+            Message = "User created and logged in", 
+            RedirectUrl = "/Home/Home",
+            User = new UserInfo
+            {
+                Id = savedUser.Id,
+                Name = savedUser.Name!,
+                Email = savedUser.Email!,
+                Role = "User"
+            }
+        };
+    }
+
+    public async Task<AuthResult> LoginAsync(string email, string password, HttpContext context)
+    {
+        try
+        {
+            var user = await _userService.GetUserByEmailAsync(email);
+            if (user == null)
+                return new AuthResult{Success = false, Message = "User not found"};
+            
+            var isPasswordCorrect = BCrypt.Net.BCrypt.Verify(password, user.Password);
+            
+            if (!isPasswordCorrect)
+            {
+                return new AuthResult
+                {
+                    Success = false,
+                    Message = "Email or password is incorrect"
+                };
+            }
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Email, user.Email!),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Name!),
+                new Claim(ClaimTypes.Role, "User")
+            };
+            
+            var claimsIdentity = new ClaimsIdentity(claims, 
+                CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var authProperties = new AuthenticationProperties
+            {
+                IsPersistent = false,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30)   
+            };
+        
+            await context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+        
+            return new AuthResult
+            {
+                Success = true, 
+                Message = "User created and logged in", 
+                RedirectUrl = "/Home/Home",
+                User = new UserInfo
+                {
+                    Id = user.Id,
+                    Name = user.Name!,
+                    Email = user.Email!,
+                    Role = "User"
+                }
+            };
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            return new AuthResult
+            {
+                Success = false,
+                Message = "There was an error logging in"
+            };
+        }
+    }
+}

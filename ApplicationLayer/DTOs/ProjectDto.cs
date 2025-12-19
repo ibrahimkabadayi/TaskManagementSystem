@@ -9,4 +9,5 @@ public class ProjectDto
     public DateTime EndDate { get; set; }
     public List<int> ProjectUserIds { get; set; }
     public List<int> TaskIds { get; set; }
+    public List<SectionDto> Sections { get; set; }
 }

@@ -10,11 +10,10 @@ public class ApplicationDbContext : DbContext
     public DbSet<ProjectUser> ProjectUsers { get; set; }
     public DbSet<Entities.Task> Tasks { get; set; }
     public DbSet<User> Users { get; set; }
-
+    public DbSet<Section> Sections { get; set; }
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
-        
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -23,5 +22,6 @@ public class ApplicationDbContext : DbContext
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new ProjectConfiguration());
         modelBuilder.ApplyConfiguration(new ProjectUserConfiguration());
+        modelBuilder.ApplyConfiguration(new SectionConfiguration());
     }
 }

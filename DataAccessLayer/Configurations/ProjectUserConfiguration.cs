@@ -12,24 +12,29 @@ public class ProjectUserConfiguration : IEntityTypeConfiguration<ProjectUser>
         
         builder.HasKey(x => x.Id);
         
-        builder.Property(x => x.Role)
+        builder
+            .Property(x => x.Role)
             .IsRequired();
         
-        builder.Property(x => x.IsActive)
+        builder
+            .Property(x => x.IsActive)
             .IsRequired();
         
-        builder.Property(x => x.JoinedDate)
+        builder
+            .Property(x => x.JoinedDate)
             .IsRequired()
             .HasColumnType("datetime");
         
-        builder.HasOne(x => x.Project)
+        builder
+            .HasOne(x => x.Project)
             .WithMany()
             .HasForeignKey(x => x.ProjectId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
         
-        builder.HasOne(x => x.User)
+        builder
+            .HasOne(x => x.User)
             .WithMany()
             .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

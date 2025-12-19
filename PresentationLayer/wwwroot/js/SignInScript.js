@@ -3,14 +3,8 @@
 }
 
 async function SignIn(){
-    const name = document.getElementById("name-Input").value;
     const email = document.getElementById("email-Input").value;
     const password = document.getElementById("password-Input").value;
-    
-    if(name.length < 3){
-        alert("Please enter your name");
-        return;
-    }
     
     if(email.length < 3 || !email.includes("@")){
         alert("Please enter your email");
@@ -24,22 +18,24 @@ async function SignIn(){
     
     try
     {
-        await fetch('Home/RegisterSignIn/', {
+        await fetch('Authenticate/RegisterSignIn/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                Name: name,
                 Email: email,
                 Password: password,
             })
         }.then((response) => response.json()).then((data) => {
             if (data.success) {
                 const params = data.Data;
-                window.location.href = `Home/SignIn?${params}`;
+                window.location.href = 'Home/Home';
             } else {
                 alert(data.message);
+                if(data.message === "Wrong password"){
+                    return;
+                }
                 const params = new URLSearchParams({
                     Message: data.error,
                     Type: 'RegisterError',
@@ -60,4 +56,8 @@ async function SignIn(){
 
 function PrivacyPolicy(){
     
+}
+
+function ForgotPassword(){
+    window.location.href = 'Home/PasswordCreation';
 }
