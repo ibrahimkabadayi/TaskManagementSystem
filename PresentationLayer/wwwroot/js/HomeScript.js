@@ -1,9 +1,9 @@
-﻿window.addEventListener('scroll', function() {
-    const navbar = document.getElementById('navbar');
-    if (window.scrollY > 50) {
-        navbar.classList.add('scrolled');
+﻿window.addEventListener('scroll', () => {
+    const nav = document.querySelector('nav');
+    if (window.scrollY > 10) {
+        nav.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.05)';
     } else {
-        navbar.classList.remove('scrolled');
+        nav.style.boxShadow = 'none';
     }
 });
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {

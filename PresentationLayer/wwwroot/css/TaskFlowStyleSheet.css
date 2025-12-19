@@ -1,0 +1,123 @@
+﻿/* Section Headers */
+.section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    margin-top: 30px;
+    font-size: 1rem;
+    color: #5e6c84;
+    font-weight: 600;
+}
+
+.section-header span {
+    margin-left: 10px;
+}
+
+/* Grid Structure (For Cards) */
+.boards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 20px;
+}
+
+/* Card Design */
+.board-card {
+    background-color: #ffffff; /* Light colored card */
+    height: 100px;
+    border-radius: 8px; /* Modern oval corners */
+    padding: 10px;
+    font-weight: bold;
+    color: #172b4d;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12); /* Slight shadow */
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+
+.board-card:hover {
+    background-color: #ebecf0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+}
+
+/* Special style for cards with images (Like Trello) */
+.board-card.has-bg {
+    background-size: cover;
+    background-position: center;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.board-card.new-board {
+    background-color: #f4f5f7;
+    border: 2px dashed #dfe1e6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #5e6c84;
+    font-weight: normal;
+}
+
+/* Project (Workspace) Headers and Buttons */
+.workspace-title-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #dfe1e6;
+}
+
+.ws-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ws-icon {
+    background: linear-gradient(#4b91e2, #0052cc);
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.ws-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.ws-actions button {
+    background-color: #ebecf0;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    margin-left: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    color: #172b4d;
+    transition: background 0.2s;
+}
+
+.ws-actions button:hover {
+    background-color: #dfe1e6;
+}
+
+/* Developer Joke CSS */
+.bug-fix-later {
+    font-size: 0.7rem;
+    color: transparent;
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    user-select: none;
+}
+.board-card:hover .bug-fix-later {
+    color: #ff0000; /* Visible on hover */
+}
