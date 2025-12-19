@@ -17,6 +17,7 @@ public static class DependencyInjection
         services.AddScoped<IProjectUserService, ProjectUserService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<ISectionService, SectionService>();
         
         return services;
     }

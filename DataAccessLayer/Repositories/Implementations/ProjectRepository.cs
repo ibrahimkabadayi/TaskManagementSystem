@@ -29,15 +29,6 @@ public class ProjectRepository : Repository<Project>, IProjectRepository
             .ToListAsync();
     }
 
-    public async Task<Project> GetProjectWithTasksAsync(int projectId)
-    {
-       var projectWithTask = await _context.Projects
-            .Include(p => p.Tasks)
-            .FirstOrDefaultAsync(p => p.Id == projectId);
-       
-       return projectWithTask ?? throw new Exception("Project not found");
-    }
-
     public async Task<User> GetProjectLeaderAsync(int projectId)
     {
         var projectUser = await _context.ProjectUsers

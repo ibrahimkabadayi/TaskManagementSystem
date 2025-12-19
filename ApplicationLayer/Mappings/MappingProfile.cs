@@ -33,5 +33,13 @@ public class MappingProfile : Profile
         CreateMap<ProjectUserDto, ProjectUser>();
 
         CreateMap<ProjectUser, ProjectUserDto>();
+        
+        CreateMap<Section, SectionDto>()
+            .ForMember(dest => dest.TasksIds,
+                opt => opt.MapFrom(
+                    src => src.Tasks.Select(x => x.Id)));
+        
+        CreateMap<SectionDto, Section>()
+            .ForMember(src => src.Tasks, opt => opt.Ignore());
     }
 }

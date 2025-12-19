@@ -29,12 +29,12 @@ public class ProjectUserConfiguration : IEntityTypeConfiguration<ProjectUser>
             .HasOne(x => x.Project)
             .WithMany()
             .HasForeignKey(x => x.ProjectId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
         
         builder
             .HasOne(x => x.User)
             .WithMany()
             .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

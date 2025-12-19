@@ -37,7 +37,7 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .HasPrincipalKey(x => x.Id);
         
         builder
-            .HasMany(x => x.Tasks)
+            .HasMany(x => x.Sections)
             .WithOne(x => x.Project)
             .HasForeignKey(x => x.ProjectId)
             .HasPrincipalKey(x => x.Id);

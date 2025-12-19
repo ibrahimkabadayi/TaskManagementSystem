@@ -16,7 +16,7 @@ public class ProjectUserService : IProjectUserService
         _mapper = mapper;
     }
     
-    public async Task<ProjectUserDto?> GetProjectByIdAsync(int id)
+    public async Task<ProjectUserDto?> GetProjectUserByIdAsync(int id)
     {
         var user = await _projectUserRepository.GetByAsyncId(id);
         return _mapper.Map<ProjectUserDto>(user) ?? null;

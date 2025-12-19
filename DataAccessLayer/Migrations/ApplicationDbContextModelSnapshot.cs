@@ -17,7 +17,7 @@ namespace DataAccessLayer.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.9")
+                .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -92,6 +92,34 @@ namespace DataAccessLayer.Migrations
                     b.ToTable("ProjectUsers", (string)null);
                 });
 
+            modelBuilder.Entity("DataAccessLayer.Entities.Section", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("Sections", (string)null);
+                });
+
             modelBuilder.Entity("DataAccessLayer.Entities.Task", b =>
                 {
                     b.Property<int>("Id")
@@ -122,7 +150,10 @@ namespace DataAccessLayer.Migrations
                     b.Property<int>("Priority")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProjectId")
+                    b.Property<int>("SectionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SectionId1")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
@@ -144,7 +175,9 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("FinishedById");
 
-                    b.HasIndex("ProjectId");
+                    b.HasIndex("SectionId");
+
+                    b.HasIndex("SectionId1");
 
                     b.ToTable("Tasks", (string)null);
                 });
@@ -182,7 +215,7 @@ namespace DataAccessLayer.Migrations
                     b.HasOne("DataAccessLayer.Entities.Project", "Project")
                         .WithMany()
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("DataAccessLayer.Entities.Project", null)
@@ -192,7 +225,7 @@ namespace DataAccessLayer.Migrations
                     b.HasOne("DataAccessLayer.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("DataAccessLayer.Entities.User", null)
@@ -202,6 +235,17 @@ namespace DataAccessLayer.Migrations
                     b.Navigation("Project");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.Section", b =>
+                {
+                    b.HasOne("DataAccessLayer.Entities.Project", "Project")
+                        .WithMany("Sections")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.Task", b =>
@@ -223,10 +267,16 @@ namespace DataAccessLayer.Migrations
                         .HasForeignKey("FinishedById")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("DataAccessLayer.Entities.Project", "Project")
+                    b.HasOne("DataAccessLayer.Entities.Section", null)
                         .WithMany("Tasks")
-                        .HasForeignKey("ProjectId")
+                        .HasForeignKey("SectionId")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DataAccessLayer.Entities.Section", "Section")
+                        .WithMany()
+                        .HasForeignKey("SectionId1")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("AssignedTo");
@@ -235,13 +285,18 @@ namespace DataAccessLayer.Migrations
 
                     b.Navigation("FinishedBy");
 
-                    b.Navigation("Project");
+                    b.Navigation("Section");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.Project", b =>
                 {
                     b.Navigation("ProjectUsers");
 
+                    b.Navigation("Sections");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.Section", b =>
+                {
                     b.Navigation("Tasks");
                 });
 

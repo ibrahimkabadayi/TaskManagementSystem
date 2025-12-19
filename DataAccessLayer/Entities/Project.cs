@@ -14,5 +14,5 @@ public class Project
     public DateTime? EndDate { get; set; }
     
     public ICollection<ProjectUser> ProjectUsers { get; set; } = new List<ProjectUser>();
-    public ICollection<Task> Tasks { get; set; } = new List<Task>();
+    public ICollection<Section> Sections { get; set; } = new List<Section>();
 }

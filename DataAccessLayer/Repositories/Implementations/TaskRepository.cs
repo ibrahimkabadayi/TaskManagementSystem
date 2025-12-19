@@ -13,10 +13,10 @@ public class TaskRepository : Repository<Task>, ITaskRepository
     {
     }
 
-    public async Task<IEnumerable<Task>> GetTasksByProjectAsync(int projectId)
+    public async Task<IEnumerable<Task>> GetTasksBySectionAsync(int sectionId)
     {
         return await _context.Tasks
-            .Where(t => t.ProjectId == projectId)
+            .Where(t => t.SectionId == sectionId)
             .Include(t => t.AssignedTo)
             .ToListAsync();
     }
@@ -25,7 +25,7 @@ public class TaskRepository : Repository<Task>, ITaskRepository
     {
         return await _context.Tasks.AsQueryable()
             .Where(t => t.AssignedToId == userId)
-            .Include(t => t.Project)
+            .Include(t => t.Section)
             .ToListAsync();
     }
 
@@ -33,15 +33,15 @@ public class TaskRepository : Repository<Task>, ITaskRepository
     {
         return await _context.Tasks
             .Where(t => t.State == TaskState.Todo || t.State == TaskState.InProgress)
-            .Include(t => t.Project)
+            .Include(t => t.Section)
             .Include(t => t.AssignedTo)
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Task>> GetCompletedTasksAsync(int projectId)
+    public async Task<IEnumerable<Task>> GetCompletedTasksAsync(int sectionId)
     {
         return await _context.Tasks
-            .Where(t => t.ProjectId == projectId && t.State == TaskState.Done)
+            .Where(t => t.SectionId == sectionId && t.State == TaskState.Done)
             .ToListAsync();
     }
 }

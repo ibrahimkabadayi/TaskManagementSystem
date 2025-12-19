@@ -4,6 +4,6 @@ namespace Application.Interfaces;
 
 public interface IProjectUserService
 {
-    Task<ProjectUserDto?> GetProjectByIdAsync(int id);
+    Task<ProjectUserDto?> GetProjectUserByIdAsync(int id);
     Task<List<ProjectUserDto?>> GetAllProjectsAsync();
 }
