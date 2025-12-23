@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApplicationLayer", "Applica
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccessLayer", "DataAccessLayer\DataAccessLayer.csproj", "{6D6D58DE-4EC3-409B-9B5D-EC0975646228}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManagementSystem.Tests", "TaskManagementSystem.Tests\TaskManagementSystem.Tests.csproj", "{38C13621-91D0-4F94-B462-38F16E8A3E93}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{6D6D58DE-4EC3-409B-9B5D-EC0975646228}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D6D58DE-4EC3-409B-9B5D-EC0975646228}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D6D58DE-4EC3-409B-9B5D-EC0975646228}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38C13621-91D0-4F94-B462-38F16E8A3E93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38C13621-91D0-4F94-B462-38F16E8A3E93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38C13621-91D0-4F94-B462-38F16E8A3E93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38C13621-91D0-4F94-B462-38F16E8A3E93}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
