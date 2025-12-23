@@ -24,8 +24,9 @@ public class SectionConfiguration : IEntityTypeConfiguration<Section>
             .OnDelete(DeleteBehavior.Restrict);
         
         builder
-            .HasMany(x => x.Tasks)
-            .WithOne()
+            .HasMany(x => x.TaskGroups)
+            .WithOne(x => x.Section)
+            .HasForeignKey(x => x.SectionId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
     }

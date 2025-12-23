@@ -45,10 +45,10 @@ public class UserService : IUserService
         }
     }
 
-    public async Task<List<UserDto?>> GetAllUsersAsync(string email)
+    public async Task<List<UserDto?>> GetAllUsersAsync()
     {
         var users =  await _userRepository.GetAllAsync();
-        return users == null ? null : _mapper.Map<List<User>, List<UserDto>>(users);
+        return (users == null ? null : _mapper.Map<List<User>, List<UserDto>>(users))!;
     }
 
     public async Task<UserDto?> GetUserByEmailAsync(string email)

@@ -15,7 +15,7 @@ public class SectionRepository : Repository<Section>, ISectionRepository
     public async Task<Section?> GetSectionWithTasksAsync(int sectionId)
     {
         return await _context.Sections.Where(x => x.Id == sectionId)
-            .Include(x => x.Tasks)
+            .Include(x => x.TaskGroups)
             .FirstOrDefaultAsync();
     }
 }

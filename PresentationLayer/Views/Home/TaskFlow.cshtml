@@ -1,7 +1,6 @@
 ﻿@page
 @using Application.DTOs
 @using TaskManagementSystem.Views
-@model TaskManagementSystem.Views.TaskFlow
 
 @{
     Layout = "TaskFlowLayout";
@@ -19,8 +18,7 @@
         @{
             foreach (var visitedSection in lastVisitedSections)
             {
-                <div class="board-card has-bg"
-                     style="background-image: url('@lastVisitedSections.ImageUrl');">
+                <div class="board-card has-bg" onclick="SectionClick(this)" style="background-image: url('@lastVisitedSections.ImageUrl');">
                     @visitedSection.Name
                 </div>
             }
@@ -43,20 +41,20 @@
                         <div class="ws-name">@project.Name</div>
                     </div>
                     <div class="ws-actions">
-                        <button>Boards</button>
-                        <button>Members</button>
-                        <button>Settings</button>
+                        <button onclick="BoardsButtonClick()">Boards</button>
+                        <button onclick="MembersButtonClick()">Members</button>
+                        <button onclick="SettingsButtonClick()">Settings</button>
                     </div>
                 </div>
 
                 <div class="boards-grid">
                     @foreach (var projectSection in project.Sections)
                     {
-                        <div class="board-card" style="@projectSection.ImageUrl">
+                        <div class="board-card" onclick="SectionClick()" style="@projectSection.ImageUrl">
                             @projectSection.Name
                         </div>
                     }
-                    <div class="board-card new-board">
+                    <div class="board-card new-board" onclick="NewSectionClick()">
                         Create New Board
                     </div>
                 </div>
@@ -64,4 +62,20 @@
         }
     }
 </div>
+<div id="dynamicModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalTitle">Başlık</h3>
+            <button class="close-btn" onclick="closeModal()">×</button>
+        </div>
 
+        <div id="modalBody" class="modal-body">
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal()">İptal</button>
+            <button id="modalConfirmBtn" class="btn-confirm">Kaydet</button>
+        </div>
+    </div>
+</div>
+<script src="js/TaskFlowScript.js"></script>

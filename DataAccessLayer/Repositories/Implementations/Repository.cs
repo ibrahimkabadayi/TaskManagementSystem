@@ -31,6 +31,7 @@ public class Repository<T> : IRepository<T> where T : class
     public async Task AddAsync(T entity)
     {
         await _dbSet.AddAsync(entity);
+        await _context.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(T entity)
@@ -43,6 +44,7 @@ public class Repository<T> : IRepository<T> where T : class
     {
         var entity = await GetByAsyncId(id);
         _dbSet.Remove(entity);
+        await _context.SaveChangesAsync();
     }
 
     public async Task<List<T>> FindAsync(Expression<Func<T, bool>> predicate)
