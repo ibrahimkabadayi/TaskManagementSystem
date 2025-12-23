@@ -291,14 +291,14 @@
 
         /* Arka Plan Seçici Grid */
         .bg-picker-title { font-size: 12px; font-weight: bold; color: #5e6c84; margin-bottom: 5px; }
-        .bg-grid {
+        .bg-grid-top {
             display: grid;
             grid-template-columns: repeat(4, 1fr); /* 4'lü sıra */
             gap: 8px;
             margin-bottom: 10px;
         }
 
-        .bg-option {
+        .bg-option-top {
             height: 40px;
             border-radius: 5px;
             border: none;
@@ -308,8 +308,8 @@
             position: relative;
             transition: transform 0.1s;
         }
-        .bg-option:hover { filter: brightness(0.9); }
-        .bg-option.selected::after {
+        .bg-option-top:hover { filter: brightness(0.9); }
+        .bg-option-top.selected::after {
             content: '✓';
             color: white;
             position: absolute;
@@ -318,6 +318,32 @@
             font-weight: bold;
         }
 
+        .bg-grid-bot {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr); /* 4'lü sıra */
+            gap: 4px;
+            margin-bottom: 10px;
+        }
+
+        .bg-option-bot {
+            height: 20px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            transition: transform 0.1s;
+        }
+        .bg-option-bot:hover { filter: brightness(0.9); }
+        .bg-option-bot.selected::after {
+            content: '✓';
+            color: white;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+        }
         /* Form Elemanları */
         .form-group label { display: block; font-size: 12px; font-weight: bold; color: #5e6c84; margin-bottom: 5px; }
         .form-input, .form-select {
@@ -333,6 +359,107 @@
             border-color: #0079bf;
             background-color: #fff;
             outline: none;
+        }
+        /* Yan Panel Stili */
+        .side-modal {
+            position: fixed; /* Sayfada sabit duracak */
+            width: 300px; /* Genişlik */
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+            z-index: 10005; /* Modal'ın (10000) üstünde olmalı */
+            display: none;
+            animation: slideInRight 0.2s ease-out;
+        }
+
+        .side-modal-header {
+            padding: 10px 15px;
+            border-bottom: 1px solid #dfe1e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f4f5f7;
+            border-radius: 8px 8px 0 0;
+            font-weight: bold;
+            color: #172b4d;
+        }
+
+        .side-modal-body {
+            padding: 10px;
+            max-height: 400px; /* Çok uzarsa scroll çıksın */
+            overflow-y: auto;
+        }
+
+        .back-btn { cursor: pointer; color: #5e6c84; font-size: 1.2rem; }
+        .back-btn:hover { color: #172b4d; }
+
+        /* Grid Yapısı (Fotoğraflar için) */
+        .side-grid-photos {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 2'li sıra */
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        /* Grid Yapısı (Renkler için) */
+        .side-grid-colors {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3'lü sıra */
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .side-item {
+            height: 60px;
+            border-radius: 6px;
+            background-size: cover;
+            background-position: center;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .side-item:hover { filter: brightness(0.9); transform: scale(1.02); }
+
+        /* Kategori Başlıkları */
+        .side-cat-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #5e6c84;
+            margin-bottom: 8px;
+            margin-top: 5px;
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        /* Hesap Menüsü Özel Stili */
+        .account-menu-style {
+            width: 300px; /* Genişliği sabitledik */
+            display: none; /* Başlangıçta gizli */
+            position: absolute;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+            border: 1px solid #dfe1e6;
+            z-index: 10002; /* Diğer menülerin üstünde */
+            overflow: hidden;
+        }
+
+        /* Diğer tasarımsal detaylar */
+        .account-header {
+            background-color: #f4f5f7;
+            padding: 15px;
+            border-bottom: 1px solid #dfe1e6;
+        }
+        .account-name { font-weight: bold; color: #172b4d; font-size: 14px; }
+        .account-email { color: #5e6c84; font-size: 12px; }
+        .menu-divider { border: 0; border-top: 1px solid #dfe1e6; margin: 5px 0; }
+        .logout-item { color: #b04632; }
+        .logout-item:hover { background-color: #ffebe6; }
+
+        /* Göstermek için kullanılan sınıf */
+        .popup-menu.show {
+            display: block;
         }
     </style>
 </head>
@@ -471,12 +598,124 @@
         </div>
     </div>
 </div>
+<div id="sideModal" class="side-modal" style="display: none;">
+    <div class="side-modal-header">
+        <span class="back-btn" onclick="closeSideModal()">⬅️</span>
+        <span class="side-modal-title">Arkaplanlar</span>
+        <button class="close-btn" onclick="closeSideModal()">×</button>
+    </div>
+    <div id="sideModalBody" class="side-modal-body">
+    </div>
+</div>
+<div id="accountMenu" class="popup-menu account-menu-style">
+    <div class="account-header">
+        <div class="account-name">İbrahim Kabadayı</div>
+        <div class="account-email">ibrahim@example.com</div>
+    </div>
+
+    <ul>
+        <li onclick="alert('Profil')">👤 Profil ve Görünürlük</li>
+        <li onclick="alert('Hareketler')">📊 Hareketler</li>
+        <li onclick="alert('Ayarlar')">⚙️ Ayarlar</li>
+        <hr class="menu-divider">
+        <li class="logout-item" onclick="window.location.href='/Logout'">🚪 Çıkış Yap</li>
+    </ul>
+</div>
 <script>
     function SectionClick(element){
 
     }
-    let selectedBackground = "#0079bf";
 
+    const allBackgrounds = {
+        photos: [
+            "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=200&q=80",
+            "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=200&q=80",
+            "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=200&q=80",
+            "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=200&q=80",
+            "https://images.unsplash.com/photo-1501854140884-074cf2b2c3af?w=200&q=80",
+            "https://images.unsplash.com/photo-1505144808419-1957a94ca61e?w=200&q=80",
+            "https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=200&q=80",
+            "https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=200&q=80"
+        ],
+        colors: [
+            "#0079bf", "#d29034", "#519839", "#b04632",
+            "#89609e", "#cd5a91", "#4bbf6b", "#00aecc",
+            "#838c91", "#172b4d", "#ff9f1a", "#eb5a46"
+        ]
+    };
+    function ShowAllBackgrounds(event){
+        event.stopPropagation();
+        event.preventDefault(); 
+
+        const sideModal = document.getElementById('sideModal');
+        const sideBody = document.getElementById('sideModalBody');
+
+        let html = `
+        <div class="side-cat-title">🖼️ Fotoğraflar</div>
+        <div class="side-grid-photos">
+            ${allBackgrounds.photos.map(url =>
+            `<div class="side-item" onclick="selectFromSidePanel('${url}', 'image')" style="background-image: url('${url}')"></div>`
+        ).join('')}
+        </div>
+
+        <div class="side-cat-title">🎨 Renkler</div>
+        <div class="side-grid-colors">
+            ${allBackgrounds.colors.map(color =>
+            `<div class="side-item" onclick="selectFromSidePanel('${color}', 'color')" style="background-color: ${color}"></div>`
+        ).join('')}
+        </div>
+    `;
+
+        sideBody.innerHTML = html;
+
+        const mainModalContent = document.querySelector('.modal-content');
+
+        if (mainModalContent) {
+            const rect = mainModalContent.getBoundingClientRect();
+
+            sideModal.style.top = rect.top + 'px'; 
+            sideModal.style.left = (rect.right + 10) + 'px'; 
+
+            if (rect.right + 310 > window.innerWidth) {
+                sideModal.style.left = (rect.right - 310) + 'px';
+            }
+        }
+
+        sideModal.style.display = 'block';
+    }
+
+    function closeSideModal() {
+        document.getElementById('sideModal').style.display = 'none';
+    }
+
+    function selectFromSidePanel(val, type) {
+        if (type === 'image') {
+            selectedBackground = `url('${val}')`;
+        } else {
+            selectedBackground = val;
+        }
+
+        const previewBox = document.getElementById('boardPreview');
+        if (previewBox) {
+            if (type === 'image') {
+                previewBox.style.backgroundImage = `url('${val}')`;
+                previewBox.style.backgroundColor = 'transparent';
+            } else {
+                previewBox.style.backgroundImage = 'none';
+                previewBox.style.backgroundColor = val;
+            }
+        }
+
+        document.querySelectorAll('.bg-option-top, .bg-option-bot').forEach(b => b.classList.remove('selected'));
+    }
+
+    const originalCloseModal = window.closeModal; 
+    window.closeModal = function() {
+        document.getElementById('dynamicModal').style.display = 'none';
+        closeSideModal(); 
+    }
+    
+    let selectedBackground = "#0079bf";
     function NewSectionClick() {
         const formHtml = `
         <div class="create-board-container">
@@ -490,17 +729,22 @@
 
             <div>
                 <div class="bg-picker-title">Arkaplan</div>
-                <div class="bg-grid">
-                    <button class="bg-option" data-type="image" data-val="url('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=100&q=80')" style="background-image: url('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=100&q=80')"></button>
-                    <button class="bg-option" data-type="image" data-val="url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=100&q=80')" style="background-image: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=100&q=80')"></button>
-                    <button class="bg-option" data-type="image" data-val="url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=100&q=80')" style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=100&q=80')"></button>
-                    <button class="bg-option" data-type="image" data-val="url('https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=100&q=80')" style="background-image: url('https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=100&q=80')"></button>
-                    
-                    <button class="bg-option selected" data-type="color" data-val="#0079bf" style="background-color: #0079bf;"></button>
-                    <button class="bg-option" data-type="color" data-val="#d29034" style="background-color: #d29034;"></button>
-                    <button class="bg-option" data-type="color" data-val="#519839" style="background-color: #519839;"></button>
-                    <button class="bg-option" data-type="color" data-val="#b04632" style="background-color: #b04632;"></button>
+                <div class="bg-grid-top">
+                    <button class="bg-option-top" data-type="image" data-val="url('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=100&q=80')" style="background-image: url('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=100&q=80')"></button>
+                    <button class="bg-option-top" data-type="image" data-val="url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=100&q=80')" style="background-image: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=100&q=80')"></button>
+                    <button class="bg-option-top" data-type="image" data-val="url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=100&q=80')" style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=100&q=80')"></button>
+                    <button class="bg-option-top" data-type="image" data-val="url('https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=100&q=80')" style="background-image: url('https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=100&q=80')"></button>
                 </div>
+                <div class="bg-grid-bot">
+                <button class="bg-option selected" data-type="color" data-val="#0079bf" style="background-color: #0079bf;"></button>
+                    <button class="bg-option-bot" data-type="color" data-val="#d29034" style="background-color: #d29034;"></button>
+                    <button class="bg-option-bot" data-type="color" data-val="#519839" style="background-color: #519839;"></button>
+                    <button class="bg-option-bot" data-type="color" data-val="#b04632" style="background-color: #b04632;"></button>
+                    <button class="bg-option-bot" data-type="color" data-val="#98167b" style="background-color: #519839;"></button>
+                    <button class="bg-option-bot" data-type="color" data-val="#519839" style="background-color: #e4d5d5;"></button>
+                    <button class="bg-option-bot" data-type="color" data-val="#519839" style="background-color: #eab815;"></button>
+                    <button class="bg-option-bot" onclick="ShowAllBackgrounds(event)">...</button>
+                </div>       
             </div>
 
             <div class="form-group">
@@ -548,7 +792,7 @@
             closeModal();
         });
         
-        const bgButtons = document.querySelectorAll('.bg-option');
+        const bgButtons = document.querySelectorAll('.bg-option-top, .bg-option-bot');
         const previewBox = document.getElementById('boardPreview');
 
         bgButtons.forEach(btn => {
@@ -571,10 +815,37 @@
             });
         });
     }
-    
-    function AccountClick(event){
-        
+
+    function AccountClick(event) {
+        event.stopPropagation();
+
+        const menu = document.getElementById('accountMenu');
+
+        if (menu.classList.contains('show')) {
+            menu.classList.remove('show');
+            return;
+        }
+
+        document.querySelectorAll('.popup-menu').forEach(m => m.classList.remove('show'));
+
+        const button = event.currentTarget;
+        const rect = button.getBoundingClientRect();
+
+        const menuWidth = 300;
+
+        menu.style.top = (rect.bottom + window.scrollY + 10) + 'px';
+
+        menu.style.left = (rect.right + window.scrollX - menuWidth) + 'px';
+
+        menu.classList.add('show');
     }
+
+    document.addEventListener('click', function(event) {
+        const menu = document.getElementById('accountMenu');
+        if (menu && !menu.contains(event.target)) {
+            menu.classList.remove('show');
+        }
+    });
     function BoardsButtonClick(){
 
     }
