@@ -150,16 +150,13 @@ namespace DataAccessLayer.Migrations
                     b.Property<int>("Priority")
                         .HasColumnType("int");
 
-                    b.Property<int>("SectionId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SectionId1")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime");
 
                     b.Property<int>("State")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TaskGroupId")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
@@ -175,11 +172,38 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("FinishedById");
 
-                    b.HasIndex("SectionId");
-
-                    b.HasIndex("SectionId1");
+                    b.HasIndex("TaskGroupId");
 
                     b.ToTable("Tasks", (string)null);
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.TaskGroup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("SectionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById")
+                        .IsUnique();
+
+                    b.HasIndex("SectionId");
+
+                    b.ToTable("TaskGroups", (string)null);
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.User", b =>
@@ -267,16 +291,10 @@ namespace DataAccessLayer.Migrations
                         .HasForeignKey("FinishedById")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("DataAccessLayer.Entities.Section", null)
+                    b.HasOne("DataAccessLayer.Entities.TaskGroup", "TaskGroup")
                         .WithMany("Tasks")
-                        .HasForeignKey("SectionId")
+                        .HasForeignKey("TaskGroupId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("DataAccessLayer.Entities.Section", "Section")
-                        .WithMany()
-                        .HasForeignKey("SectionId1")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("AssignedTo");
@@ -284,6 +302,25 @@ namespace DataAccessLayer.Migrations
                     b.Navigation("CreatedBy");
 
                     b.Navigation("FinishedBy");
+
+                    b.Navigation("TaskGroup");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.TaskGroup", b =>
+                {
+                    b.HasOne("DataAccessLayer.Entities.User", "CreatedBy")
+                        .WithOne()
+                        .HasForeignKey("DataAccessLayer.Entities.TaskGroup", "CreatedById")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DataAccessLayer.Entities.Section", "Section")
+                        .WithMany("TaskGroups")
+                        .HasForeignKey("SectionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CreatedBy");
 
                     b.Navigation("Section");
                 });
@@ -296,6 +333,11 @@ namespace DataAccessLayer.Migrations
                 });
 
             modelBuilder.Entity("DataAccessLayer.Entities.Section", b =>
+                {
+                    b.Navigation("TaskGroups");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.TaskGroup", b =>
                 {
                     b.Navigation("Tasks");
                 });

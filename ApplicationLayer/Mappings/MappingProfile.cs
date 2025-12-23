@@ -37,9 +37,17 @@ public class MappingProfile : Profile
         CreateMap<Section, SectionDto>()
             .ForMember(dest => dest.TasksIds,
                 opt => opt.MapFrom(
-                    src => src.Tasks.Select(x => x.Id)));
+                    src => src.TaskGroups.Select(x => x.Id)));
         
         CreateMap<SectionDto, Section>()
+            .ForMember(src => src.TaskGroups, opt => opt.Ignore());
+        
+        CreateMap<TaskGroup, TaskGroupDto>()
+            .ForMember(dest => dest.TaskIds,
+                opt => opt.MapFrom(
+                    src => src.Tasks.Select(x => x.Id)));
+        
+        CreateMap<TaskGroupDto, TaskGroup>()
             .ForMember(src => src.Tasks, opt => opt.Ignore());
     }
 }

@@ -20,8 +20,8 @@ public class Task
     public TaskState State { get; set; }
     public TaskPriority Priority { get; set; }
     
-    public int SectionId { get; set; }
-    public virtual required Section Section { get; set; }
+    public int TaskGroupId { get; set; }
+    public virtual required TaskGroup TaskGroup { get; set; }
     
     public int CreatedById { get; set; }
     public virtual required User CreatedBy { get; set; }

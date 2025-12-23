@@ -43,9 +43,9 @@ public class TaskConfiguration : IEntityTypeConfiguration<Task>
             .HasColumnType("datetime");
         
         builder
-            .HasOne(x => x.Section)
+            .HasOne(x => x.TaskGroup)
             .WithMany(x => x.Tasks)
-            .HasForeignKey(x => x.SectionId)
+            .HasForeignKey(x => x.TaskGroupId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
         
