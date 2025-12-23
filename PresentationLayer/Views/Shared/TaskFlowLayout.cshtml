@@ -11,6 +11,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TaskFlow Dashboard</title>
+    <link rel="stylesheet" href="css/TaskFlowLayoutStyleSheet.css"/>
 </head>
 <body>
 <nav class="top-bar">
@@ -30,5 +31,20 @@
         @RenderBody()
     </main>
 </div>
+<div id="accountMenu" class="popup-menu account-menu-style">
+    <div class="account-header">
+        <div class="account-name">İbrahim Kabadayı</div>
+        <div class="account-email">ibrahim@example.com</div>
+    </div>
+
+    <ul>
+        <li onclick="alert('Profil')">👤 Profil ve Görünürlük</li>
+        <li onclick="alert('Hareketler')">📊 Hareketler</li>
+        <li onclick="alert('Ayarlar')">⚙️ Ayarlar</li>
+        <hr class="menu-divider">
+        <li class="logout-item" onclick="window.location.href='/Logout'">🚪 Çıkış Yap</li>
+    </ul>
+</div>
+<script src="js/TaskFlowLayoutScript.js"></script>
 </body>
 </html>

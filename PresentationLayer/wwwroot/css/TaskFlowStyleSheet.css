@@ -220,14 +220,14 @@
 
 /* Arka Plan Seçici Grid */
 .bg-picker-title { font-size: 12px; font-weight: bold; color: #5e6c84; margin-bottom: 5px; }
-.bg-grid {
+.bg-grid-top {
     display: grid;
     grid-template-columns: repeat(4, 1fr); /* 4'lü sıra */
     gap: 8px;
     margin-bottom: 10px;
 }
 
-.bg-option {
+.bg-option-top {
     height: 40px;
     border-radius: 5px;
     border: none;
@@ -237,8 +237,35 @@
     position: relative;
     transition: transform 0.1s;
 }
-.bg-option:hover { filter: brightness(0.9); }
-.bg-option.selected::after {
+.bg-option-top:hover { filter: brightness(0.9); }
+.bg-option-top.selected::after {
+    content: '✓';
+    color: white;
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+}
+
+.bg-grid-bot {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr); /* 4'lü sıra */
+    gap: 4px;
+    margin-bottom: 10px;
+}
+
+.bg-option-bot {
+    height: 20px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    transition: transform 0.1s;
+}
+.bg-option-bot:hover { filter: brightness(0.9); }
+.bg-option-bot.selected::after {
     content: '✓';
     color: white;
     position: absolute;
@@ -262,4 +289,105 @@
     border-color: #0079bf;
     background-color: #fff;
     outline: none;
+}
+/* Yan Panel Stili */
+.side-modal {
+    position: fixed; /* Sayfada sabit duracak */
+    width: 300px; /* Genişlik */
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+    z-index: 10005; /* Modal'ın (10000) üstünde olmalı */
+    display: none;
+    animation: slideInRight 0.2s ease-out;
+}
+
+.side-modal-header {
+    padding: 10px 15px;
+    border-bottom: 1px solid #dfe1e6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f4f5f7;
+    border-radius: 8px 8px 0 0;
+    font-weight: bold;
+    color: #172b4d;
+}
+
+.side-modal-body {
+    padding: 10px;
+    max-height: 400px; /* Çok uzarsa scroll çıksın */
+    overflow-y: auto;
+}
+
+.back-btn { cursor: pointer; color: #5e6c84; font-size: 1.2rem; }
+.back-btn:hover { color: #172b4d; }
+
+/* Grid Yapısı (Fotoğraflar için) */
+.side-grid-photos {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2'li sıra */
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+/* Grid Yapısı (Renkler için) */
+.side-grid-colors {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3'lü sıra */
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.side-item {
+    height: 60px;
+    border-radius: 6px;
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+.side-item:hover { filter: brightness(0.9); transform: scale(1.02); }
+
+/* Kategori Başlıkları */
+.side-cat-title {
+    font-size: 12px;
+    font-weight: bold;
+    color: #5e6c84;
+    margin-bottom: 8px;
+    margin-top: 5px;
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+/* Hesap Menüsü Özel Stili */
+.account-menu-style {
+    width: 300px; /* Genişliği sabitledik */
+    display: none; /* Başlangıçta gizli */
+    position: absolute;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    border: 1px solid #dfe1e6;
+    z-index: 10002; /* Diğer menülerin üstünde */
+    overflow: hidden;
+}
+
+/* Diğer tasarımsal detaylar */
+.account-header {
+    background-color: #f4f5f7;
+    padding: 15px;
+    border-bottom: 1px solid #dfe1e6;
+}
+.account-name { font-weight: bold; color: #172b4d; font-size: 14px; }
+.account-email { color: #5e6c84; font-size: 12px; }
+.menu-divider { border: 0; border-top: 1px solid #dfe1e6; margin: 5px 0; }
+.logout-item { color: #b04632; }
+.logout-item:hover { background-color: #ffebe6; }
+
+/* Göstermek için kullanılan sınıf */
+.popup-menu.show {
+    display: block;
 }
