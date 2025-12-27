@@ -1,0 +1,2325 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow Board</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="TaskFlowStyles.css">
+    <style>
+        /* =========================================
+           1. TEMEL AYARLAR & ARKA PLAN
+           ========================================= */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        html, body {
+            height: 100%; /* Ekranı tam kapla */
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Sayfanın kendisi kaymasın, sadece board kaysın */
+        }
+
+        body {
+            background-image: url('https://images.unsplash.com/photo-1477346611705-65d1883cee1e?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* Resim sabit kalsın */
+            display: flex;
+            flex-direction: column;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        /* =========================================
+           2. NAVBAR (ÜST MENÜ)
+           ========================================= */
+        .top-bar {
+            height: 48px;
+            background-color: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            flex-shrink: 0; /* Boyutunun daralmasını engelle */
+        }
+
+        .logo span {
+            font-weight: bold;
+            color: white;
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .bar-account-section {
+            display: flex;
+            align-items: center;
+        }
+
+        .account {
+            background-color: #0079bf;
+            color: white;
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* =========================================
+           3. BOARD HEADER (FİLTRELER & BAŞLIK)
+           ========================================= */
+        .section-header {
+            padding: 8px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.24);
+            backdrop-filter: blur(2px);
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .section-title:hover { background: rgba(255,255,255,0.2); }
+
+        .section-header-right-side {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .project-users { display: flex; align-items: center; margin-right: 10px; }
+        .user-icon {
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            color: white;
+            font-size: 11px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: -5px;
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+        .user-icon:hover { margin-top: -5px; z-index: 2; }
+
+        .section-header-buttons { display: flex; gap: 5px; }
+
+        .button-style {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 3px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.2s;
+        }
+        .button-style:hover { background: rgba(255, 255, 255, 0.3); }
+        .icon-only { padding: 6px 10px; }
+
+        /* =========================================
+           4. BOARD ALANI (YATAY SCROLL & LİSTELER)
+           ========================================= */
+        .task-groups-container {
+            flex: 1;
+            display: flex;
+            align-items: flex-start;
+            overflow-x: auto;
+            padding: 12px;
+            gap: 12px;
+        }
+
+        /* Scrollbar Tasarımı */
+        .task-groups-container::-webkit-scrollbar { height: 12px; }
+        .task-groups-container::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 6px;
+        }
+        .task-groups-container::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+        }
+
+        /* Liste Kutusu (Task Group) */
+        .task-group {
+            min-width: 272px;
+            max-width: 272px;
+            /* ESKİ: #f1f2f4 (Gri) -> YENİ: #f0f4f8 (Buz Mavisi/Beyaz) */
+            background-color: #f0f4f8;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            max-height: 100%;
+            color: #172b4d;
+            /* Daha yumuşak bir gölge */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: none;
+        }
+
+        /* Liste Başlığı */
+        .task-group-header {
+            padding: 10px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            min-height: 40px;
+        }
+
+        .task-group-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #172b4d;
+            padding: 12px;
+            cursor: pointer;
+        }
+
+        .task-group-menu {
+            color: #5e6c84;
+            padding: 6px;
+            border-radius: 4px;
+        }
+
+        .task-group-menu:hover {
+            /* Hover rengini de temaya uyduralım */
+            background-color: rgba(9, 30, 66, 0.08);
+            color: #172b4d;
+        }
+
+        /* =========================================
+           5. KART TASARIMI (TASK ITEMS)
+           ========================================= */
+        .Task {
+            background-color: #ffffff; /* Kartlar tam beyaz kalsın */
+            margin: 0 8px 8px 8px;
+            padding: 10px; /* Biraz daha ferah iç boşluk */
+            border-radius: 8px;
+            /* Trello benzeri belirgin ama yumuşak gölge */
+            box-shadow: 0 1px 3px rgba(9, 30, 66, 0.15), 0 0 1px rgba(9, 30, 66, 0.3);
+            cursor: pointer;
+            color: #172b4d;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+        .Task:hover {
+            /* Üzerine gelince hafifçe yukarı kalksın ve gölgesi artsın */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(9, 30, 66, 0.2);
+            background-color: #f8faff; /* Hover'da çok hafif mavimsi beyaz */
+        }
+
+        .Task-Title {
+            font-size: 14px;
+            margin-bottom: 4px;
+            word-wrap: break-word;
+        }
+
+        .assigned-to-profile-icon {
+            width: 20px; height: 20px;
+            border-radius: 50%;
+            color: white;
+            font-size: 9px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            float: right;
+        }
+
+        .task-desc-button {
+            font-size: 12px;
+            color: #9fadbc;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        /* =========================================
+           6. FORM: KART EKLEME (COMPOSER)
+           ========================================= */
+        .task-footer {
+            padding: 8px;
+            margin-top: auto;
+        }
+
+        .add-task-btn {
+            padding: 8px;
+            margin: 0 8px 8px 8px;
+            border-radius: 4px;
+            color: #5e6c84; /* Gri yazı */
+            cursor: pointer;
+            font-size: 14px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .add-task-btn:hover {
+            background-color: rgba(9, 30, 66, 0.08); /* Koyu hover */
+            color: #172b4d;
+        }
+
+        .card-composer-input {
+            width: 100%;
+            background-color: #fff;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(9, 30, 66, 0.25);
+            padding: 8px 10px;
+            font-size: 14px;
+            color: #172b4d;
+            resize: none;
+            display: block;
+            margin-bottom: 8px;
+            outline: none;
+        }
+
+        .composer-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .composer-left { display: flex; align-items: center; gap: 8px; }
+
+        .btn-add-card {
+            background-color: #0079bf;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 3px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .btn-add-card:hover { background-color: #026aa7; }
+
+        .btn-close-composer {
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            color: #9fadbc;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px; height: 32px;
+            border-radius: 3px;
+        }
+        .btn-close-composer:hover { background-color: rgba(255, 255, 255, 0.1); }
+        .btn-icon-only { background: transparent; border: none; color: #9fadbc; font-size: 16px; cursor: pointer; padding: 4px; }
+
+        /* =========================================
+           7. FORM: LİSTE EKLEME
+           ========================================= */
+        .add-list-wrapper {
+            min-width: 272px;
+            max-width: 272px;
+            background-color: rgba(255, 255, 255, 0.25);
+            border-radius: 12px;
+            padding: 10px;
+            height: fit-content;
+            transition: background-color 0.2s;
+        }
+        
+
+        .add-list-btn-idle {
+            width: 100%;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 6px 8px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .add-list-btn-idle:hover { background-color: rgba(255, 255, 255, 0.2); }
+
+        .list-name-input {
+            width: 100%;
+            border: 2px solid #0079bf;
+            border-radius: 3px;
+            padding: 8px 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #172b4d;
+            outline: none;
+            box-shadow: inset 0 0 0 1px #0079bf;
+        }
+
+        /* =========================================
+           8. MODAL (TASK DETAY - LIGHT THEME)
+           ========================================= */
+        .task-modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 50px;
+            z-index: 20000;
+            overflow-y: auto;
+        }
+
+        .dynamic-task-container {
+            width: 768px;
+            background-color: #f4f5f7;
+            border-radius: 2px; /* Trello köşeleri daha keskindir */
+            padding: 20px; /* İç boşluğu azalttık */
+            position: relative;
+            color: #172b4d;
+        }
+
+        /* Modal Üst Bar */
+        .modal-close-btn {
+            position: absolute;
+            top: 10px; right: 10px;
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            color: #42526e;
+            cursor: pointer;
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            transition: background 0.2s;
+            z-index: 10;
+        }
+        .modal-close-btn:hover { background-color: rgba(9, 30, 66, 0.08); }
+
+        /* --- BAŞLIK ALANI --- */
+        .task-modal-header { margin-bottom: 20px; }
+        .title-section { display: flex; gap: 12px; margin-top: 10px; }
+
+        .icon-title { margin-top: 6px; font-size: 20px; color: #42526e; }
+
+        .title-content { width: 100%; }
+
+        /* Başlık Input Düzenlemesi (Okları/Scrollbarı Yok Etme) */
+        .task-title-input {
+            width: 100%;
+            font-size: 20px;
+            font-weight: 600;
+            color: #172b4d;
+            background: transparent;
+            border: 2px solid transparent; /* Odaklanınca açılacak */
+            border-radius: 3px;
+            resize: none; /* Köşedeki çekme işaretini kaldırır */
+            height: 34px;
+            padding: 2px 6px;
+            margin-left: -6px;
+            overflow: hidden; /* Scrollbar çıkmasın */
+            line-height: 24px;
+            font-family: inherit;
+        }
+        .task-title-input:focus {
+            background-color: #ffffff;
+            border-color: #0079bf;
+            box-shadow: inset 0 0 0 1px #0079bf;
+            outline: none;
+        }
+
+        .list-meta-info { font-size: 14px; color: #5e6c84; margin-top: 2px; }
+        .list-name-link { text-decoration: underline; cursor: pointer; color: #5e6c84; font-weight: 500; }
+        .list-name-link:hover { color: #172b4d; }
+
+        /* --- GÖVDE DÜZENİ --- */
+        /* =========================================
+   YENİ MODAL DÜZENİ (User Request)
+   ========================================= */
+
+        /* Modal Gövdesi: 2 Sütunlu Yapı */
+        .task-body-section {
+            display: flex;
+            gap: 30px;
+            margin-top: 15px;
+        }
+
+        /* --- SOL SÜTUN (Meta Bilgiler) --- */
+        .task-left-col {
+            flex: 0 0 240px; /* Genişlik 240px'e sabitlendi */
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            border-right: 1px solid #dfe1e6; /* Sağ taraftan ayıran çizgi */
+            padding-right: 20px;
+        }
+
+        /* Kişiler Alanı (Yan yana yuvarlaklar) */
+        .people-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .people-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #5e6c84;
+            text-transform: uppercase;
+        }
+        .avatars-container {
+            display: flex;
+            align-items: center;
+            gap: -8px; /* İkonlar hafif iç içe geçsin */
+        }
+        .user-avatar-lg {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #fff; /* Beyaz çerçeve ile ayrım */
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            cursor: pointer;
+            position: relative;
+        }
+        .user-avatar-lg:hover {
+            z-index: 10;
+            transform: translateY(-2px);
+        }
+
+        /* Tarihler */
+        .date-row {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .date-item {
+            font-size: 13px;
+            color: #172b4d;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .date-item i { color: #5e6c84; width: 16px; }
+
+        /* Öncelik Combo Box */
+        .priority-select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #dfe1e6;
+            background-color: #fafbfc;
+            color: #172b4d;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .priority-select:focus {
+            border-color: #0079bf;
+            box-shadow: 0 0 0 2px rgba(0,121,191,0.2);
+        }
+
+        /* Sil Butonu (En altta kırmızı) */
+        .btn-delete-task {
+            margin-top: auto; /* En alta it */
+            background-color: #ffebe6;
+            color: #bf2600;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+        .btn-delete-task:hover {
+            background-color: #ffbdad;
+            color: #9e2000;
+        }
+
+        /* --- SAĞ SÜTUN (Açıklama & Action) --- */
+        .task-right-col {
+            flex: 1; /* Kalan tüm alanı kapla */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Açıklama Başlığı */
+        .desc-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #172b4d;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Açıklama Kutusu */
+        .task-desc-input {
+            width: 100%;
+            min-height: 200px; /* Daha yüksek */
+            background-color: #f4f5f7;
+            border: 1px solid transparent;
+            border-radius: 3px;
+            padding: 12px;
+            resize: none;
+            outline: none;
+            color: #172b4d;
+            font-size: 14px;
+            line-height: 1.5;
+            transition: all 0.2s;
+        }
+        .task-desc-input:focus {
+            background-color: #fff;
+            border-color: #0079bf;
+            box-shadow: 0 0 0 2px rgba(0,121,191,0.2);
+        }
+
+        /* Kaydet / İptal Butonları */
+        .desc-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        /* =========================================
+   DRAG & DROP (SÜRÜKLE BIRAK) STİLLERİ
+   ========================================= */
+
+        /* Sürüklenen eleman */
+        .Task.dragging {
+            opacity: 0.5;
+            background-color: #e4f0f6; /* Sürüklenirken rengi hafif mavi olsun */
+            border: 2px dashed #0079bf;
+            transform: rotate(3deg); /* Fotoğraftaki gibi hafif eğim */
+            cursor: grabbing;
+        }
+
+        /* Kartların bırakılacağı alanın, sürükleme anındaki durumu */
+        .task-group.drag-over {
+            background-color: #e2e4e9; /* Liste rengi hafif koyulaşsın */
+        }
+
+        /* Kartın kendisi tutulabilir imleci */
+        .Task {
+            cursor: grab;
+            /* ...diğer task stillerin aynen kalıyor... */
+        }
+
+        /* =========================================
+   SIDEBAR MENU (ARKAPLAN SEÇİCİ)
+   ========================================= */
+        .sidebar-menu {
+            position: fixed;
+            top: 48px; /* Navbarın hemen altı */
+            right: -340px; /* Başlangıçta ekran dışında gizli */
+            width: 340px;
+            height: calc(100% - 48px);
+            background-color: #f4f5f7;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            transition: right 0.3s ease-in-out; /* Kayma efekti */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-menu.open {
+            right: 0; /* Açılınca ekrana girer */
+        }
+
+        .sidebar-header {
+            padding: 15px;
+            border-bottom: 1px solid #dfe1e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: white;
+        }
+
+        .sidebar-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: #172b4d;
+        }
+
+        .sidebar-close-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #42526e;
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto; /* İçerik taşarsa scroll çıksın */
+            padding: 15px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 25px;
+        }
+
+        .sidebar-subtitle {
+            font-size: 14px;
+            font-weight: 600;
+            color: #5e6c84;
+            margin-bottom: 10px;
+        }
+
+        /* Izgara Yapısı (2 sütunlu) */
+        .bg-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        /* Küçük Kutular (Thumbnail) */
+        .bg-option {
+            height: 90px;
+            border-radius: 8px;
+            cursor: pointer;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.1s, box-shadow 0.1s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bg-option:hover {
+            transform: scale(1.03);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Renk kutuları için özel hover */
+        .bg-option.color-box:hover::after {
+            content: '';
+            position: absolute;
+            top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.1);
+        }
+
+        /* =========================================
+   LİSTE AKSİYON MENÜSÜ CSS
+   ========================================= */
+        .list-menu-popup {
+            position: absolute;
+            width: 260px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 8px 16px -4px rgba(9, 30, 66, 0.25), 0 0 0 1px rgba(9, 30, 66, 0.08);
+            z-index: 5000;
+            padding: 10px 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .list-menu-header {
+            padding: 0 12px 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .list-menu-title {
+            font-weight: 600;
+            color: #5e6c84;
+            font-size: 14px;
+            text-align: center;
+            flex: 1;
+        }
+
+        .list-menu-close {
+            background: none;
+            border: none;
+            color: #6b778c;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .list-menu-close:hover { color: #172b4d; }
+
+        .list-menu-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .list-menu-item {
+            background: none;
+            border: none;
+            text-align: left;
+            padding: 8px 16px;
+            font-size: 14px;
+            color: #172b4d;
+            cursor: pointer;
+            transition: background 0.1s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .list-menu-item:hover {
+            background-color: #f4f5f7;
+        }
+
+        .list-menu-item i {
+            width: 20px;
+            text-align: center;
+            color: #42526e;
+        }
+
+        .item-danger { color: #b04632; }
+        .item-danger i { color: #b04632; }
+        .item-danger:hover { background-color: #ffebe6; }
+
+        .list-menu-separator {
+            height: 1px;
+            background-color: #dfe1e6;
+            margin: 8px 0;
+        }
+
+        .menu-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #5e6c84;
+            text-transform: uppercase;
+            padding: 4px 16px;
+        }
+        /* Başlık Düzenleme Modu İçin Input */
+        .edit-list-title-input {
+            width: 95%; /* Biraz boşluk bırak */
+            margin: 5px;
+            font-size: 14px; /* Mevcut başlıkla aynı boy */
+            font-weight: 600;
+            color: #172b4d;
+            border: 2px solid #0079bf; /* Trello mavisi çerçeve */
+            border-radius: 3px;
+            padding: 6px 8px;
+            outline: none;
+            background-color: white;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        /* =========================================
+   PAYLAŞIM MODALI CSS
+   ========================================= */
+
+        /* Modal Kutusu */
+        .share-modal-content {
+            background-color: white;
+            width: 580px;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            position: relative;
+            /* Yukarıdan biraz boşluk bırakarak ortalama */
+            margin-top: 80px;
+        }
+
+        .share-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .share-title {
+            font-size: 20px;
+            font-weight: 500;
+            color: #172b4d;
+        }
+
+        .modal-close-btn-static {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #42526e;
+            cursor: pointer;
+        }
+
+        /* Davet Alanı */
+        .invite-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .invite-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 2px solid #dfe1e6;
+            border-radius: 3px;
+            font-size: 14px;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .invite-input:focus { border-color: #0079bf; }
+
+        .invite-role-select {
+            padding: 8px;
+            background-color: #f4f5f7;
+            border: none;
+            border-radius: 3px;
+            color: #172b4d;
+            cursor: pointer;
+        }
+
+        .btn-share-invite {
+            background-color: #0079bf; /* Mavi Buton */
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 3px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .btn-share-invite:hover { background-color: #026aa7; }
+
+        /* Link Alanı */
+        .share-link-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .link-icon-box {
+            width: 32px; height: 32px;
+            background-color: #f4f5f7;
+            border-radius: 4px;
+            display: flex; align-items: center; justify-content: center;
+            color: #42526e;
+        }
+
+        .link-details { flex: 1; }
+
+        .link-text { font-size: 14px; color: #172b4d; margin-bottom: 2px; }
+        .link-actions { font-size: 12px; color: #5e6c84; }
+        .link-action-btn { text-decoration: underline; cursor: pointer; color: #0079bf; }
+
+        .btn-permissions {
+            background: none;
+            border: none;
+            color: #5e6c84;
+            cursor: pointer;
+            font-size: 14px;
+            background-color: #f4f5f7;
+            padding: 6px 12px;
+            border-radius: 3px;
+        }
+
+        /* Üyeler Listesi */
+        .members-header {
+            font-size: 12px;
+            font-weight: 600;
+            color: #5e6c84;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .members-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .member-item-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f4f5f7;
+        }
+
+        .member-avatar {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            color: white;
+            font-size: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold;
+        }
+
+        .member-info { flex: 1; }
+
+        .member-name { font-weight: 600; font-size: 14px; color: #172b4d; }
+        .member-username { font-size: 12px; color: #5e6c84; }
+
+        /* Rol Butonları */
+        .btn-member-role {
+            background-color: #f4f5f7;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 3px;
+            font-size: 14px;
+            color: #172b4d;
+            cursor: pointer;
+        }
+        .btn-member-role-secondary {
+            background: none;
+            border: none;
+            color: #5e6c84;
+            cursor: pointer;
+        }
+        .btn-member-role:hover, .btn-member-role-secondary:hover { background-color: #e4f0f6; color: #0079bf; }
+        /* =========================================
+   KULLANICI PROFİL KARTI CSS
+   ========================================= */
+        .user-profile-popup {
+            position: fixed;
+            width: 320px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2), 0 0 1px rgba(0,0,0,0.1);
+            z-index: 21000 !important;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            animation: fadeInScale 0.2s ease-out;
+        }
+
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Header */
+        .profile-card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .profile-avatar-large {
+            width: 64px; height: 64px;
+            border-radius: 50%;
+            background-color: #ccc;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex; justify-content: center; align-items: center;
+            flex-shrink: 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .profile-info-text { flex: 1; overflow: hidden; }
+
+        .profile-fullname {
+            font-size: 18px; font-weight: 700; color: #172b4d;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .profile-email {
+            font-size: 13px; color: #5e6c84; margin-bottom: 5px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .profile-role-badge {
+            display: inline-block;
+            background-color: #ebecf0;
+            color: #42526e;
+            font-size: 11px; font-weight: 700;
+            padding: 2px 8px; border-radius: 4px; text-transform: uppercase;
+        }
+
+        .profile-close-btn {
+            position: absolute; top: -10px; right: -10px;
+            background: none; border: none; color: #6b778c; cursor: pointer; font-size: 16px;
+        }
+
+        /* İstatistikler */
+        .profile-stats-row { display: flex; gap: 15px; margin-bottom: 15px; }
+        .stat-box {
+            flex: 1;
+            background-color: #fafbfc;
+            border: 1px solid #dfe1e6;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+        .stat-value { display: block; font-size: 18px; font-weight: 700; color: #172b4d; }
+        .stat-label { display: block; font-size: 11px; color: #5e6c84; margin-top: 2px; text-transform: uppercase; }
+
+        .profile-divider { border: 0; border-top: 1px solid #dfe1e6; margin: 0 0 15px 0; }
+
+        /* Task Listesi */
+        .profile-section-title {
+            font-size: 12px; font-weight: 700; color: #5e6c84;
+            text-transform: uppercase; margin-bottom: 10px;
+        }
+
+        .profile-task-list {
+            max-height: 150px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+
+        .mini-task-item {
+            padding: 8px;
+            background-color: #fff;
+            border: 1px solid #dfe1e6;
+            border-radius: 4px;
+            margin-bottom: 6px;
+            font-size: 13px; color: #172b4d;
+            border-left: 3px solid #0079bf; /* Task rengi */
+        }
+        .empty-task-msg { font-size: 13px; color: #6b778c; font-style: italic; text-align: center; padding: 10px; }
+
+        /* Footer */
+        .btn-profile-action {
+            width: 100%;
+            padding: 8px;
+            background-color: #0079bf; color: white;
+            border: none; border-radius: 4px; font-weight: 600; cursor: pointer;
+        }
+        .btn-profile-action:hover { background-color: #026aa7; }
+        /* =========================================
+   FİLTRE MENÜSÜ CSS
+   ========================================= */
+        .filter-menu-popup {
+            position: absolute;
+            top: 100px; /* JS ile dinamik ayarlanacak ama varsayılan kalsın */
+            right: 20px;
+            width: 300px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 8px 16px -4px rgba(9, 30, 66, 0.25), 0 0 0 1px rgba(9, 30, 66, 0.08);
+            z-index: 4000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-header {
+            padding: 10px 15px;
+            border-bottom: 1px solid #dfe1e6;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .filter-title { font-weight: 600; color: #5e6c84; font-size: 14px; flex: 1; text-align: center; }
+        .filter-close-btn { background: none; border: none; color: #6b778c; cursor: pointer; }
+
+        .filter-content { padding: 15px; }
+
+        .filter-section { margin-bottom: 20px; }
+        .filter-label { font-size: 12px; font-weight: 700; color: #5e6c84; margin-bottom: 8px; text-transform: uppercase; }
+
+        .filter-input {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #dfe1e6;
+            border-radius: 3px;
+            font-size: 14px;
+            outline: none;
+        }
+        .filter-input:focus { border-color: #0079bf; }
+        .filter-hint { font-size: 11px; color: #5e6c84; margin-top: 4px; }
+
+        /* Checkbox Satırları */
+        .filter-checkbox-row {
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 8px; cursor: pointer;
+            padding: 4px; border-radius: 4px;
+        }
+        .filter-checkbox-row:hover { background-color: #f4f5f7; }
+
+        .filter-checkbox { transform: scale(1.2); cursor: pointer; }
+
+        .filter-avatar {
+            width: 24px; height: 24px; border-radius: 50%;
+            color: white; font-size: 10px; display: flex; justify-content: center; align-items: center; font-weight: bold;
+        }
+        .filter-avatar-icon {
+            width: 24px; height: 24px; border-radius: 50%;
+            background-color: #dfe1e6; color: #42526e;
+            display: flex; justify-content: center; align-items: center; font-size: 12px;
+        }
+        .filter-text { font-size: 14px; color: #172b4d; }
+
+        .btn-clear-filters {
+            width: 100%;
+            background: none; border: none;
+            color: #5e6c84; cursor: pointer;
+            font-size: 14px; text-decoration: underline;
+        }
+        .btn-clear-filters:hover { color: #172b4d; }
+    </style>
+</head>
+<body>
+
+<nav class="top-bar">
+    <div class="logo">
+        <span>📊 TaskFlow</span>
+    </div>
+    <div class="bar-account-section">
+        <div style="cursor: pointer; color: white; margin-right: 15px;" title="Notifications">🔔</div>
+        <div class="account" onclick="AccountClick(event)">
+            I
+        </div>
+    </div>
+</nav>
+
+<div class="section-header">
+    <div class="section-header-left-side">
+        <div class="section-title">
+            Term Project 🚀
+        </div>
+    </div>
+
+    <div class="section-header-right-side">
+        <div class="project-users">
+            <div class="user-icon" style="background-color: #df5c4e;" onclick="openUserProfile(event, 'MK')">MK</div>
+
+            <div class="user-icon" style="background-color: #4bbf6b;" onclick="openUserProfile(event, 'CY')">CY</div>
+
+            <div class="user-icon" style="background-color: #0079bf;" onclick="openUserProfile(event, 'İK')">İK</div>
+        </div>
+
+        <div class="section-header-buttons">
+            <div class="settings button-style" onclick="toggleFilterMenu()">
+                <i class="fa-solid fa-filter"></i> Filtrele
+            </div>
+            <div class="share-button button-style" onclick="openShareModal()">
+                <i class="fa-solid fa-user-plus"></i> Paylaş
+            </div>
+            <div class="change-background-button button-style icon-only" onclick="toggleBackgroundMenu()">
+                <i class="fa-solid fa-image"></i> Arkaplanlar
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="task-groups-container">
+
+    <div class="task-group">
+        <div class="task-group-title" onclick="">
+            Yapılacaklar <i class="fa-solid fa-ellipsis" style="float:right; font-size:12px; cursor: pointer;" onclick="openListMenu(event, this)"></i>
+        </div>
+
+        <div class="Task" onclick="">
+            <div class="Task-Title">
+                UI Tasarım Revizeleri
+            </div>
+            <div class="assigned-to-profile-icon" style="background-color: #4bbf6b;">
+                CY
+            </div>
+            <div class="task-desc-button">
+                <i class="fa-solid fa-align-left"></i>
+            </div>
+        </div>
+
+        <div class="Task" onclick="openTaskModal({
+    title: 'UI Tasarım Revizeleri',
+    listName: 'Yapılacaklar',
+    createdByName: 'İbrahim Kabadayı',
+    createdByInitial: 'İK',
+    assignedToName: 'Can Yılmaz',
+    assignedInitial: 'CY',
+    assignedColor: '#4bbf6b',
+    dueDate: '30 Ara 2025',
+    priorityColor: '#eb5a46',
+    priorityText: 'Yüksek Öncelik',
+    description: 'Login ekranı revizeleri...'
+})">
+            <div class="Task-Title">
+                Backend API Route Ayarları
+            </div>
+            <div class="task-desc-button">
+                <i class="fa-solid fa-paperclip"></i> 2
+            </div>
+        </div>
+
+        <div class="Add-Task">
+            + Add Task
+        </div>
+    </div>
+
+    <div class="task-group">
+        <div class="task-group-title" onclick="">
+            Devam Edenler <i class="fa-solid fa-ellipsis" style="float:right;" onclick="openListMenu(event, this)"></i>
+        </div>
+        <div class="Task" onclick="">
+            <div class="Task-Title">
+                Patlama Animasyonları
+            </div>
+            <div class="assigned-to-profile-icon" style="background-color: #df5c4e;">
+                MK
+            </div>
+        </div>
+        <div class="task-footer">
+
+            <div class="add-task-btn" onclick="showAddCardForm(this)">
+                <i class="fa-solid fa-plus"></i> Add Task
+            </div>
+
+            <div class="add-card-form" style="display: none;">
+                <textarea class="card-composer-input" placeholder="Bu kart için bir başlık girin..." rows="3" onkeydown="handleEnterKey(event, this)"></textarea>
+
+                <div class="composer-controls">
+                    <div class="composer-left">
+                        <button class="btn-add-card" onclick="saveNewCard(this)">Add Task</button>
+                        <button class="btn-close-composer" onclick="hideAddCardForm(this)">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="composer-right">
+                        <button class="btn-icon-only"><i class="fa-solid fa-ellipsis"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="add-list-wrapper">
+        <div class="add-list-btn-idle" onclick="showAddListForm(this)">
+            <i class="fa-solid fa-plus"></i> Başka liste ekleyin
+        </div>
+
+        <div class="add-list-form" style="display: none;">
+            <input class="list-name-input" type="text" placeholder="Liste başlığı girin..." onkeydown="handleListEnterKey(event, this)">
+
+            <div class="composer-controls" style="margin-top: 8px;">
+                <button class="btn-add-card" onclick="saveNewList(this)">Liste Ekle</button>
+                <button class="btn-close-composer" onclick="hideAddListForm(this)">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="dynamic-task-container" style="display:none;"></div>
+<div class="dynamic-generalPurpose-container" style="display:none;"></div>
+
+<div id="taskModalOverlay" class="task-modal-overlay" style="display: none;" onclick="closeTaskModal(event)">
+
+    <div class="dynamic-task-container" onclick="event.stopPropagation()">
+
+        <button class="modal-close-btn" onclick="closeTaskModal(null)">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="task-modal-header">
+            <div class="title-section">
+                <div class="title-content" style="margin-left: 0;">
+                    <textarea id="modalTaskTitle" class="task-title-input" rows="1"></textarea>
+                    <div class="list-meta-info">
+                        <span class="list-name-link"><span id="modalListName">...</span></span> listesinde
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="task-body-section">
+
+            <div class="task-left-col">
+
+                <div class="people-section">
+                    <span class="people-label">İlgililer</span>
+                    <div class="avatars-container">
+                        <div id="modalCreatedByAvatar" class="user-avatar-lg" title="Oluşturan"></div>
+                        <div id="modalAssignedToAvatar" class="user-avatar-lg" title="Atanan"></div>
+                    </div>
+                </div>
+
+                <div class="people-section">
+                    <span class="people-label">Öncelik</span>
+                    <select id="modalPrioritySelect" class="priority-select">
+                        <option value="low">🟢 Düşük Öncelik</option>
+                        <option value="medium" selected>🟡 Orta Öncelik</option>
+                        <option value="high">🔴 Yüksek Öncelik</option>
+                    </select>
+                </div>
+
+                <div class="people-section">
+                    <span class="people-label">Zaman Çizelgesİ</span>
+                    <div class="date-row">
+                        <div class="date-item">
+                            <i class="fa-regular fa-calendar-plus"></i>
+                            <span id="modalCreatedDate">12 Ara 2025</span>
+                        </div>
+                        <div class="date-item">
+                            <i class="fa-regular fa-clock"></i>
+                            <span id="modalDueDate" style="font-weight: 500; color:#d93535;">30 Ara 2025</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-delete-task">
+                    <i class="fa-solid fa-trash"></i> Sil
+                </button>
+
+            </div>
+
+            <div class="task-right-col">
+                <div class="desc-label">
+                    <i class="fa-solid fa-align-left"></i> Açıklama
+                </div>
+
+                <textarea id="modalTaskDesc" class="task-desc-input" placeholder="Detaylı açıklama yazın..."></textarea>
+
+                <div class="desc-actions">
+                    <button class="btn-primary">Kaydet</button>
+                    <button class="btn-ghost" onclick="closeTaskModal(null)">İptal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="backgroundMenu" class="sidebar-menu">
+    <div class="sidebar-header">
+        <span class="sidebar-title">Arkaplan Değiştir</span>
+        <button class="sidebar-close-btn" onclick="toggleBackgroundMenu()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <div class="sidebar-content">
+        <div class="sidebar-section">
+            <h4 class="sidebar-subtitle">🎨 Renkler</h4>
+            <div class="bg-grid" id="colorGrid">
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <h4 class="sidebar-subtitle">🖼️ Fotoğraflar</h4>
+            <div class="bg-grid" id="photoGrid">
+            </div>
+        </div>
+    </div>
+</div>
+<div id="listActionMenu" class="list-menu-popup" style="display: none;">
+    <div class="list-menu-header">
+        <span class="list-menu-title">Liste İşlemleri</span>
+        <button class="list-menu-close" onclick="closeListMenu()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+    <hr class="sidebar-divider" style="margin: 5px 0;">
+
+    <div class="list-menu-content">
+        <button class="list-menu-item" onclick="actionEditTitle()">
+            <i class="fa-solid fa-pen"></i> Başlığı Değiştir
+        </button>
+        <button class="list-menu-item" onclick="actionAddTask()">
+            <i class="fa-solid fa-plus"></i> Kart Ekle
+        </button>
+
+        <div class="list-menu-separator"></div>
+        <div class="menu-label">Sırala</div>
+
+        <button class="list-menu-item" onclick="actionSortTasks('date')">
+            <i class="fa-solid fa-clock-rotate-left"></i> Tarihe Göre (En Yeni)
+        </button>
+        <button class="list-menu-item" onclick="actionSortTasks('priority')">
+            <i class="fa-solid fa-arrow-up-wide-short"></i> Önceliğe Göre
+        </button>
+
+        <div class="list-menu-separator"></div>
+
+        <button class="list-menu-item item-danger" onclick="actionDeleteList()">
+            <i class="fa-solid fa-trash"></i> Listeyi Sil
+        </button>
+    </div>
+</div>
+<div id="shareModalOverlay" class="task-modal-overlay" style="display: none;" onclick="closeShareModal(event)">
+
+    <div class="share-modal-content" onclick="event.stopPropagation()">
+
+        <div class="share-header">
+            <span class="share-title">Panoyu paylaş</span>
+            <button class="modal-close-btn-static" onclick="closeShareModal(null)">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="share-invite-section">
+            <div class="invite-input-group">
+                <input type="text" placeholder="E-posta adresi veya isim" class="invite-input">
+                <select class="invite-role-select">
+                    <option>Üye</option>
+                    <option>Gözlemci</option>
+                </select>
+                <button class="btn-share-invite">Paylaş</button>
+            </div>
+        </div>
+
+        <div class="share-link-section">
+            <div class="link-icon-box">
+                <i class="fa-solid fa-link"></i>
+            </div>
+            <div class="link-details">
+                <div class="link-text">
+                    <strong>Bağlantısı olan herkes</strong> üye olarak katılabilir
+                </div>
+                <div class="link-actions">
+                    <span class="link-action-btn">Bağlantıyı kopyala</span> •
+                    <span class="link-action-btn">Bağlantıyı sil</span>
+                </div>
+            </div>
+            <button class="btn-permissions">İzinleri değiştir <i class="fa-solid fa-chevron-down"></i></button>
+        </div>
+
+        <div class="share-members-section">
+            <div class="members-header">Pano üyeleri (3)</div>
+
+            <div class="members-list">
+                <div class="member-item-row">
+                    <div class="member-avatar" style="background-color: #0079bf;">İK</div>
+                    <div class="member-info">
+                        <div class="member-name">İbrahim Kabadayı (siz)</div>
+                        <div class="member-username">@ibrahimkabadayi4 • Çalışma Alanı yöneticisi</div>
+                    </div>
+                    <button class="btn-member-role">Yönetici <i class="fa-solid fa-chevron-down"></i></button>
+                </div>
+
+                <div class="member-item-row">
+                    <div class="member-avatar" style="background-color: #4bbf6b;">CY</div>
+                    <div class="member-info">
+                        <div class="member-name">Can Yılmaz</div>
+                        <div class="member-username">@cihangiryaman • Çalışma Alanı yöneticisi</div>
+                    </div>
+                    <button class="btn-member-role-secondary">Yönetici <i class="fa-solid fa-chevron-down"></i></button>
+                </div>
+
+                <div class="member-item-row">
+                    <div class="member-avatar" style="background-color: #df5c4e;">MK</div>
+                    <div class="member-info">
+                        <div class="member-name">Mehmet Kaya</div>
+                        <div class="member-username">@mehmetkaya • Pano üyesi</div>
+                    </div>
+                    <button class="btn-member-role-secondary">Üye <i class="fa-solid fa-chevron-down"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="userProfileCard" class="user-profile-popup" style="display: none;" onclick="event.stopPropagation()">
+
+    <div class="profile-card-header">
+        <div class="profile-avatar-large" id="profileCardAvatar">MK</div>
+        <div class="profile-info-text">
+            <div class="profile-fullname" id="profileCardName">Mehmet Kaya</div>
+            <div class="profile-email" id="profileCardEmail">mehmet@ornek.com</div>
+            <div class="profile-role-badge" id="profileCardRole">Admin</div>
+        </div>
+        <button class="profile-close-btn" onclick="closeUserProfile()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <div class="profile-stats-row">
+        <div class="stat-box">
+            <span class="stat-value" id="profileCardCount">0</span>
+            <span class="stat-label">Aktif Görev</span>
+        </div>
+        <div class="stat-box">
+            <span class="stat-value" style="color:#4bbf6b;">Çevrimiçi</span>
+            <span class="stat-label">Durum</span>
+        </div>
+    </div>
+
+    <hr class="profile-divider">
+
+    <div class="profile-tasks-section">
+        <div class="profile-section-title">Üzerindeki Görevler</div>
+        <div class="profile-task-list" id="profileCardTaskList">
+        </div>
+    </div>
+
+    <div class="profile-footer">
+        <button class="btn-profile-action">Profili Görüntüle</button>
+    </div>
+</div>
+<div id="filterMenuPopup" class="filter-menu-popup" style="display: none;">
+    <div class="filter-header">
+        <span class="filter-title">Kartları Filtrele</span>
+        <button class="filter-close-btn" onclick="toggleFilterMenu()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <div class="filter-content">
+        <div class="filter-section">
+            <div class="filter-label">Anahtar Kelime</div>
+            <input type="text" id="filterSearchInput" class="filter-input" placeholder="Kart adı ara..." onkeyup="applyFilters()">
+            <div class="filter-hint">Başlıkta arama yapar</div>
+        </div>
+
+        <div class="filter-section">
+            <div class="filter-label">Üyeler</div>
+
+            <label class="filter-checkbox-row">
+                <input type="checkbox" class="filter-checkbox" value="İK" onchange="applyFilters()">
+                <div class="filter-avatar" style="background-color: #0079bf;">İK</div>
+                <span class="filter-text">İbrahim Kabadayı (Sen)</span>
+            </label>
+
+            <label class="filter-checkbox-row">
+                <input type="checkbox" class="filter-checkbox" value="CY" onchange="applyFilters()">
+                <div class="filter-avatar" style="background-color: #4bbf6b;">CY</div>
+                <span class="filter-text">Can Yılmaz</span>
+            </label>
+
+            <label class="filter-checkbox-row">
+                <input type="checkbox" class="filter-checkbox" value="MK" onchange="applyFilters()">
+                <div class="filter-avatar" style="background-color: #df5c4e;">MK</div>
+                <span class="filter-text">Mehmet Kaya</span>
+            </label>
+
+            <label class="filter-checkbox-row">
+                <input type="checkbox" class="filter-checkbox" value="NO_ASSIGN" onchange="applyFilters()">
+                <div class="filter-avatar-icon"><i class="fa-regular fa-user"></i></div>
+                <span class="filter-text">Atanmamış olanlar</span>
+            </label>
+        </div>
+
+        <button class="btn-clear-filters" onclick="clearAllFilters()">Filtreleri Temizle</button>
+    </div>
+</div>
+<script>
+    /* =========================================
+   GÜNCELLENMİŞ TASK MODAL AÇMA (Profil Kartı Destekli)
+   ========================================= */
+
+    function openTaskModal(taskData, cardElement) {
+        // 1. Tıklanan kartı global değişkene ata
+        currentActiveCard = cardElement;
+
+        const modal = document.getElementById('taskModalOverlay');
+        if (!modal) return;
+
+        // --- MEVCUT VERİLERİ DOLDURMA ---
+
+        // 1. Başlık
+        const titleInput = document.getElementById('modalTaskTitle');
+        titleInput.value = taskData.title || '';
+        // Yüksekliği ayarla
+        titleInput.style.height = 'auto';
+        titleInput.style.height = titleInput.scrollHeight + 'px';
+
+        // 2. Liste Adı
+        document.getElementById('modalListName').innerText = taskData.listName || "Yapılacaklar";
+
+        // 3. OLUŞTURAN KİŞİ (BURASI GÜNCELLENDİ: onclick EKLENDİ)
+        const createdAvatar = document.getElementById('modalCreatedByAvatar');
+        const cInitial = taskData.createdByInitial || 'İK'; // Varsayılan İK olsun
+
+        createdAvatar.innerText = cInitial;
+        // MockData'da varsa rengini al, yoksa gri yap
+        createdAvatar.style.backgroundColor = mockUserData[cInitial] ? mockUserData[cInitial].color : '#607d8b';
+        createdAvatar.title = `Oluşturan: ${taskData.createdByName || 'Bilinmiyor'}`;
+
+        // TIKLAMA ÖZELLİĞİ EKLENDİ
+        // onclick eventini dinamik olarak bağlıyoruz
+        createdAvatar.onclick = function(event) {
+            openUserProfile(event, cInitial);
+        };
+
+
+        // 4. ATANAN KİŞİ (BURASI GÜNCELLENDİ: onclick EKLENDİ)
+        const assignedAvatar = document.getElementById('modalAssignedToAvatar');
+
+        if (taskData.assignedToName) {
+            const aInitial = taskData.assignedInitial || 'CY';
+
+            assignedAvatar.style.display = 'flex';
+            assignedAvatar.innerText = aInitial;
+
+            // MockData'dan veya parametreden renk al
+            assignedAvatar.style.backgroundColor = mockUserData[aInitial] ? mockUserData[aInitial].color : (taskData.assignedColor || '#0079bf');
+            assignedAvatar.title = `Atanan: ${taskData.assignedToName}`;
+
+            // TIKLAMA ÖZELLİĞİ EKLENDİ
+            assignedAvatar.style.cursor = 'pointer';
+            assignedAvatar.onclick = function(event) {
+                openUserProfile(event, aInitial);
+            };
+
+        } else {
+            assignedAvatar.style.display = 'none'; // Atanan yoksa gizle
+        }
+
+        // 5. Tarihler
+        document.getElementById('modalCreatedDate').innerText = taskData.createdDate || '12 Ara 2025';
+        document.getElementById('modalDueDate').innerText = taskData.dueDate || '30 Ara 2025';
+
+        // 6. Açıklama
+        document.getElementById('modalTaskDesc').value = taskData.description || '';
+
+        // 7. Öncelik
+        const prioritySelect = document.getElementById('modalPrioritySelect');
+        if(taskData.priorityValue) {
+            prioritySelect.value = taskData.priorityValue;
+        } else {
+            prioritySelect.value = 'medium';
+        }
+
+        // Modalı Aç
+        modal.style.display = 'flex';
+    }
+
+    function closeTaskModal(event) {
+        // Eğer event null ise (X butonuna basıldıysa) direkt kapat
+        if (!event) {
+            document.getElementById('taskModalOverlay').style.display = 'none';
+            return;
+        }
+        // Eğer tıklanan yer Overlay'in kendisiyse kapat (içerik değilse)
+        if (event.target.id === 'taskModalOverlay') {
+            document.getElementById('taskModalOverlay').style.display = 'none';
+        }
+    }
+    function showAddCardForm(btnElement) {
+        const footer = btnElement.parentElement;
+
+        btnElement.style.display = 'none';
+
+        const form = footer.querySelector('.add-card-form');
+        form.style.display = 'block';
+
+        const input = form.querySelector('textarea');
+        input.focus();
+    }
+
+    function hideAddCardForm(btnElement) {
+        const footer = btnElement.closest('.task-footer');
+
+        const form = footer.querySelector('.add-card-form');
+        form.style.display = 'none';
+
+        form.querySelector('textarea').value = '';
+
+        const addBtn = footer.querySelector('.add-task-btn');
+        addBtn.style.display = 'flex';
+    }
+
+    // 3. Yeni Kartı Kaydet (Mavi butona basınca)
+    function saveNewCard(btnElement) {
+        const footer = btnElement.closest('.task-footer');
+        const input = footer.querySelector('textarea');
+        const title = input.value.trim();
+
+        if (title) {
+            // 1. Elementi DOM elemanı olarak oluştur (String değil)
+            const newCard = document.createElement('div');
+            newCard.className = 'Task';
+            newCard.onclick = function() {
+                openTaskModal({ title: title, createdByName: 'Ben', createdByInitial: 'B' });
+            };
+
+            // İçeriği doldur
+            newCard.innerHTML = `
+                <div class="Task-Title">${title}</div>
+            `;
+
+            // 2. Sürüklenebilir yap (Yazdığımız fonksiyonu çağırıyoruz)
+            makeCardDraggable(newCard);
+
+            // 3. Footer'dan hemen önceye ekle
+            // footer.parentElement aslında .task-group dividir
+            footer.parentElement.insertBefore(newCard, footer);
+
+            input.value = '';
+            input.focus();
+        }
+    }
+
+    // 4. Enter Tuşuna Basınca Kaydet
+    function handleEnterKey(event, inputElement) {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault(); // Alt satıra geçmeyi engelle
+            // Kaydet butonunu bul ve tıkla
+            const saveBtn = inputElement.parentElement.querySelector('.btn-add-card');
+            saveNewCard(saveBtn);
+        }
+    }
+    // 1. Formu Göster
+    function showAddListForm(btnElement) {
+        const wrapper = btnElement.parentElement;
+
+        // Wrapper'ın rengini değiştirmek için class ekle
+        wrapper.classList.add('active');
+
+        // Butonu gizle, formu göster
+        btnElement.style.display = 'none';
+        wrapper.querySelector('.add-list-form').style.display = 'block';
+
+        // Inputa odaklan
+        wrapper.querySelector('input').focus();
+    }
+
+    // 2. Formu Gizle
+    function hideAddListForm(btnElement) {
+        // closest ile en dıştaki wrapper'ı bul
+        const wrapper = btnElement.closest('.add-list-wrapper');
+
+        wrapper.classList.remove('active');
+
+        // Formu gizle, butonu göster
+        wrapper.querySelector('.add-list-form').style.display = 'none';
+        wrapper.querySelector('.add-list-btn-idle').style.display = 'flex';
+
+        // Inputu temizle
+        wrapper.querySelector('input').value = '';
+    }
+
+    // 3. Yeni Listeyi Kaydet (EN ÖNEMLİ KISIM)
+    function saveNewList(btnElement) {
+        const wrapper = btnElement.closest('.add-list-wrapper');
+        const input = wrapper.querySelector('input');
+        const listTitle = input.value.trim();
+
+        if (listTitle) {
+            // String olarak HTML'i hazırla (Senin mevcut yapın)
+            const newListHTML = `
+            <div class="task-group">
+                <div class="task-group-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="task-group-title">${listTitle}</div>
+                    <div class="task-group-menu" style="margin-left: auto; cursor: pointer;" onclick="openListMenu(event, this)">
+                        <i class="fa-solid fa-ellipsis"></i>
+                    </div>
+                </div>
+                
+                <div class="task-footer">
+                    <div class="add-task-btn" onclick="showAddCardForm(this)">
+                        <i class="fa-solid fa-plus"></i> Kart ekle
+                    </div>
+                    <div class="add-card-form" style="display: none;">
+                        <textarea class="card-composer-input" placeholder="Kart başlığı..." rows="3" onkeydown="handleEnterKey(event, this)"></textarea>
+                        <div class="composer-controls">
+                            <div class="composer-left">
+                                <button class="btn-add-card" onclick="saveNewCard(this)">Ekle</button>
+                                <button class="btn-close-composer" onclick="hideAddCardForm(this)"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+
+            // HTML'i ekle
+            wrapper.insertAdjacentHTML('beforebegin', newListHTML);
+
+            // EKLENEN KISIM: Yeni eklenen listeyi bul ve Droppable yap
+            // Wrapper'dan bir önceki element bizim yeni listemizdir
+            const newListElement = wrapper.previousElementSibling;
+            if(newListElement) {
+                makeColumnDroppable(newListElement);
+            }
+
+            input.value = '';
+            hideAddListForm(btnElement);
+        }
+    }
+
+    // 4. Enter Tuşu Kontrolü
+    function handleListEnterKey(event, inputElement) {
+        if (event.key === 'Enter') {
+            const saveBtn = inputElement.parentElement.querySelector('.btn-add-card');
+            saveNewList(saveBtn);
+        }
+    }
+    
+    /* =========================================
+   DRAG & DROP MOTORU
+   ========================================= */
+
+    // Sayfa yüklendiğinde mevcut kartları sürüklenebilir yap
+    document.addEventListener('DOMContentLoaded', () => {
+        const cards = document.querySelectorAll('.Task');
+        const columns = document.querySelectorAll('.task-group');
+
+        cards.forEach(card => makeCardDraggable(card));
+        columns.forEach(column => makeColumnDroppable(column));
+    });
+
+    // Bir kartı sürüklenebilir hale getiren fonksiyon
+    function makeCardDraggable(card) {
+        card.setAttribute('draggable', 'true');
+
+        card.addEventListener('dragstart', () => {
+            card.classList.add('dragging');
+        });
+
+        card.addEventListener('dragend', () => {
+            card.classList.remove('dragging');
+        });
+    }
+
+    // Bir sütunu (Listeyi) kart kabul eder hale getiren fonksiyon
+    function makeColumnDroppable(column) {
+        column.addEventListener('dragover', e => {
+            e.preventDefault(); // Bırakmaya izin ver
+            const afterElement = getDragAfterElement(column, e.clientY);
+            const draggable = document.querySelector('.dragging');
+
+            // Sadece Task class'ı olanları taşı, başlık veya footer'ı bozma
+            if (!draggable) return;
+
+            // Footer'ı bul (Ekleme butonu en altta kalsın diye)
+            const footer = column.querySelector('.task-footer');
+
+            if (afterElement == null) {
+                // Eğer altında eleman yoksa, footer'ın hemen üstüne ekle
+                column.insertBefore(draggable, footer);
+            } else {
+                // Altında eleman varsa, onun üstüne ekle
+                column.insertBefore(draggable, afterElement);
+            }
+        });
+    }
+
+    // Fare pozisyonuna göre hangi elemanın altına geleceğini hesaplayan sihirli fonksiyon
+    function getDragAfterElement(container, y) {
+        // Sürüklenen hariç diğer tüm kartları al
+        const draggableElements = [...container.querySelectorAll('.Task:not(.dragging)')];
+
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+            // Mouse'un elemanın ortasına olan uzaklığı
+            const offset = y - box.top - box.height / 2;
+
+            // offset < 0 demek mouse elemanın üstünde demek
+            // En yakın negatif değeri arıyoruz (0'a en yakın olan üstteki elemandır)
+            if (offset < 0 && offset > closest.offset) {
+                return { offset: offset, element: child };
+            } else {
+                return closest;
+            }
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+
+    /* =========================================
+   ARKAPLAN DEĞİŞTİRİCİ MANTIĞI
+   ========================================= */
+
+    // 1. Menüyü Aç/Kapa
+    function toggleBackgroundMenu() {
+        const menu = document.getElementById('backgroundMenu');
+
+        // Eğer menü ilk kez açılıyorsa ve içi boşsa doldur
+        if (!menu.classList.contains('open') && document.getElementById('photoGrid').children.length === 0) {
+            initBackgroundOptions();
+        }
+
+        menu.classList.toggle('open');
+    }
+
+    // 2. Renkleri ve Resimleri Oluştur (Sadece 1 kere çalışır)
+    function initBackgroundOptions() {
+
+        // --- A. RENKLER ---
+        const colors = ['#0079bf', '#d29034', '#519839', '#b04632', '#89609e', '#cd5a91', '#4bbf6b', '#00aecc'];
+        const colorGrid = document.getElementById('colorGrid');
+
+        colors.forEach(color => {
+            const div = document.createElement('div');
+            div.className = 'bg-option color-box';
+            div.style.backgroundColor = color;
+            div.onclick = () => setBackgroundColor(color);
+            colorGrid.appendChild(div);
+        });
+
+        // --- B. FOTOĞRAFLAR (Sınırsız hissi için döngü) ---
+        // Mockup için 'Lorem Picsum' kullanıyoruz. Gerçek projede veritabanından URL çekeceksin.
+        const photoGrid = document.getElementById('photoGrid');
+
+        // 20 tane rastgele yüksek kalite resim üretelim
+        for (let i = 20; i <= 40; i++) {
+            // Her seferinde farklı resim gelmesi için 'seed' kullanıyoruz
+            const thumbUrl = `https://picsum.photos/seed/${i * 123}/200/120`; // Küçük hali (Hızlı yüklenir)
+            const fullUrl = `https://picsum.photos/seed/${i * 123}/2560/1440`; // Büyük hali (Arkaplan olur)
+
+            const div = document.createElement('div');
+            div.className = 'bg-option';
+            div.style.backgroundImage = `url('${thumbUrl}')`;
+
+            // Tıklayınca ana arkaplanı değiştir
+            div.onclick = () => setBackgroundImage(fullUrl);
+
+            photoGrid.appendChild(div);
+        }
+    }
+
+    // 3. Arkaplanı RESİM Yap
+    function setBackgroundImage(url) {
+        document.body.style.backgroundImage = `url('${url}')`;
+        document.body.style.backgroundColor = ''; // Rengi sıfırla
+        // Navbar'ı biraz daha şeffaf yap ki resim belli olsun
+        document.querySelector('.top-bar').style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
+    }
+
+    // 4. Arkaplanı RENK Yap
+    function setBackgroundColor(color) {
+        document.body.style.backgroundImage = 'none'; // Resmi kaldır
+        document.body.style.backgroundColor = color;
+        // Navbar rengini seçilen renge uyumlu hale getirmek için hafif koyulaştır
+        document.querySelector('.top-bar').style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
+    }
+
+    /* =========================================
+   LİSTE MENÜSÜ FONKSİYONLARI
+   ========================================= */
+
+    let currentListElement = null; // Hangi liste üzerinde işlem yapıyoruz?
+
+    // 1. Menüyü Açma Fonksiyonu
+    function openListMenu(event, iconElement) {
+        event.stopPropagation(); // Sayfa tıklamasını engelle
+        const menu = document.getElementById('listActionMenu');
+
+        // Tıklanan ikonun ait olduğu ana listeyi (.task-group) bul
+        currentListElement = iconElement.closest('.task-group');
+
+        // Menüyü görünür yap
+        menu.style.display = 'flex';
+
+        // Pozisyonu ayarla (Tıklanan ikonun hemen yanına/altına)
+        const rect = iconElement.getBoundingClientRect();
+        menu.style.top = (rect.bottom + 5) + 'px';
+        menu.style.left = (rect.left) + 'px';
+    }
+
+    // 2. Menüyü Kapatma
+    function closeListMenu() {
+        document.getElementById('listActionMenu').style.display = 'none';
+    }
+
+    // Sayfa boşluğuna tıklayınca menüyü kapat
+    document.addEventListener('click', (e) => {
+        const menu = document.getElementById('listActionMenu');
+        if (!menu.contains(e.target)) {
+            closeListMenu();
+        }
+    });
+
+    // --- İŞLEVLER ---
+
+    // A. Başlığı Değiştir
+    // A. Başlığı Değiştir (Modern, Inline Input Yöntemi)
+    function actionEditTitle() {
+        if (!currentListElement) return;
+
+        // Başlık divini bul
+        const titleDiv = currentListElement.querySelector('.task-group-title');
+
+        // Mevcut metni al (İçindeki ikonun HTML'ini bozmamak için sadece text node'u alıyoruz)
+        // childNodes[0] genellikle "Yapılacaklar " yazısıdır.
+        const textNode = titleDiv.childNodes[0];
+        const currentText = textNode.nodeValue.trim();
+
+        // 1. Geçici bir Input oluştur
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'edit-list-title-input';
+        input.value = currentText;
+
+        // 2. Görünümü Değiştir
+        // Başlık divini geçici olarak gizle
+        titleDiv.style.display = 'none';
+
+        // Inputu başlık divinin hemen öncesine (yani tam yerine) ekle
+        titleDiv.parentNode.insertBefore(input, titleDiv);
+
+        // 3. Inputa odaklan ve içindeki metni seç (Hızlı düzenleme için)
+        input.focus();
+        input.select();
+
+        // --- KAYDETME MANTIĞI ---
+        const saveAndClose = () => {
+            const newTitle = input.value.trim();
+
+            if (newTitle) {
+                // Sadece metin kısmını güncelle, ikona dokunma
+                textNode.nodeValue = newTitle + " ";
+            }
+
+            // Temizlik: Inputu sil, başlığı geri getir
+            input.remove();
+            titleDiv.style.display = 'block'; // block veya flex yapına göre değişebilir, genelde block yeterli
+        };
+
+        // Enter tuşuna basınca kaydet
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                saveAndClose();
+            }
+        });
+
+        // Inputun dışına tıklayınca da kaydet (Kullanıcı dostu)
+        input.addEventListener('blur', saveAndClose);
+
+        // Menüyü kapat
+        closeListMenu();
+    }
+
+    // B. Yeni Task Ekle (Footer'daki butonu tetikler)
+    function actionAddTask() {
+        if (!currentListElement) return;
+
+        // Footer'daki "Add Task" butonunu bul ve tıkla
+        const addTaskBtn = currentListElement.querySelector('.add-task-btn');
+        if (addTaskBtn) {
+            // Scroll ile en alta git ki form görünsün
+            const listContent = currentListElement; // Scroll edilecek alan
+            addTaskBtn.click();
+            // Hafif bir gecikmeyle inputa odaklan
+            setTimeout(() => listContent.scrollTop = listContent.scrollHeight, 100);
+        }
+        closeListMenu();
+    }
+
+    // C. Listeyi Sil
+    function actionDeleteList() {
+        if (!currentListElement) return;
+
+        if (confirm("Bu listeyi ve içindeki tüm kartları silmek istediğinize emin misiniz?")) {
+            currentListElement.remove();
+        }
+        closeListMenu();
+    }
+
+    // D. Sıralama (Basit Algoritma)
+    function actionSortTasks(criteria) {
+        if (!currentListElement) return;
+
+        // Kartların olduğu container'ı bulmak lazım.
+        // Senin HTML yapında kartlar direkt .task-group içinde, footer'dan önce.
+        // O yüzden footer hariç tüm .Task elemanlarını alacağız.
+
+        const tasks = Array.from(currentListElement.querySelectorAll('.Task'));
+        const footer = currentListElement.querySelector('.task-footer');
+
+        if (criteria === 'date') {
+            // Tarih verisi olmadığı için DOM sırasını tersine çeviriyoruz (En yeni en üstte)
+            tasks.reverse().forEach(task => {
+                currentListElement.insertBefore(task, footer);
+            });
+        }
+        else if (criteria === 'priority') {
+            // İçinde "Yüksek" yazanları en üste al
+            tasks.sort((a, b) => {
+                const priorityA = a.innerText.toLowerCase().includes('yüksek') ? 1 : 0;
+                const priorityB = b.innerText.toLowerCase().includes('yüksek') ? 1 : 0;
+                return priorityB - priorityA; // 1 olan (yüksek) üste çıkar
+            });
+
+            tasks.forEach(task => {
+                currentListElement.insertBefore(task, footer);
+            });
+        }
+
+        closeListMenu();
+    }
+    /* =========================================
+   PAYLAŞIM MENÜSÜ FONKSİYONLARI
+   ========================================= */
+
+    function openShareModal() {
+        const modal = document.getElementById('shareModalOverlay');
+        modal.style.display = 'flex'; // Overlay'i görünür yap
+    }
+
+    function closeShareModal(event) {
+        const modal = document.getElementById('shareModalOverlay');
+
+        // Eğer null gönderildiyse (X butonu) veya direkt overlay'e tıklandıysa kapat
+        if (!event || event.target === modal) {
+            modal.style.display = 'none';
+        }
+    }
+    /* =========================================
+   KULLANICI PROFİL MANTIĞI
+   ========================================= */
+
+    // 1. Sanal Kullanıcı Veritabanı
+    const mockUserData = {
+        'MK': { fullName: 'Mehmet Kaya', email: 'mehmet.kaya@taskflow.com', role: 'Frontend Dev', color: '#df5c4e' },
+        'CY': { fullName: 'Can Yılmaz', email: 'can.yilmaz@taskflow.com', role: 'Backend Lead', color: '#4bbf6b' },
+        'İK': { fullName: 'İbrahim Kabadayı', email: 'ibrahim@taskflow.com', role: 'Project Manager', color: '#0079bf' }
+    };
+
+    let activeProfilePopup = null;
+
+    // 2. Profili Açan Fonksiyon
+    function openUserProfile(event, initials) {
+        event.stopPropagation(); // Sayfa tıklamasını durdur
+
+        const popup = document.getElementById('userProfileCard');
+        const user = mockUserData[initials];
+
+        if (!user) {
+            console.error("Kullanıcı verisi bulunamadı: " + initials);
+            return;
+        }
+
+        // A. Bilgileri Doldur
+        document.getElementById('profileCardAvatar').innerText = initials;
+        document.getElementById('profileCardAvatar').style.backgroundColor = user.color;
+        document.getElementById('profileCardName').innerText = user.fullName;
+        document.getElementById('profileCardEmail').innerText = user.email;
+        document.getElementById('profileCardRole').innerText = user.role;
+
+        // B. Taskları Tara ve Bul (DOM'dan okuma)
+        const taskData = findTasksForUser(initials);
+
+        document.getElementById('profileCardCount').innerText = taskData.count;
+
+        // Task Listesini Render Et
+        const listContainer = document.getElementById('profileCardTaskList');
+        listContainer.innerHTML = ''; // Temizle
+
+        if (taskData.tasks.length === 0) {
+            listContainer.innerHTML = '<div class="empty-task-msg">Şu an aktif görevi yok.</div>';
+        } else {
+            taskData.tasks.forEach(taskTitle => {
+                const div = document.createElement('div');
+                div.className = 'mini-task-item';
+                div.innerText = taskTitle;
+                listContainer.appendChild(div);
+            });
+        }
+
+        // C. Pozisyonlama (Tıklanan ikonun altına)
+        popup.style.display = 'flex';
+
+        const rect = event.currentTarget.getBoundingClientRect();
+        // Popup'ı ikonun ortasına hizala ama ekran dışına taşmasın
+        let leftPos = rect.left;
+        if(leftPos + 320 > window.innerWidth) {
+            leftPos = window.innerWidth - 340; // Sağa çok yakınsa sola çek
+        }
+
+        popup.style.top = (rect.bottom + 10) + 'px';
+        popup.style.left = leftPos + 'px';
+    }
+
+    // 3. Kullanıcının Tasklarını Bulan Fonksiyon
+    function findTasksForUser(targetInitials) {
+        const allTasks = document.querySelectorAll('.Task');
+        let count = 0;
+        let taskTitles = [];
+
+        allTasks.forEach(task => {
+            // Task içindeki avatarı bul
+            const avatar = task.querySelector('.assigned-to-profile-icon');
+            if (avatar) {
+                // Avatarın içindeki metni (Örn: 'MK') al ve boşlukları temizle
+                const assignedInitials = avatar.innerText.trim();
+
+                if (assignedInitials === targetInitials) {
+                    count++;
+                    // Task başlığını al
+                    const title = task.querySelector('.Task-Title').innerText;
+                    taskTitles.push(title);
+                }
+            }
+        });
+
+        return { count: count, tasks: taskTitles };
+    }
+
+    // 4. Kapatma Fonksiyonu
+    function closeUserProfile() {
+        document.getElementById('userProfileCard').style.display = 'none';
+    }
+
+    // Dışarı tıklayınca kapat
+    document.addEventListener('click', (e) => {
+        const popup = document.getElementById('userProfileCard');
+        if (!popup.contains(e.target)) {
+            closeUserProfile();
+        }
+    });
+    /* =========================================
+   FİLTRELEME FONKSİYONLARI
+   ========================================= */
+
+    // 1. Menüyü Aç/Kapa
+    function toggleFilterMenu() {
+        const menu = document.getElementById('filterMenuPopup');
+        const btn = document.querySelector('.settings'); // Filtrele butonu class'ı
+
+        if (menu.style.display === 'none') {
+            menu.style.display = 'flex';
+            // Butonun altına hizala
+            const rect = btn.getBoundingClientRect();
+            menu.style.top = (rect.bottom + 10) + 'px';
+            menu.style.left = rect.left + 'px'; // Sola hizalı kalsın
+        } else {
+            menu.style.display = 'none';
+        }
+    }
+
+    // 2. Filtreleri Uygula (Ana Motor)
+    function applyFilters() {
+        const searchVal = document.getElementById('filterSearchInput').value.toLowerCase();
+
+        // Seçili checkbox'ları bul
+        const checkboxes = document.querySelectorAll('.filter-checkbox:checked');
+        const selectedMembers = Array.from(checkboxes).map(cb => cb.value); // ['MK', 'CY'] gibi
+
+        // Tüm kartları gez
+        const allTasks = document.querySelectorAll('.Task');
+
+        allTasks.forEach(task => {
+            let isVisible = true;
+
+            // A. Kelime Kontrolü
+            const title = task.querySelector('.Task-Title').innerText.toLowerCase();
+            if (searchVal && !title.includes(searchVal)) {
+                isVisible = false;
+            }
+
+            // B. Üye Kontrolü (Eğer en az bir üye seçiliyse)
+            if (isVisible && selectedMembers.length > 0) {
+                const avatarDiv = task.querySelector('.assigned-to-profile-icon');
+
+                if (avatarDiv) {
+                    // Kartın üstündeki harfleri al (Örn: CY)
+                    const assignedInitial = avatarDiv.innerText.trim();
+
+                    // Seçilenlerin içinde bu kişi var mı?
+                    if (!selectedMembers.includes(assignedInitial)) {
+                        isVisible = false;
+                    }
+                } else {
+                    // Kartta avatar yok (Atanmamış)
+                    // Eğer "NO_ASSIGN" seçili değilse gizle
+                    if (!selectedMembers.includes('NO_ASSIGN')) {
+                        isVisible = false;
+                    }
+                }
+            }
+
+            // Kararı uygula
+            task.style.display = isVisible ? 'block' : 'none';
+        });
+    }
+
+    // 3. Filtreleri Temizle
+    function clearAllFilters() {
+        // Inputu temizle
+        document.getElementById('filterSearchInput').value = '';
+
+        // Checkboxları kaldır
+        const checkboxes = document.querySelectorAll('.filter-checkbox');
+        checkboxes.forEach(cb => cb.checked = false);
+
+        // Filtre fonksiyonunu tekrar çağır (Hepsi görünür olacak)
+        applyFilters();
+    }
+</script>
+</body>
+</html>

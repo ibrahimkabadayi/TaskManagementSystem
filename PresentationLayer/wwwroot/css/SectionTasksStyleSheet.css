@@ -1,0 +1,1147 @@
+﻿/* =========================================
+   1. TEMEL AYARLAR & ARKA PLAN
+   ========================================= */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+html, body {
+    height: 100%; /* Ekranı tam kapla */
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Sayfanın kendisi kaymasın, sadece board kaysın */
+}
+
+body {
+    background-image: url('https://images.unsplash.com/photo-1477346611705-65d1883cee1e?q=80&w=2070&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Resim sabit kalsın */
+    display: flex;
+    flex-direction: column;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* =========================================
+   2. NAVBAR (ÜST MENÜ)
+   ========================================= */
+.top-bar {
+    height: 48px;
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    flex-shrink: 0; /* Boyutunun daralmasını engelle */
+}
+
+.logo span {
+    font-weight: bold;
+    color: white;
+    font-size: 18px;
+    opacity: 0.9;
+}
+
+.bar-account-section {
+    display: flex;
+    align-items: center;
+}
+
+.account {
+    background-color: #0079bf;
+    color: white;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* =========================================
+   3. BOARD HEADER (FİLTRELER & BAŞLIK)
+   ========================================= */
+.section-header {
+    padding: 8px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.24);
+    backdrop-filter: blur(2px);
+    flex-shrink: 0;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+.section-title:hover { background: rgba(255,255,255,0.2); }
+
+.section-header-right-side {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.project-users { display: flex; align-items: center; margin-right: 10px; }
+.user-icon {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    color: white;
+    font-size: 11px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: -5px;
+    border: 1px solid transparent;
+    cursor: pointer;
+}
+.user-icon:hover { margin-top: -5px; z-index: 2; }
+
+.section-header-buttons { display: flex; gap: 5px; }
+
+.button-style {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 3px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background 0.2s;
+}
+.button-style:hover { background: rgba(255, 255, 255, 0.3); }
+.icon-only { padding: 6px 10px; }
+
+/* =========================================
+   4. BOARD ALANI (YATAY SCROLL & LİSTELER)
+   ========================================= */
+.task-groups-container {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    overflow-x: auto;
+    padding: 12px;
+    gap: 12px;
+}
+
+/* Scrollbar Tasarımı */
+.task-groups-container::-webkit-scrollbar { height: 12px; }
+.task-groups-container::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.3);
+    border-radius: 6px;
+}
+.task-groups-container::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.1);
+}
+
+/* Liste Kutusu (Task Group) */
+.task-group {
+    min-width: 272px;
+    max-width: 272px;
+    /* ESKİ: #f1f2f4 (Gri) -> YENİ: #f0f4f8 (Buz Mavisi/Beyaz) */
+    background-color: #f0f4f8;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+    color: #172b4d;
+    /* Daha yumuşak bir gölge */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: none;
+}
+
+/* Liste Başlığı */
+.task-group-header {
+    padding: 10px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    min-height: 40px;
+}
+
+.task-group-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: #172b4d;
+    padding: 12px;
+    cursor: pointer;
+}
+
+.task-group-menu {
+    color: #5e6c84;
+    padding: 6px;
+    border-radius: 4px;
+}
+
+.task-group-menu:hover {
+    /* Hover rengini de temaya uyduralım */
+    background-color: rgba(9, 30, 66, 0.08);
+    color: #172b4d;
+}
+
+/* =========================================
+   5. KART TASARIMI (TASK ITEMS)
+   ========================================= */
+.Task {
+    background-color: #ffffff; /* Kartlar tam beyaz kalsın */
+    margin: 0 8px 8px 8px;
+    padding: 10px; /* Biraz daha ferah iç boşluk */
+    border-radius: 8px;
+    /* Trello benzeri belirgin ama yumuşak gölge */
+    box-shadow: 0 1px 3px rgba(9, 30, 66, 0.15), 0 0 1px rgba(9, 30, 66, 0.3);
+    cursor: pointer;
+    color: #172b4d;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+}
+.Task:hover {
+    /* Üzerine gelince hafifçe yukarı kalksın ve gölgesi artsın */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(9, 30, 66, 0.2);
+    background-color: #f8faff; /* Hover'da çok hafif mavimsi beyaz */
+}
+
+.Task-Title {
+    font-size: 14px;
+    margin-bottom: 4px;
+    word-wrap: break-word;
+}
+
+.assigned-to-profile-icon {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    color: white;
+    font-size: 9px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    float: right;
+}
+
+.task-desc-button {
+    font-size: 12px;
+    color: #9fadbc;
+    display: inline-block;
+    margin-top: 5px;
+}
+
+/* =========================================
+   6. FORM: KART EKLEME (COMPOSER)
+   ========================================= */
+.task-footer {
+    padding: 8px;
+    margin-top: auto;
+}
+
+.add-task-btn {
+    padding: 8px;
+    margin: 0 8px 8px 8px;
+    border-radius: 4px;
+    color: #5e6c84; /* Gri yazı */
+    cursor: pointer;
+    font-size: 14px;
+    display: flex; align-items: center; gap: 6px;
+}
+.add-task-btn:hover {
+    background-color: rgba(9, 30, 66, 0.08); /* Koyu hover */
+    color: #172b4d;
+}
+
+.card-composer-input {
+    width: 100%;
+    background-color: #fff;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(9, 30, 66, 0.25);
+    padding: 8px 10px;
+    font-size: 14px;
+    color: #172b4d;
+    resize: none;
+    display: block;
+    margin-bottom: 8px;
+    outline: none;
+}
+
+.composer-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.composer-left { display: flex; align-items: center; gap: 8px; }
+
+.btn-add-card {
+    background-color: #0079bf;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 3px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+}
+.btn-add-card:hover { background-color: #026aa7; }
+
+.btn-close-composer {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    color: #9fadbc;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px; height: 32px;
+    border-radius: 3px;
+}
+.btn-close-composer:hover { background-color: rgba(255, 255, 255, 0.1); }
+.btn-icon-only { background: transparent; border: none; color: #9fadbc; font-size: 16px; cursor: pointer; padding: 4px; }
+
+/* =========================================
+   7. FORM: LİSTE EKLEME
+   ========================================= */
+.add-list-wrapper {
+    min-width: 272px;
+    max-width: 272px;
+    background-color: rgba(255, 255, 255, 0.25);
+    border-radius: 12px;
+    padding: 10px;
+    height: fit-content;
+    transition: background-color 0.2s;
+}
+
+
+.add-list-btn-idle {
+    width: 100%;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 6px 8px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.add-list-btn-idle:hover { background-color: rgba(255, 255, 255, 0.2); }
+
+.list-name-input {
+    width: 100%;
+    border: 2px solid #0079bf;
+    border-radius: 3px;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #172b4d;
+    outline: none;
+    box-shadow: inset 0 0 0 1px #0079bf;
+}
+
+/* =========================================
+   8. MODAL (TASK DETAY - LIGHT THEME)
+   ========================================= */
+.task-modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 50px;
+    z-index: 20000;
+    overflow-y: auto;
+}
+
+.dynamic-task-container {
+    width: 768px;
+    background-color: #f4f5f7;
+    border-radius: 2px; /* Trello köşeleri daha keskindir */
+    padding: 20px; /* İç boşluğu azalttık */
+    position: relative;
+    color: #172b4d;
+}
+
+/* Modal Üst Bar */
+.modal-close-btn {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    color: #42526e;
+    cursor: pointer;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    transition: background 0.2s;
+    z-index: 10;
+}
+.modal-close-btn:hover { background-color: rgba(9, 30, 66, 0.08); }
+
+/* --- BAŞLIK ALANI --- */
+.task-modal-header { margin-bottom: 20px; }
+.title-section { display: flex; gap: 12px; margin-top: 10px; }
+
+.icon-title { margin-top: 6px; font-size: 20px; color: #42526e; }
+
+.title-content { width: 100%; }
+
+/* Başlık Input Düzenlemesi (Okları/Scrollbarı Yok Etme) */
+.task-title-input {
+    width: 100%;
+    font-size: 20px;
+    font-weight: 600;
+    color: #172b4d;
+    background: transparent;
+    border: 2px solid transparent; /* Odaklanınca açılacak */
+    border-radius: 3px;
+    resize: none; /* Köşedeki çekme işaretini kaldırır */
+    height: 34px;
+    padding: 2px 6px;
+    margin-left: -6px;
+    overflow: hidden; /* Scrollbar çıkmasın */
+    line-height: 24px;
+    font-family: inherit;
+}
+.task-title-input:focus {
+    background-color: #ffffff;
+    border-color: #0079bf;
+    box-shadow: inset 0 0 0 1px #0079bf;
+    outline: none;
+}
+
+.list-meta-info { font-size: 14px; color: #5e6c84; margin-top: 2px; }
+.list-name-link { text-decoration: underline; cursor: pointer; color: #5e6c84; font-weight: 500; }
+.list-name-link:hover { color: #172b4d; }
+
+/* --- GÖVDE DÜZENİ --- */
+/* =========================================
+YENİ MODAL DÜZENİ (User Request)
+========================================= */
+
+/* Modal Gövdesi: 2 Sütunlu Yapı */
+.task-body-section {
+    display: flex;
+    gap: 30px;
+    margin-top: 15px;
+}
+
+/* --- SOL SÜTUN (Meta Bilgiler) --- */
+.task-left-col {
+    flex: 0 0 240px; /* Genişlik 240px'e sabitlendi */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    border-right: 1px solid #dfe1e6; /* Sağ taraftan ayıran çizgi */
+    padding-right: 20px;
+}
+
+/* Kişiler Alanı (Yan yana yuvarlaklar) */
+.people-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.people-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #5e6c84;
+    text-transform: uppercase;
+}
+.avatars-container {
+    display: flex;
+    align-items: center;
+    gap: -8px; /* İkonlar hafif iç içe geçsin */
+}
+.user-avatar-lg {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #fff; /* Beyaz çerçeve ile ayrım */
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    cursor: pointer;
+    position: relative;
+}
+.user-avatar-lg:hover {
+    z-index: 10;
+    transform: translateY(-2px);
+}
+
+/* Tarihler */
+.date-row {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.date-item {
+    font-size: 13px;
+    color: #172b4d;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.date-item i { color: #5e6c84; width: 16px; }
+
+/* Öncelik Combo Box */
+.priority-select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #dfe1e6;
+    background-color: #fafbfc;
+    color: #172b4d;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s;
+}
+.priority-select:focus {
+    border-color: #0079bf;
+    box-shadow: 0 0 0 2px rgba(0,121,191,0.2);
+}
+
+/* Sil Butonu (En altta kırmızı) */
+.btn-delete-task {
+    margin-top: auto; /* En alta it */
+    background-color: #ffebe6;
+    color: #bf2600;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.2s;
+}
+.btn-delete-task:hover {
+    background-color: #ffbdad;
+    color: #9e2000;
+}
+
+/* --- SAĞ SÜTUN (Açıklama & Action) --- */
+.task-right-col {
+    flex: 1; /* Kalan tüm alanı kapla */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Açıklama Başlığı */
+.desc-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #172b4d;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Açıklama Kutusu */
+.task-desc-input {
+    width: 100%;
+    min-height: 200px; /* Daha yüksek */
+    background-color: #f4f5f7;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    padding: 12px;
+    resize: none;
+    outline: none;
+    color: #172b4d;
+    font-size: 14px;
+    line-height: 1.5;
+    transition: all 0.2s;
+}
+.task-desc-input:focus {
+    background-color: #fff;
+    border-color: #0079bf;
+    box-shadow: 0 0 0 2px rgba(0,121,191,0.2);
+}
+
+/* Kaydet / İptal Butonları */
+.desc-actions {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+}
+/* =========================================
+DRAG & DROP (SÜRÜKLE BIRAK) STİLLERİ
+========================================= */
+
+/* Sürüklenen eleman */
+.Task.dragging {
+    opacity: 0.5;
+    background-color: #e4f0f6; /* Sürüklenirken rengi hafif mavi olsun */
+    border: 2px dashed #0079bf;
+    transform: rotate(3deg); /* Fotoğraftaki gibi hafif eğim */
+    cursor: grabbing;
+}
+
+/* Kartların bırakılacağı alanın, sürükleme anındaki durumu */
+.task-group.drag-over {
+    background-color: #e2e4e9; /* Liste rengi hafif koyulaşsın */
+}
+
+/* Kartın kendisi tutulabilir imleci */
+.Task {
+    cursor: grab;
+    /* ...diğer task stillerin aynen kalıyor... */
+}
+
+/* =========================================
+SIDEBAR MENU (ARKAPLAN SEÇİCİ)
+========================================= */
+.sidebar-menu {
+    position: fixed;
+    top: 48px; /* Navbarın hemen altı */
+    right: -340px; /* Başlangıçta ekran dışında gizli */
+    width: 340px;
+    height: calc(100% - 48px);
+    background-color: #f4f5f7;
+    box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+    transition: right 0.3s ease-in-out; /* Kayma efekti */
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-menu.open {
+    right: 0; /* Açılınca ekrana girer */
+}
+
+.sidebar-header {
+    padding: 15px;
+    border-bottom: 1px solid #dfe1e6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+}
+
+.sidebar-title {
+    font-weight: 600;
+    font-size: 16px;
+    color: #172b4d;
+}
+
+.sidebar-close-btn {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #42526e;
+}
+
+.sidebar-content {
+    flex: 1;
+    overflow-y: auto; /* İçerik taşarsa scroll çıksın */
+    padding: 15px;
+}
+
+.sidebar-section {
+    margin-bottom: 25px;
+}
+
+.sidebar-subtitle {
+    font-size: 14px;
+    font-weight: 600;
+    color: #5e6c84;
+    margin-bottom: 10px;
+}
+
+/* Izgara Yapısı (2 sütunlu) */
+.bg-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+/* Küçük Kutular (Thumbnail) */
+.bg-option {
+    height: 90px;
+    border-radius: 8px;
+    cursor: pointer;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.1s, box-shadow 0.1s;
+    position: relative;
+    overflow: hidden;
+}
+
+.bg-option:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Renk kutuları için özel hover */
+.bg-option.color-box:hover::after {
+    content: '';
+    position: absolute;
+    top:0; left:0; width:100%; height:100%;
+    background: rgba(0,0,0,0.1);
+}
+
+/* =========================================
+LİSTE AKSİYON MENÜSÜ CSS
+========================================= */
+.list-menu-popup {
+    position: absolute;
+    width: 260px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px -4px rgba(9, 30, 66, 0.25), 0 0 0 1px rgba(9, 30, 66, 0.08);
+    z-index: 5000;
+    padding: 10px 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.list-menu-header {
+    padding: 0 12px 8px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.list-menu-title {
+    font-weight: 600;
+    color: #5e6c84;
+    font-size: 14px;
+    text-align: center;
+    flex: 1;
+}
+
+.list-menu-close {
+    background: none;
+    border: none;
+    color: #6b778c;
+    cursor: pointer;
+    font-size: 16px;
+}
+.list-menu-close:hover { color: #172b4d; }
+
+.list-menu-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.list-menu-item {
+    background: none;
+    border: none;
+    text-align: left;
+    padding: 8px 16px;
+    font-size: 14px;
+    color: #172b4d;
+    cursor: pointer;
+    transition: background 0.1s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.list-menu-item:hover {
+    background-color: #f4f5f7;
+}
+
+.list-menu-item i {
+    width: 20px;
+    text-align: center;
+    color: #42526e;
+}
+
+.item-danger { color: #b04632; }
+.item-danger i { color: #b04632; }
+.item-danger:hover { background-color: #ffebe6; }
+
+.list-menu-separator {
+    height: 1px;
+    background-color: #dfe1e6;
+    margin: 8px 0;
+}
+
+.menu-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #5e6c84;
+    text-transform: uppercase;
+    padding: 4px 16px;
+}
+/* Başlık Düzenleme Modu İçin Input */
+.edit-list-title-input {
+    width: 95%; /* Biraz boşluk bırak */
+    margin: 5px;
+    font-size: 14px; /* Mevcut başlıkla aynı boy */
+    font-weight: 600;
+    color: #172b4d;
+    border: 2px solid #0079bf; /* Trello mavisi çerçeve */
+    border-radius: 3px;
+    padding: 6px 8px;
+    outline: none;
+    background-color: white;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+/* =========================================
+PAYLAŞIM MODALI CSS
+========================================= */
+
+/* Modal Kutusu */
+.share-modal-content {
+    background-color: white;
+    width: 580px;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    position: relative;
+    /* Yukarıdan biraz boşluk bırakarak ortalama */
+    margin-top: 80px;
+}
+
+.share-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.share-title {
+    font-size: 20px;
+    font-weight: 500;
+    color: #172b4d;
+}
+
+.modal-close-btn-static {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #42526e;
+    cursor: pointer;
+}
+
+/* Davet Alanı */
+.invite-input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.invite-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 2px solid #dfe1e6;
+    border-radius: 3px;
+    font-size: 14px;
+    outline: none;
+    transition: border 0.2s;
+}
+.invite-input:focus { border-color: #0079bf; }
+
+.invite-role-select {
+    padding: 8px;
+    background-color: #f4f5f7;
+    border: none;
+    border-radius: 3px;
+    color: #172b4d;
+    cursor: pointer;
+}
+
+.btn-share-invite {
+    background-color: #0079bf; /* Mavi Buton */
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 3px;
+    font-weight: 500;
+    cursor: pointer;
+}
+.btn-share-invite:hover { background-color: #026aa7; }
+
+/* Link Alanı */
+.share-link-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.link-icon-box {
+    width: 32px; height: 32px;
+    background-color: #f4f5f7;
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    color: #42526e;
+}
+
+.link-details { flex: 1; }
+
+.link-text { font-size: 14px; color: #172b4d; margin-bottom: 2px; }
+.link-actions { font-size: 12px; color: #5e6c84; }
+.link-action-btn { text-decoration: underline; cursor: pointer; color: #0079bf; }
+
+.btn-permissions {
+    background: none;
+    border: none;
+    color: #5e6c84;
+    cursor: pointer;
+    font-size: 14px;
+    background-color: #f4f5f7;
+    padding: 6px 12px;
+    border-radius: 3px;
+}
+
+/* Üyeler Listesi */
+.members-header {
+    font-size: 12px;
+    font-weight: 600;
+    color: #5e6c84;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+}
+
+.members-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.member-item-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f4f5f7;
+}
+
+.member-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    color: white;
+    font-size: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold;
+}
+
+.member-info { flex: 1; }
+
+.member-name { font-weight: 600; font-size: 14px; color: #172b4d; }
+.member-username { font-size: 12px; color: #5e6c84; }
+
+/* Rol Butonları */
+.btn-member-role {
+    background-color: #f4f5f7;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 3px;
+    font-size: 14px;
+    color: #172b4d;
+    cursor: pointer;
+}
+.btn-member-role-secondary {
+    background: none;
+    border: none;
+    color: #5e6c84;
+    cursor: pointer;
+}
+.btn-member-role:hover, .btn-member-role-secondary:hover { background-color: #e4f0f6; color: #0079bf; }
+/* =========================================
+KULLANICI PROFİL KARTI CSS
+========================================= */
+.user-profile-popup {
+    position: fixed;
+    width: 320px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2), 0 0 1px rgba(0,0,0,0.1);
+    z-index: 21000 !important;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    animation: fadeInScale 0.2s ease-out;
+}
+
+@keyframes fadeInScale {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Header */
+.profile-card-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.profile-avatar-large {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background-color: #ccc;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    display: flex; justify-content: center; align-items: center;
+    flex-shrink: 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.profile-info-text { flex: 1; overflow: hidden; }
+
+.profile-fullname {
+    font-size: 18px; font-weight: 700; color: #172b4d;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.profile-email {
+    font-size: 13px; color: #5e6c84; margin-bottom: 5px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.profile-role-badge {
+    display: inline-block;
+    background-color: #ebecf0;
+    color: #42526e;
+    font-size: 11px; font-weight: 700;
+    padding: 2px 8px; border-radius: 4px; text-transform: uppercase;
+}
+
+.profile-close-btn {
+    position: absolute; top: -10px; right: -10px;
+    background: none; border: none; color: #6b778c; cursor: pointer; font-size: 16px;
+}
+
+/* İstatistikler */
+.profile-stats-row { display: flex; gap: 15px; margin-bottom: 15px; }
+.stat-box {
+    flex: 1;
+    background-color: #fafbfc;
+    border: 1px solid #dfe1e6;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+}
+.stat-value { display: block; font-size: 18px; font-weight: 700; color: #172b4d; }
+.stat-label { display: block; font-size: 11px; color: #5e6c84; margin-top: 2px; text-transform: uppercase; }
+
+.profile-divider { border: 0; border-top: 1px solid #dfe1e6; margin: 0 0 15px 0; }
+
+/* Task Listesi */
+.profile-section-title {
+    font-size: 12px; font-weight: 700; color: #5e6c84;
+    text-transform: uppercase; margin-bottom: 10px;
+}
+
+.profile-task-list {
+    max-height: 150px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+}
+
+.mini-task-item {
+    padding: 8px;
+    background-color: #fff;
+    border: 1px solid #dfe1e6;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    font-size: 13px; color: #172b4d;
+    border-left: 3px solid #0079bf; /* Task rengi */
+}
+.empty-task-msg { font-size: 13px; color: #6b778c; font-style: italic; text-align: center; padding: 10px; }
+
+/* Footer */
+.btn-profile-action {
+    width: 100%;
+    padding: 8px;
+    background-color: #0079bf; color: white;
+    border: none; border-radius: 4px; font-weight: 600; cursor: pointer;
+}
+.btn-profile-action:hover { background-color: #026aa7; }
+/* =========================================
+FİLTRE MENÜSÜ CSS
+========================================= */
+.filter-menu-popup {
+    position: absolute;
+    top: 100px; /* JS ile dinamik ayarlanacak ama varsayılan kalsın */
+    right: 20px;
+    width: 300px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px -4px rgba(9, 30, 66, 0.25), 0 0 0 1px rgba(9, 30, 66, 0.08);
+    z-index: 4000;
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-header {
+    padding: 10px 15px;
+    border-bottom: 1px solid #dfe1e6;
+    display: flex; justify-content: space-between; align-items: center;
+}
+.filter-title { font-weight: 600; color: #5e6c84; font-size: 14px; flex: 1; text-align: center; }
+.filter-close-btn { background: none; border: none; color: #6b778c; cursor: pointer; }
+
+.filter-content { padding: 15px; }
+
+.filter-section { margin-bottom: 20px; }
+.filter-label { font-size: 12px; font-weight: 700; color: #5e6c84; margin-bottom: 8px; text-transform: uppercase; }
+
+.filter-input {
+    width: 100%;
+    padding: 8px;
+    border: 2px solid #dfe1e6;
+    border-radius: 3px;
+    font-size: 14px;
+    outline: none;
+}
+.filter-input:focus { border-color: #0079bf; }
+.filter-hint { font-size: 11px; color: #5e6c84; margin-top: 4px; }
+
+/* Checkbox Satırları */
+.filter-checkbox-row {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 8px; cursor: pointer;
+    padding: 4px; border-radius: 4px;
+}
+.filter-checkbox-row:hover { background-color: #f4f5f7; }
+
+.filter-checkbox { transform: scale(1.2); cursor: pointer; }
+
+.filter-avatar {
+    width: 24px; height: 24px; border-radius: 50%;
+    color: white; font-size: 10px; display: flex; justify-content: center; align-items: center; font-weight: bold;
+}
+.filter-avatar-icon {
+    width: 24px; height: 24px; border-radius: 50%;
+    background-color: #dfe1e6; color: #42526e;
+    display: flex; justify-content: center; align-items: center; font-size: 12px;
+}
+.filter-text { font-size: 14px; color: #172b4d; }
+
+.btn-clear-filters {
+    width: 100%;
+    background: none; border: none;
+    color: #5e6c84; cursor: pointer;
+    font-size: 14px; text-decoration: underline;
+}
+.btn-clear-filters:hover { color: #172b4d; }
+    
