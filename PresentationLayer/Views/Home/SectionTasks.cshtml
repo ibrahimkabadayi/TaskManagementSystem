@@ -5,3 +5,438 @@
     Layout = "TaskFlowLayout";
 }
 
+<link rel="stylesheet" href="css/SectionTasksStyleSheet.css"/>
+<link rel="stylesheet" href="css/TaskFlowLayoutStyleSheet.css"/>
+<nav class="top-bar">
+    <div class="logo">
+        <span>📊 TaskFlow</span>
+    </div>
+    <div class="bar-account-section">
+        <div style="cursor: pointer; color: white; margin-right: 15px;" title="Notifications">🔔</div>
+        <div class="account" onclick="AccountClick(event)">
+            I
+        </div>
+    </div>
+</nav>
+
+<div class="section-header">
+    <div class="section-header-left-side">
+        <div class="section-title">
+            Term Project 🚀
+        </div>
+    </div>
+
+    <div class="section-header-right-side">
+        <div class="project-users">
+            <div class="user-icon" style="background-color: #df5c4e;" onclick="openUserProfile(event, 'MK')">MK</div>
+
+            <div class="user-icon" style="background-color: #4bbf6b;" onclick="openUserProfile(event, 'CY')">CY</div>
+
+            <div class="user-icon" style="background-color: #0079bf;" onclick="openUserProfile(event, 'İK')">İK</div>
+        </div>
+
+        <div class="section-header-buttons">
+            <div class="settings button-style" onclick="toggleFilterMenu()">
+                <i class="fa-solid fa-filter"></i> Filtrele
+            </div>
+            <div class="share-button button-style" onclick="openShareModal()">
+                <i class="fa-solid fa-user-plus"></i> Paylaş
+            </div>
+            <div class="change-background-button button-style icon-only" onclick="toggleBackgroundMenu()">
+                <i class="fa-solid fa-image"></i> Arkaplanlar
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="task-groups-container">
+
+    <div class="task-group">
+        <div class="task-group-title" onclick="">
+            Yapılacaklar <i class="fa-solid fa-ellipsis" style="float:right; font-size:12px; cursor: pointer;" onclick="openListMenu(event, this)"></i>
+        </div>
+
+        <div class="Task" onclick="">
+            <div class="Task-Title">
+                UI Tasarım Revizeleri
+            </div>
+            <div class="assigned-to-profile-icon" style="background-color: #4bbf6b;">
+                CY
+            </div>
+            <div class="task-desc-button">
+                <i class="fa-solid fa-align-left"></i>
+            </div>
+        </div>
+
+        <div class="Task" onclick="openTaskModal({
+    title: 'UI Tasarım Revizeleri',
+    listName: 'Yapılacaklar',
+    createdByName: 'İbrahim Kabadayı',
+    createdByInitial: 'İK',
+    assignedToName: 'Can Yılmaz',
+    assignedInitial: 'CY',
+    assignedColor: '#4bbf6b',
+    dueDate: '30 Ara 2025',
+    priorityColor: '#eb5a46',
+    priorityText: 'Yüksek Öncelik',
+    description: 'Login ekranı revizeleri...'
+})">
+            <div class="Task-Title">
+                Backend API Route Ayarları
+            </div>
+            <div class="task-desc-button">
+                <i class="fa-solid fa-paperclip"></i> 2
+            </div>
+        </div>
+
+        <div class="Add-Task">
+            + Add Task
+        </div>
+    </div>
+
+    <div class="task-group">
+        <div class="task-group-title" onclick="">
+            Devam Edenler <i class="fa-solid fa-ellipsis" style="float:right;" onclick="openListMenu(event, this)"></i>
+        </div>
+        <div class="Task" onclick="">
+            <div class="Task-Title">
+                Patlama Animasyonları
+            </div>
+            <div class="assigned-to-profile-icon" style="background-color: #df5c4e;">
+                MK
+            </div>
+        </div>
+        <div class="task-footer">
+
+            <div class="add-task-btn" onclick="showAddCardForm(this)">
+                <i class="fa-solid fa-plus"></i> Add Task
+            </div>
+
+            <div class="add-card-form" style="display: none;">
+                <textarea class="card-composer-input" placeholder="Bu kart için bir başlık girin..." rows="3" onkeydown="handleEnterKey(event, this)"></textarea>
+
+                <div class="composer-controls">
+                    <div class="composer-left">
+                        <button class="btn-add-card" onclick="saveNewCard(this)">Add Task</button>
+                        <button class="btn-close-composer" onclick="hideAddCardForm(this)">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="composer-right">
+                        <button class="btn-icon-only"><i class="fa-solid fa-ellipsis"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="add-list-wrapper">
+        <div class="add-list-btn-idle" onclick="showAddListForm(this)">
+            <i class="fa-solid fa-plus"></i> Başka liste ekleyin
+        </div>
+
+        <div class="add-list-form" style="display: none;">
+            <input class="list-name-input" type="text" placeholder="Liste başlığı girin..." onkeydown="handleListEnterKey(event, this)">
+
+            <div class="composer-controls" style="margin-top: 8px;">
+                <button class="btn-add-card" onclick="saveNewList(this)">Liste Ekle</button>
+                <button class="btn-close-composer" onclick="hideAddListForm(this)">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="dynamic-task-container" style="display:none;"></div>
+<div class="dynamic-generalPurpose-container" style="display:none;"></div>
+
+<div id="taskModalOverlay" class="task-modal-overlay" style="display: none;" onclick="closeTaskModal(event)">
+
+    <div class="dynamic-task-container" onclick="event.stopPropagation()">
+
+        <button class="modal-close-btn" onclick="closeTaskModal(null)">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="task-modal-header">
+            <div class="title-section">
+                <div class="title-content" style="margin-left: 0;">
+                    <textarea id="modalTaskTitle" class="task-title-input" rows="1"></textarea>
+                    <div class="list-meta-info">
+                        <span class="list-name-link"><span id="modalListName">...</span></span> listesinde
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="task-body-section">
+
+            <div class="task-left-col">
+
+                <div class="people-section">
+                    <span class="people-label">İlgililer</span>
+                    <div class="avatars-container">
+                        <div id="modalCreatedByAvatar" class="user-avatar-lg" title="Oluşturan"></div>
+                        <div id="modalAssignedToAvatar" class="user-avatar-lg" title="Atanan"></div>
+                    </div>
+                </div>
+
+                <div class="people-section">
+                    <span class="people-label">Öncelik</span>
+                    <select id="modalPrioritySelect" class="priority-select">
+                        <option value="low">🟢 Düşük Öncelik</option>
+                        <option value="medium" selected>🟡 Orta Öncelik</option>
+                        <option value="high">🔴 Yüksek Öncelik</option>
+                    </select>
+                </div>
+
+                <div class="people-section">
+                    <span class="people-label">Zaman Çizelgesİ</span>
+                    <div class="date-row">
+                        <div class="date-item">
+                            <i class="fa-regular fa-calendar-plus"></i>
+                            <span id="modalCreatedDate">12 Ara 2025</span>
+                        </div>
+                        <div class="date-item">
+                            <i class="fa-regular fa-clock"></i>
+                            <span id="modalDueDate" style="font-weight: 500; color:#d93535;">30 Ara 2025</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-delete-task">
+                    <i class="fa-solid fa-trash"></i> Sil
+                </button>
+
+            </div>
+
+            <div class="task-right-col">
+                <div class="desc-label">
+                    <i class="fa-solid fa-align-left"></i> Açıklama
+                </div>
+
+                <textarea id="modalTaskDesc" class="task-desc-input" placeholder="Detaylı açıklama yazın..."></textarea>
+
+                <div class="desc-actions">
+                    <button class="btn-primary">Kaydet</button>
+                    <button class="btn-ghost" onclick="closeTaskModal(null)">İptal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="backgroundMenu" class="sidebar-menu">
+    <div class="sidebar-header">
+        <span class="sidebar-title">Arkaplan Değiştir</span>
+        <button class="sidebar-close-btn" onclick="toggleBackgroundMenu()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <div class="sidebar-content">
+        <div class="sidebar-section">
+            <h4 class="sidebar-subtitle">🎨 Renkler</h4>
+            <div class="bg-grid" id="colorGrid">
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <h4 class="sidebar-subtitle">🖼️ Fotoğraflar</h4>
+            <div class="bg-grid" id="photoGrid">
+            </div>
+        </div>
+    </div>
+</div>
+<div id="listActionMenu" class="list-menu-popup" style="display: none;">
+    <div class="list-menu-header">
+        <span class="list-menu-title">Liste İşlemleri</span>
+        <button class="list-menu-close" onclick="closeListMenu()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+    <hr class="sidebar-divider" style="margin: 5px 0;">
+
+    <div class="list-menu-content">
+        <button class="list-menu-item" onclick="actionEditTitle()">
+            <i class="fa-solid fa-pen"></i> Başlığı Değiştir
+        </button>
+        <button class="list-menu-item" onclick="actionAddTask()">
+            <i class="fa-solid fa-plus"></i> Kart Ekle
+        </button>
+
+        <div class="list-menu-separator"></div>
+        <div class="menu-label">Sırala</div>
+
+        <button class="list-menu-item" onclick="actionSortTasks('date')">
+            <i class="fa-solid fa-clock-rotate-left"></i> Tarihe Göre (En Yeni)
+        </button>
+        <button class="list-menu-item" onclick="actionSortTasks('priority')">
+            <i class="fa-solid fa-arrow-up-wide-short"></i> Önceliğe Göre
+        </button>
+
+        <div class="list-menu-separator"></div>
+
+        <button class="list-menu-item item-danger" onclick="actionDeleteList()">
+            <i class="fa-solid fa-trash"></i> Listeyi Sil
+        </button>
+    </div>
+</div>
+<div id="shareModalOverlay" class="task-modal-overlay" style="display: none;" onclick="closeShareModal(event)">
+
+    <div class="share-modal-content" onclick="event.stopPropagation()">
+
+        <div class="share-header">
+            <span class="share-title">Panoyu paylaş</span>
+            <button class="modal-close-btn-static" onclick="closeShareModal(null)">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="share-invite-section">
+            <div class="invite-input-group">
+                <input type="text" placeholder="E-posta adresi veya isim" class="invite-input">
+                <select class="invite-role-select">
+                    <option>Üye</option>
+                    <option>Gözlemci</option>
+                </select>
+                <button class="btn-share-invite">Paylaş</button>
+            </div>
+        </div>
+
+        <div class="share-link-section">
+            <div class="link-icon-box">
+                <i class="fa-solid fa-link"></i>
+            </div>
+            <div class="link-details">
+                <div class="link-text">
+                    <strong>Bağlantısı olan herkes</strong> üye olarak katılabilir
+                </div>
+                <div class="link-actions">
+                    <span class="link-action-btn">Bağlantıyı kopyala</span> •
+                    <span class="link-action-btn">Bağlantıyı sil</span>
+                </div>
+            </div>
+            <button class="btn-permissions">İzinleri değiştir <i class="fa-solid fa-chevron-down"></i></button>
+        </div>
+
+        <div class="share-members-section">
+            <div class="members-header">Pano üyeleri (3)</div>
+
+            <div class="members-list">
+                <div class="member-item-row">
+                    <div class="member-avatar" style="background-color: #0079bf;">İK</div>
+                    <div class="member-info">
+                        <div class="member-name">İbrahim Kabadayı (siz)</div>
+                        <div class="member-username">ibrahimkabadayi4 • Çalışma Alanı yöneticisi</div>
+                    </div>
+                    <button class="btn-member-role">Yönetici <i class="fa-solid fa-chevron-down"></i></button>
+                </div>
+
+                <div class="member-item-row">
+                    <div class="member-avatar" style="background-color: #4bbf6b;">CY</div>
+                    <div class="member-info">
+                        <div class="member-name">Can Yılmaz</div>
+                        <div class="member-username">cihangiryaman • Çalışma Alanı yöneticisi</div>
+                    </div>
+                    <button class="btn-member-role-secondary">Yönetici <i class="fa-solid fa-chevron-down"></i></button>
+                </div>
+
+                <div class="member-item-row">
+                    <div class="member-avatar" style="background-color: #df5c4e;">MK</div>
+                    <div class="member-info">
+                        <div class="member-name">Mehmet Kaya</div>
+                        <div class="member-username">mehmetkaya • Pano üyesi</div>
+                    </div>
+                    <button class="btn-member-role-secondary">Üye <i class="fa-solid fa-chevron-down"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="userProfileCard" class="user-profile-popup" style="display: none;" onclick="event.stopPropagation()">
+
+    <div class="profile-card-header">
+        <div class="profile-avatar-large" id="profileCardAvatar">MK</div>
+        <div class="profile-info-text">
+            <div class="profile-fullname" id="profileCardName">Mehmet Kaya</div>
+            <div class="profile-email" id="profileCardEmail">mehmet@ornek.com</div>
+            <div class="profile-role-badge" id="profileCardRole">Admin</div>
+        </div>
+        <button class="profile-close-btn" onclick="closeUserProfile()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <div class="profile-stats-row">
+        <div class="stat-box">
+            <span class="stat-value" id="profileCardCount">0</span>
+            <span class="stat-label">Aktif Görev</span>
+        </div>
+        <div class="stat-box">
+            <span class="stat-value" style="color:#4bbf6b;">Çevrimiçi</span>
+            <span class="stat-label">Durum</span>
+        </div>
+    </div>
+
+    <hr class="profile-divider">
+
+    <div class="profile-tasks-section">
+        <div class="profile-section-title">Üzerindeki Görevler</div>
+        <div class="profile-task-list" id="profileCardTaskList">
+        </div>
+    </div>
+
+    <div class="profile-footer">
+        <button class="btn-profile-action">Profili Görüntüle</button>
+    </div>
+</div>
+<div id="filterMenuPopup" class="filter-menu-popup" style="display: none;">
+    <div class="filter-header">
+        <span class="filter-title">Kartları Filtrele</span>
+        <button class="filter-close-btn" onclick="toggleFilterMenu()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <div class="filter-content">
+        <div class="filter-section">
+            <div class="filter-label">Anahtar Kelime</div>
+            <input type="text" id="filterSearchInput" class="filter-input" placeholder="Kart adı ara..." onkeyup="applyFilters()">
+            <div class="filter-hint">Başlıkta arama yapar</div>
+        </div>
+
+        <div class="filter-section">
+            <div class="filter-label">Üyeler</div>
+
+            <label class="filter-checkbox-row">
+                <input type="checkbox" class="filter-checkbox" value="İK" onchange="applyFilters()">
+                <div class="filter-avatar" style="background-color: #0079bf;">İK</div>
+                <span class="filter-text">İbrahim Kabadayı (Sen)</span>
+            </label>
+
+            <label class="filter-checkbox-row">
+                <input type="checkbox" class="filter-checkbox" value="CY" onchange="applyFilters()">
+                <div class="filter-avatar" style="background-color: #4bbf6b;">CY</div>
+                <span class="filter-text">Can Yılmaz</span>
+            </label>
+
+            <label class="filter-checkbox-row">
+                <input type="checkbox" class="filter-checkbox" value="MK" onchange="applyFilters()">
+                <div class="filter-avatar" style="background-color: #df5c4e;">MK</div>
+                <span class="filter-text">Mehmet Kaya</span>
+            </label>
+
+            <label class="filter-checkbox-row">
+                <input type="checkbox" class="filter-checkbox" value="NO_ASSIGN" onchange="applyFilters()">
+                <div class="filter-avatar-icon"><i class="fa-regular fa-user"></i></div>
+                <span class="filter-text">Atanmamış olanlar</span>
+            </label>
+        </div>
+
+        <button class="btn-clear-filters" onclick="clearAllFilters()">Filtreleri Temizle</button>
+    </div>
+</div>
+<script src="js/SectionTasksScript.js"></script>
+<script src="js/TaskFlowLayoutScript.js"></script>
