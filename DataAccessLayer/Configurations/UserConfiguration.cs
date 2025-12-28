@@ -33,5 +33,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasForeignKey(x => x.UserId)
             .HasPrincipalKey(x => x.Id)
             .OnDelete(DeleteBehavior.Restrict);
+        
+        builder.Property(x => x.ProfileColor)
+            .HasMaxLength(10);
     }
 }
