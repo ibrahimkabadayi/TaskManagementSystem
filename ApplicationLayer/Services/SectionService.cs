@@ -27,4 +27,13 @@ public class SectionService : ISectionService
         var allSections = await _sectionRepository.GetAllAsync();
         return _mapper.Map<List<SectionDto>>(allSections)!;
     }
+
+    public async Task<string> ChangeBackgroundUrl(int sectionId, string url)
+    {
+        var section = await _sectionRepository.GetByAsyncId(sectionId);
+        section!.ImageUrl = url;
+        
+        await _sectionRepository.UpdateAsync(section);
+        return section.ImageUrl;
+    }
 }

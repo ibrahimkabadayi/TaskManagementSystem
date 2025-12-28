@@ -1936,10 +1936,10 @@
         const photoGrid = document.getElementById('photoGrid');
 
         // 20 tane rastgele yüksek kalite resim üretelim
-        for (let i = 20; i <= 40; i++) {
+        for (let i = 0; i <= 40; i++) {
             // Her seferinde farklı resim gelmesi için 'seed' kullanıyoruz
-            const thumbUrl = `https://picsum.photos/seed/${i * 123}/200/120`; // Küçük hali (Hızlı yüklenir)
-            const fullUrl = `https://picsum.photos/seed/${i * 123}/2560/1440`; // Büyük hali (Arkaplan olur)
+            const thumbUrl = `https://picsum.photos/seed/${i * 100}/200/120`; // Küçük hali (Hızlı yüklenir)
+            const fullUrl = `https://picsum.photos/seed/${i * 100}/2560/1440`; // Büyük hali (Arkaplan olur)
 
             const div = document.createElement('div');
             div.className = 'bg-option';

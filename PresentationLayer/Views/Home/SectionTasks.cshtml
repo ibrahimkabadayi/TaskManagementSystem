@@ -1,9 +1,14 @@
 ﻿@page
-@model TaskManagementSystem.Views.SectionTasks
 
 @{
     Layout = "TaskFlowLayout";
+    var project = ViewBag.Project;
+    var currentUserName = User.Identity!.Name;
+    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 }
+
+@using System.Security.Claims
+@model Application.DTOs.SectionDto
 
 <link rel="stylesheet" href="css/SectionTasksStyleSheet.css"/>
 <link rel="stylesheet" href="css/TaskFlowLayoutStyleSheet.css"/>
@@ -21,125 +26,104 @@
 
 <div class="section-header">
     <div class="section-header-left-side">
-        <div class="section-title">
-            Term Project 🚀
+        <div class="section-title" onclick="">
+            @Model.Name
         </div>
     </div>
 
     <div class="section-header-right-side">
         <div class="project-users">
-            <div class="user-icon" style="background-color: #df5c4e;" onclick="openUserProfile(event, 'MK')">MK</div>
-
-            <div class="user-icon" style="background-color: #4bbf6b;" onclick="openUserProfile(event, 'CY')">CY</div>
-
-            <div class="user-icon" style="background-color: #0079bf;" onclick="openUserProfile(event, 'İK')">İK</div>
+            @{
+                foreach (var projectUser in project.ProjectUsers)
+                {
+                    <div class="user-icon" id="@projectUser.Id" style="background-color: @projectUser.User.ProfileColor;" onclick="openUserProfile(event, '@projectUser.User.ProfileLetters')">@projectUser.User.ProfileLetters</div>
+                }
+            }
         </div>
 
         <div class="section-header-buttons">
             <div class="settings button-style" onclick="toggleFilterMenu()">
-                <i class="fa-solid fa-filter"></i> Filtrele
+                <i class="fa-solid fa-filter"></i> Filter
             </div>
             <div class="share-button button-style" onclick="openShareModal()">
-                <i class="fa-solid fa-user-plus"></i> Paylaş
+                <i class="fa-solid fa-user-plus"></i> Share
             </div>
-            <div class="change-background-button button-style icon-only" onclick="toggleBackgroundMenu()">
-                <i class="fa-solid fa-image"></i> Arkaplanlar
+            <div class="change-background-button button-style icon-only" onclick="toggleBackgroundMenu(@Model.Id)">
+                <i class="fa-solid fa-image"></i> Backgrounds
             </div>
         </div>
     </div>
 </div>
 
 <div class="task-groups-container">
-
-    <div class="task-group">
-        <div class="task-group-title" onclick="">
-            Yapılacaklar <i class="fa-solid fa-ellipsis" style="float:right; font-size:12px; cursor: pointer;" onclick="openListMenu(event, this)"></i>
-        </div>
-
-        <div class="Task" onclick="">
-            <div class="Task-Title">
-                UI Tasarım Revizeleri
-            </div>
-            <div class="assigned-to-profile-icon" style="background-color: #4bbf6b;">
-                CY
-            </div>
-            <div class="task-desc-button">
-                <i class="fa-solid fa-align-left"></i>
-            </div>
-        </div>
-
-        <div class="Task" onclick="openTaskModal({
-    title: 'UI Tasarım Revizeleri',
-    listName: 'Yapılacaklar',
-    createdByName: 'İbrahim Kabadayı',
-    createdByInitial: 'İK',
-    assignedToName: 'Can Yılmaz',
-    assignedInitial: 'CY',
-    assignedColor: '#4bbf6b',
-    dueDate: '30 Ara 2025',
-    priorityColor: '#eb5a46',
-    priorityText: 'Yüksek Öncelik',
-    description: 'Login ekranı revizeleri...'
-})">
-            <div class="Task-Title">
-                Backend API Route Ayarları
-            </div>
-            <div class="task-desc-button">
-                <i class="fa-solid fa-paperclip"></i> 2
-            </div>
-        </div>
-
-        <div class="Add-Task">
-            + Add Task
-        </div>
-    </div>
-
-    <div class="task-group">
-        <div class="task-group-title" onclick="">
-            Devam Edenler <i class="fa-solid fa-ellipsis" style="float:right;" onclick="openListMenu(event, this)"></i>
-        </div>
-        <div class="Task" onclick="">
-            <div class="Task-Title">
-                Patlama Animasyonları
-            </div>
-            <div class="assigned-to-profile-icon" style="background-color: #df5c4e;">
-                MK
-            </div>
-        </div>
-        <div class="task-footer">
-
-            <div class="add-task-btn" onclick="showAddCardForm(this)">
-                <i class="fa-solid fa-plus"></i> Add Task
-            </div>
-
-            <div class="add-card-form" style="display: none;">
-                <textarea class="card-composer-input" placeholder="Bu kart için bir başlık girin..." rows="3" onkeydown="handleEnterKey(event, this)"></textarea>
-
-                <div class="composer-controls">
-                    <div class="composer-left">
-                        <button class="btn-add-card" onclick="saveNewCard(this)">Add Task</button>
-                        <button class="btn-close-composer" onclick="hideAddCardForm(this)">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
+    @{
+        foreach (var taskGroup in Model.TasksGroupDtos)
+        {
+            
+            <div class="task-group">
+                <div class="task-group-title" id="@taskGroup.Id">
+                    @taskGroup.Name <i class="fa-solid fa-ellipsis" style="float:right; font-size:12px; cursor: pointer;" onclick="openListMenu(event, this)"></i>
+                </div>
+                
+                @foreach (var task in taskGroup.TaskDtos)
+                {
+                    <div class="Task" id="@task.Id" onclick="openTaskModal(@task.Title)">
+                        <div class="Task-Title">
+                            @task.Title
+                        </div>
+                        
+                        @if (task.AssignedTo != null)
+                        {
+                            <div class="assigned-to-profile-icon" style="background-color: #4bbf6b;">
+                                @task.AssignedTo.ProfileLetters
+                            </div>
+                        }
+                        
+                        @if (task.Description != string.Empty)
+                        {
+                            <div class="task-desc-button">
+                                <i class="fa-solid fa-align-left"></i>
+                            </div>
+                        }
                     </div>
-                    <div class="composer-right">
-                        <button class="btn-icon-only"><i class="fa-solid fa-ellipsis"></i></button>
+                }
+                
+                <div class="task-footer">
+
+                    <div class="add-task-btn" onclick="showAddCardForm(this)">
+                        <i class="fa-solid fa-plus"></i> Add Task
+                    </div>
+
+                    <div class="add-card-form" style="display: none;">
+                        <textarea class="card-composer-input" placeholder="Enter a task title..." rows="3" onkeydown="handleEnterKey(event, this, @currentUserId)"></textarea>
+
+                        <div class="composer-controls">
+                            <div class="composer-left">
+                                <button class="btn-add-card" onclick="saveNewCard(this, @currentUserId)">Add Task</button>
+                                <button class="btn-close-composer" onclick="hideAddCardForm(this)">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                            <div class="composer-right">
+                                <button class="btn-icon-only"><i class="fa-solid fa-ellipsis"></i></button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
+        }
+    }
+    
     <div class="add-list-wrapper">
         <div class="add-list-btn-idle" onclick="showAddListForm(this)">
-            <i class="fa-solid fa-plus"></i> Başka liste ekleyin
+            <i class="fa-solid fa-plus"></i> Add task group
         </div>
 
         <div class="add-list-form" style="display: none;">
-            <input class="list-name-input" type="text" placeholder="Liste başlığı girin..." onkeydown="handleListEnterKey(event, this)">
+            <input class="list-name-input" type="text" placeholder="Enter task group title..." onkeydown="handleListEnterKey(event, this)">
 
             <div class="composer-controls" style="margin-top: 8px;">
-                <button class="btn-add-card" onclick="saveNewList(this)">Liste Ekle</button>
+                <button class="btn-add-card" onclick="saveNewList(this, @Model.Id, @currentUserId)">Add task group</button>
                 <button class="btn-close-composer" onclick="hideAddListForm(this)">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
@@ -147,9 +131,6 @@
         </div>
     </div>
 </div>
-
-<div class="dynamic-task-container" style="display:none;"></div>
-<div class="dynamic-generalPurpose-container" style="display:none;"></div>
 
 <div id="taskModalOverlay" class="task-modal-overlay" style="display: none;" onclick="closeTaskModal(event)">
 
@@ -164,7 +145,7 @@
                 <div class="title-content" style="margin-left: 0;">
                     <textarea id="modalTaskTitle" class="task-title-input" rows="1"></textarea>
                     <div class="list-meta-info">
-                        <span class="list-name-link"><span id="modalListName">...</span></span> listesinde
+                        <span class="list-name-link"><span id="modalListName">At ...</span></span> task group 
                     </div>
                 </div>
             </div>
@@ -175,24 +156,24 @@
             <div class="task-left-col">
 
                 <div class="people-section">
-                    <span class="people-label">İlgililer</span>
+                    <span class="people-label">Involved</span>
                     <div class="avatars-container">
-                        <div id="modalCreatedByAvatar" class="user-avatar-lg" title="Oluşturan"></div>
-                        <div id="modalAssignedToAvatar" class="user-avatar-lg" title="Atanan"></div>
+                        <div id="modalCreatedByAvatar" class="user-avatar-lg" title="Created By"></div>
+                        <div id="modalAssignedToAvatar" class="user-avatar-lg" title="Assigned To"></div>
                     </div>
                 </div>
 
                 <div class="people-section">
-                    <span class="people-label">Öncelik</span>
+                    <span class="people-label">Priority</span>
                     <select id="modalPrioritySelect" class="priority-select">
-                        <option value="low">🟢 Düşük Öncelik</option>
-                        <option value="medium" selected>🟡 Orta Öncelik</option>
-                        <option value="high">🔴 Yüksek Öncelik</option>
+                        <option value="low">🟢 Low Priority</option>
+                        <option value="medium" selected>🟡 Medium Priority</option>
+                        <option value="high">🔴 High Priority</option>
                     </select>
                 </div>
 
                 <div class="people-section">
-                    <span class="people-label">Zaman Çizelgesİ</span>
+                    <span class="people-label">Timeline</span>
                     <div class="date-row">
                         <div class="date-item">
                             <i class="fa-regular fa-calendar-plus"></i>
@@ -206,21 +187,21 @@
                 </div>
 
                 <button class="btn-delete-task">
-                    <i class="fa-solid fa-trash"></i> Sil
+                    <i class="fa-solid fa-trash"></i> Delete
                 </button>
 
             </div>
 
             <div class="task-right-col">
                 <div class="desc-label">
-                    <i class="fa-solid fa-align-left"></i> Açıklama
+                    <i class="fa-solid fa-align-left"></i> Description
                 </div>
 
-                <textarea id="modalTaskDesc" class="task-desc-input" placeholder="Detaylı açıklama yazın..."></textarea>
+                <textarea id="modalTaskDesc" class="task-desc-input" placeholder="Write a detailed description..."></textarea>
 
                 <div class="desc-actions">
-                    <button class="btn-primary">Kaydet</button>
-                    <button class="btn-ghost" onclick="closeTaskModal(null)">İptal</button>
+                    <button class="btn-primary">Save</button>
+                    <button class="btn-ghost" onclick="closeTaskModal(null)">Cancel</button>
                 </div>
             </div>
         </div>

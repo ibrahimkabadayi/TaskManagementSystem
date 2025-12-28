@@ -1,9 +1,11 @@
-﻿using DataAccessLayer.Entities;
+﻿using Application.DTOs;
+using DataAccessLayer.Entities;
 
 namespace Application.Interfaces;
 
 public interface ITaskGroupService
 {
-    Task<TaskGroup?> GetSectionByIdAsync(int id);
-    Task<List<TaskGroup>> GetAllSectionsAsync();
+    Task<TaskGroupDto?> GetSectionByIdAsync(int id);
+    Task<List<TaskGroupDto>> GetAllSectionsAsync();
+    Task<TaskGroupDto> SaveTaskGroupAsync(string taskGroupName, int sectionId, int userId);
 }

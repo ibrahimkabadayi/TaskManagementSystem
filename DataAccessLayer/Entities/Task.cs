@@ -19,17 +19,19 @@ public class Task
     
     public TaskState State { get; set; }
     public TaskPriority Priority { get; set; }
+
+    public int Position { get; set; } = 0;
     
     public int TaskGroupId { get; set; }
     public virtual required TaskGroup TaskGroup { get; set; }
     
     public int CreatedById { get; set; }
-    public virtual required User CreatedBy { get; set; }
+    public virtual required ProjectUser CreatedBy { get; set; }
     
     public int AssignedToId { get; set; }
-    public virtual User? AssignedTo { get; set; }
+    public virtual ProjectUser? AssignedTo { get; set; }
     
     public int? FinishedById { get; set; }
-    public virtual User? FinishedBy { get; set; }
+    public virtual ProjectUser? FinishedBy { get; set; }
     
 }

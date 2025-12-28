@@ -42,10 +42,10 @@ public class AuthenticationService : IAuthenticationService
         
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, savedUser.Name!),
-            new Claim(ClaimTypes.Email, savedUser.Email!),
-            new Claim(ClaimTypes.NameIdentifier, savedUser.Id.ToString()),
-            new Claim(ClaimTypes.Role, "User")
+            new (ClaimTypes.Name, savedUser.Name!),
+            new (ClaimTypes.Email, savedUser.Email!),
+            new (ClaimTypes.NameIdentifier, savedUser.Id.ToString()),
+            new (ClaimTypes.Role, "User")
         };
         
         var claimsIdentity = new ClaimsIdentity(claims, 

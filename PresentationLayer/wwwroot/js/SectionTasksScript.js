@@ -1,74 +1,86 @@
 
-/* =========================================
-GÜNCELLENMİŞ TASK MODAL AÇMA (Profil Kartı Destekli)
-========================================= */
 
-function openTaskModal(taskData, cardElement) {
-    // 1. Tıklanan kartı global değişkene ata
-    currentActiveCard = cardElement;
-
+async function openTaskModal(taskName, taskGroupName, sectionName) {
+    
     const modal = document.getElementById('taskModalOverlay');
     if (!modal) return;
+    let taskData;
+    
+    await fetch('/Task/GetTaskDetails',
+        {
+            method: 'GET',
+            body: JSON.stringify({
+                TaskTitle: taskName,
+                TaskGroupName: taskGroupName,
+                SectionName: sectionName
+            })
+        })
+        .then((response) => {
+        if (!response.ok) {
+             alert(response.message);
+        }
+        return response.json;
+    }).then((result) => {
+            taskData = {
+                title: result.title,
+                description: result.description,
+                createdByName: result.createdByName,
+                createdByInitial: result.createdByInitial,
+                createdByColor: result.createdByColor,
+                assignedToName: result.assignedToName,
+                assignedInitial: result.assignedInitial,
+                assignedColor: result.assignedColor,
+                createdDate: result.createdDate,
+                dueDate: result.dueDate,
+                priorityValue: result.priority
+            }
+    })
+    
 
-    // --- MEVCUT VERİLERİ DOLDURMA ---
-
-    // 1. Başlık
     const titleInput = document.getElementById('modalTaskTitle');
     titleInput.value = taskData.title || '';
-    // Yüksekliği ayarla
     titleInput.style.height = 'auto';
     titleInput.style.height = titleInput.scrollHeight + 'px';
 
-    // 2. Liste Adı
-    document.getElementById('modalListName').innerText = taskData.listName || "Yapılacaklar";
+    document.getElementById('modalListName').innerText = taskData.listName;
 
-    // 3. OLUŞTURAN KİŞİ (BURASI GÜNCELLENDİ: onclick EKLENDİ)
     const createdAvatar = document.getElementById('modalCreatedByAvatar');
-    const cInitial = taskData.createdByInitial || 'İK'; // Varsayılan İK olsun
+    const cInitial = taskData.createdByInitial; 
 
     createdAvatar.innerText = cInitial;
-    // MockData'da varsa rengini al, yoksa gri yap
-    createdAvatar.style.backgroundColor = mockUserData[cInitial] ? mockUserData[cInitial].color : '#607d8b';
-    createdAvatar.title = `Oluşturan: ${taskData.createdByName || 'Bilinmiyor'}`;
+    createdAvatar.style.backgroundColor = taskData.createdByColor;
+    createdAvatar.title = `Created By: ${taskData.createdByName}`;
 
-    // TIKLAMA ÖZELLİĞİ EKLENDİ
-    // onclick eventini dinamik olarak bağlıyoruz
     createdAvatar.onclick = function(event) {
         openUserProfile(event, cInitial);
     };
 
 
-    // 4. ATANAN KİŞİ (BURASI GÜNCELLENDİ: onclick EKLENDİ)
     const assignedAvatar = document.getElementById('modalAssignedToAvatar');
 
     if (taskData.assignedToName) {
-        const aInitial = taskData.assignedInitial || 'CY';
+        const aInitial = taskData.assignedInitial;
 
         assignedAvatar.style.display = 'flex';
         assignedAvatar.innerText = aInitial;
 
-        // MockData'dan veya parametreden renk al
         assignedAvatar.style.backgroundColor = mockUserData[aInitial] ? mockUserData[aInitial].color : (taskData.assignedColor || '#0079bf');
-        assignedAvatar.title = `Atanan: ${taskData.assignedToName}`;
+        assignedAvatar.title = `Assigned: ${taskData.assignedToName}`;
 
-        // TIKLAMA ÖZELLİĞİ EKLENDİ
         assignedAvatar.style.cursor = 'pointer';
         assignedAvatar.onclick = function(event) {
             openUserProfile(event, aInitial);
         };
 
     } else {
-        assignedAvatar.style.display = 'none'; // Atanan yoksa gizle
+        assignedAvatar.style.display = 'none'; 
     }
 
-    // 5. Tarihler
-    document.getElementById('modalCreatedDate').innerText = taskData.createdDate || '12 Ara 2025';
-    document.getElementById('modalDueDate').innerText = taskData.dueDate || '30 Ara 2025';
+    document.getElementById('modalCreatedDate').innerText = taskData.createdDate;
+    document.getElementById('modalDueDate').innerText = taskData.dueDate;
 
-    // 6. Açıklama
-    document.getElementById('modalTaskDesc').value = taskData.description || '';
+    document.getElementById('modalTaskDesc').value = taskData.description;
 
-    // 7. Öncelik
     const prioritySelect = document.getElementById('modalPrioritySelect');
     if(taskData.priorityValue) {
         prioritySelect.value = taskData.priorityValue;
@@ -76,17 +88,14 @@ function openTaskModal(taskData, cardElement) {
         prioritySelect.value = 'medium';
     }
 
-    // Modalı Aç
     modal.style.display = 'flex';
 }
 
 function closeTaskModal(event) {
-    // Eğer event null ise (X butonuna basıldıysa) direkt kapat
     if (!event) {
         document.getElementById('taskModalOverlay').style.display = 'none';
         return;
     }
-    // Eğer tıklanan yer Overlay'in kendisiyse kapat (içerik değilse)
     if (event.target.id === 'taskModalOverlay') {
         document.getElementById('taskModalOverlay').style.display = 'none';
     }
@@ -115,30 +124,44 @@ function hideAddCardForm(btnElement) {
     addBtn.style.display = 'flex';
 }
 
-// 3. Yeni Kartı Kaydet (Mavi butona basınca)
-function saveNewCard(btnElement) {
+async function saveNewCard(btnElement, userId) {
+    const taskGroupName = btnElement.parentElement.querySelector('.task-group').children.item(0).textContent;
+    const sectionName = document.getElementsByClassName('section-title').item(0).textContent;
     const footer = btnElement.closest('.task-footer');
     const input = footer.querySelector('textarea');
     const title = input.value.trim();
 
     if (title) {
-        // 1. Elementi DOM elemanı olarak oluştur (String değil)
         const newCard = document.createElement('div');
+        
+        await fetch('/Task/SaveTask', 
+            {
+                method: 'POST',
+                body: JSON.stringify({
+                    UserId: userId,
+                    TaskTitle: taskGroupName,
+                    TaskGroupName: taskGroupName,
+                    SectionName: sectionName,
+                })
+            })
+            .then((response) => {
+                if (!response.ok) {
+                    alert("Could not add another task please try again.");
+                }
+            });
+        
+        
         newCard.className = 'Task';
         newCard.onclick = function() {
-            openTaskModal({ title: title, createdByName: 'Ben', createdByInitial: 'B' });
+            openTaskModal(title, taskGroupName, sectionName)
         };
-
-        // İçeriği doldur
+        
         newCard.innerHTML = `
                 <div class="Task-Title">${title}</div>
             `;
 
-        // 2. Sürüklenebilir yap (Yazdığımız fonksiyonu çağırıyoruz)
         makeCardDraggable(newCard);
 
-        // 3. Footer'dan hemen önceye ekle
-        // footer.parentElement aslında .task-group dividir
         footer.parentElement.insertBefore(newCard, footer);
 
         input.value = '';
@@ -146,53 +169,51 @@ function saveNewCard(btnElement) {
     }
 }
 
-// 4. Enter Tuşuna Basınca Kaydet
-function handleEnterKey(event, inputElement) {
+function handleEnterKey(event, inputElement, userId) {
     if (event.key === 'Enter' && !event.shiftKey) {
-        event.preventDefault(); // Alt satıra geçmeyi engelle
-        // Kaydet butonunu bul ve tıkla
+        event.preventDefault();
         const saveBtn = inputElement.parentElement.querySelector('.btn-add-card');
-        saveNewCard(saveBtn);
+        saveNewCard(saveBtn, userId);
     }
 }
-// 1. Formu Göster
 function showAddListForm(btnElement) {
     const wrapper = btnElement.parentElement;
-
-    // Wrapper'ın rengini değiştirmek için class ekle
     wrapper.classList.add('active');
-
-    // Butonu gizle, formu göster
     btnElement.style.display = 'none';
     wrapper.querySelector('.add-list-form').style.display = 'block';
-
-    // Inputa odaklan
     wrapper.querySelector('input').focus();
 }
 
-// 2. Formu Gizle
 function hideAddListForm(btnElement) {
-    // closest ile en dıştaki wrapper'ı bul
     const wrapper = btnElement.closest('.add-list-wrapper');
-
     wrapper.classList.remove('active');
-
-    // Formu gizle, butonu göster
     wrapper.querySelector('.add-list-form').style.display = 'none';
     wrapper.querySelector('.add-list-btn-idle').style.display = 'flex';
-
-    // Inputu temizle
     wrapper.querySelector('input').value = '';
 }
 
-// 3. Yeni Listeyi Kaydet (EN ÖNEMLİ KISIM)
-function saveNewList(btnElement) {
+async function saveNewList(btnElement, sectionId, userId) {
     const wrapper = btnElement.closest('.add-list-wrapper');
     const input = wrapper.querySelector('input');
     const listTitle = input.value.trim();
 
     if (listTitle) {
-        // String olarak HTML'i hazırla (Senin mevcut yapın)
+        
+        await fetch('/TaskGroup/SaveNewTaskGroup/',
+            {
+                method: 'POST',
+                body: JSON.stringify({
+                    Name: listTitle,
+                    SectionId: sectionId,
+                    userId: userId
+                })
+            }).then(async (response) => {
+                if (!response.ok) {
+                    alert("Could not add another task group please try again.");
+                    return false;
+                }
+        })
+        
         const newListHTML = `
             <div class="task-group">
                 <div class="task-group-header" style="display: flex; justify-content: space-between; align-items: center;">
@@ -218,11 +239,8 @@ function saveNewList(btnElement) {
                 </div>
             </div>`;
 
-        // HTML'i ekle
         wrapper.insertAdjacentHTML('beforebegin', newListHTML);
 
-        // EKLENEN KISIM: Yeni eklenen listeyi bul ve Droppable yap
-        // Wrapper'dan bir önceki element bizim yeni listemizdir
         const newListElement = wrapper.previousElementSibling;
         if(newListElement) {
             makeColumnDroppable(newListElement);
@@ -233,19 +251,13 @@ function saveNewList(btnElement) {
     }
 }
 
-// 4. Enter Tuşu Kontrolü
-function handleListEnterKey(event, inputElement) {
+function handleListEnterKey(event, inputElement, sectionId, userId) {
     if (event.key === 'Enter') {
         const saveBtn = inputElement.parentElement.querySelector('.btn-add-card');
-        saveNewList(saveBtn);
+        saveNewList(saveBtn, sectionId, userId);
     }
 }
 
-/* =========================================
-DRAG & DROP MOTORU
-========================================= */
-
-// Sayfa yüklendiğinde mevcut kartları sürüklenebilir yap
 document.addEventListener('DOMContentLoaded', () => {
     const cards = document.querySelectorAll('.Task');
     const columns = document.querySelectorAll('.task-group');
@@ -254,7 +266,6 @@ document.addEventListener('DOMContentLoaded', () => {
     columns.forEach(column => makeColumnDroppable(column));
 });
 
-// Bir kartı sürüklenebilir hale getiren fonksiyon
 function makeCardDraggable(card) {
     card.setAttribute('draggable', 'true');
 
@@ -267,41 +278,68 @@ function makeCardDraggable(card) {
     });
 }
 
-// Bir sütunu (Listeyi) kart kabul eder hale getiren fonksiyon
-function makeColumnDroppable(column) {
+function makeColumnDroppable(column, sectionId) {
+
     column.addEventListener('dragover', e => {
-        e.preventDefault(); // Bırakmaya izin ver
+        e.preventDefault();
         const afterElement = getDragAfterElement(column, e.clientY);
         const draggable = document.querySelector('.dragging');
-
-        // Sadece Task class'ı olanları taşı, başlık veya footer'ı bozma
+        
         if (!draggable) return;
 
-        // Footer'ı bul (Ekleme butonu en altta kalsın diye)
-        const footer = column.querySelector('.task-footer');
+        const taskListContent = column.querySelector('.task-list-content') || column;
 
         if (afterElement == null) {
-            // Eğer altında eleman yoksa, footer'ın hemen üstüne ekle
-            column.insertBefore(draggable, footer);
+            taskListContent.appendChild(draggable);
         } else {
-            // Altında eleman varsa, onun üstüne ekle
-            column.insertBefore(draggable, afterElement);
+            taskListContent.insertBefore(draggable, afterElement);
+        }
+    });
+    column.addEventListener('drop', async e => {
+        e.preventDefault();
+        const draggable = document.querySelector('.dragging');
+        if (!draggable) return;
+
+        const taskListContent = column.querySelector('.task-list-content') || column;
+        
+        const currentTasksInOrder = [...taskListContent.querySelectorAll('.Task')];
+
+        const newPositionIndex = currentTasksInOrder.indexOf(draggable);
+
+        const taskId = draggable.id;
+        const newTaskGroupId = column.id;
+        
+        try {
+            const response = await fetch('/Task/ChangeTaskGroup', {
+                method: 'PATCH', 
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    TaskId: taskId,
+                    TaskGroupId: newTaskGroupId, 
+                    NewPosition: newPositionIndex
+                })
+            });
+
+            if (!response.ok) {
+                alert("Could not change task group.");
+                return false;
+            }
+        } catch (error) {
+            alert(error.message);
+            return false;
         }
     });
 }
 
-// Fare pozisyonuna göre hangi elemanın altına geleceğini hesaplayan sihirli fonksiyon
 function getDragAfterElement(container, y) {
-    // Sürüklenen hariç diğer tüm kartları al
     const draggableElements = [...container.querySelectorAll('.Task:not(.dragging)')];
 
     return draggableElements.reduce((closest, child) => {
         const box = child.getBoundingClientRect();
-        // Mouse'un elemanın ortasına olan uzaklığı
         const offset = y - box.top - box.height / 2;
 
-        // offset < 0 demek mouse elemanın üstünde demek
-        // En yakın negatif değeri arıyoruz (0'a en yakın olan üstteki elemandır)
         if (offset < 0 && offset > closest.offset) {
             return { offset: offset, element: child };
         } else {
@@ -310,26 +348,18 @@ function getDragAfterElement(container, y) {
     }, { offset: Number.NEGATIVE_INFINITY }).element;
 }
 
-/* =========================================
-ARKAPLAN DEĞİŞTİRİCİ MANTIĞI
-========================================= */
-
-// 1. Menüyü Aç/Kapa
-function toggleBackgroundMenu() {
+function toggleBackgroundMenu(sectionId) {
     const menu = document.getElementById('backgroundMenu');
 
-    // Eğer menü ilk kez açılıyorsa ve içi boşsa doldur
     if (!menu.classList.contains('open') && document.getElementById('photoGrid').children.length === 0) {
-        initBackgroundOptions();
+        initBackgroundOptions(sectionId);
     }
 
     menu.classList.toggle('open');
 }
 
-// 2. Renkleri ve Resimleri Oluştur (Sadece 1 kere çalışır)
-function initBackgroundOptions() {
+function initBackgroundOptions(sectionId) {
 
-    // --- A. RENKLER ---
     const colors = ['#0079bf', '#d29034', '#519839', '#b04632', '#89609e', '#cd5a91', '#4bbf6b', '#00aecc'];
     const colorGrid = document.getElementById('colorGrid');
 
@@ -341,32 +371,43 @@ function initBackgroundOptions() {
         colorGrid.appendChild(div);
     });
 
-    // --- B. FOTOĞRAFLAR (Sınırsız hissi için döngü) ---
-    // Mockup için 'Lorem Picsum' kullanıyoruz. Gerçek projede veritabanından URL çekeceksin.
     const photoGrid = document.getElementById('photoGrid');
 
-    // 20 tane rastgele yüksek kalite resim üretelim
     for (let i = 20; i <= 40; i++) {
-        // Her seferinde farklı resim gelmesi için 'seed' kullanıyoruz
-        const thumbUrl = `https://picsum.photos/seed/${i * 123}/200/120`; // Küçük hali (Hızlı yüklenir)
-        const fullUrl = `https://picsum.photos/seed/${i * 123}/2560/1440`; // Büyük hali (Arkaplan olur)
+        const thumbUrl = `https://picsum.photos/seed/${i * 100}/200/120`;
+        const fullUrl = `https://picsum.photos/seed/${i * 100}/2560/1440`;
 
         const div = document.createElement('div');
         div.className = 'bg-option';
         div.style.backgroundImage = `url('${thumbUrl}')`;
 
-        // Tıklayınca ana arkaplanı değiştir
-        div.onclick = () => setBackgroundImage(fullUrl);
+        div.onclick = () => setBackgroundImage(fullUrl, sectionId);
 
         photoGrid.appendChild(div);
     }
 }
 
-// 3. Arkaplanı RESİM Yap
-function setBackgroundImage(url) {
+async function setBackgroundImage(url, sectionId) {
     document.body.style.backgroundImage = `url('${url}')`;
-    document.body.style.backgroundColor = ''; // Rengi sıfırla
-    // Navbar'ı biraz daha şeffaf yap ki resim belli olsun
+    document.body.style.backgroundColor = ''; 
+    
+    await fetch('/Section/UpdateBackgroundUrl/', 
+        {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                SectionId: sectionId,
+                Url: url
+            })
+        }).then( response => {
+            if (!response.ok) {
+                alert(response.message);
+                return false;
+            }
+    })
+    
     document.querySelector('.top-bar').style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
 }
 
