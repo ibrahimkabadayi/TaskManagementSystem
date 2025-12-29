@@ -1,8 +1,8 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
 using AutoMapper;
-using DataAccessLayer.Repositories.Interfaces;
-using Task = DataAccessLayer.Entities.Task;
+using DomainLayer.Interfaces;
+using Task = DomainLayer.Entities.Task;
 
 namespace Application.Services;
 

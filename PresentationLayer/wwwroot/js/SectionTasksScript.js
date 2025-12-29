@@ -278,7 +278,7 @@ function makeCardDraggable(card) {
     });
 }
 
-function makeColumnDroppable(column, sectionId) {
+function makeColumnDroppable(column) {
 
     column.addEventListener('dragover', e => {
         e.preventDefault();
@@ -411,11 +411,10 @@ async function setBackgroundImage(url, sectionId) {
     document.querySelector('.top-bar').style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
 }
 
-// 4. Arkaplanı RENK Yap
 function setBackgroundColor(color) {
-    document.body.style.backgroundImage = 'none'; // Resmi kaldır
+    document.body.style.backgroundImage = 'none'; 
     document.body.style.backgroundColor = color;
-    // Navbar rengini seçilen renge uyumlu hale getirmek için hafif koyulaştır
+    
     document.querySelector('.top-bar').style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
 }
 
@@ -423,31 +422,25 @@ function setBackgroundColor(color) {
 LİSTE MENÜSÜ FONKSİYONLARI
 ========================================= */
 
-let currentListElement = null; // Hangi liste üzerinde işlem yapıyoruz?
+let currentListElement = null;
 
-// 1. Menüyü Açma Fonksiyonu
 function openListMenu(event, iconElement) {
-    event.stopPropagation(); // Sayfa tıklamasını engelle
+    event.stopPropagation();
     const menu = document.getElementById('listActionMenu');
 
-    // Tıklanan ikonun ait olduğu ana listeyi (.task-group) bul
     currentListElement = iconElement.closest('.task-group');
 
-    // Menüyü görünür yap
     menu.style.display = 'flex';
 
-    // Pozisyonu ayarla (Tıklanan ikonun hemen yanına/altına)
     const rect = iconElement.getBoundingClientRect();
     menu.style.top = (rect.bottom + 5) + 'px';
     menu.style.left = (rect.left) + 'px';
 }
 
-// 2. Menüyü Kapatma
 function closeListMenu() {
     document.getElementById('listActionMenu').style.display = 'none';
 }
 
-// Sayfa boşluğuna tıklayınca menüyü kapat
 document.addEventListener('click', (e) => {
     const menu = document.getElementById('listActionMenu');
     if (!menu.contains(e.target)) {
@@ -455,63 +448,62 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// --- İŞLEVLER ---
-
-// A. Başlığı Değiştir
-// A. Başlığı Değiştir (Modern, Inline Input Yöntemi)
 function actionEditTitle() {
     if (!currentListElement) return;
 
-    // Başlık divini bul
     const titleDiv = currentListElement.querySelector('.task-group-title');
+    const taskGroupId = titleDiv.id;
 
-    // Mevcut metni al (İçindeki ikonun HTML'ini bozmamak için sadece text node'u alıyoruz)
-    // childNodes[0] genellikle "Yapılacaklar " yazısıdır.
     const textNode = titleDiv.childNodes[0];
     const currentText = textNode.nodeValue.trim();
 
-    // 1. Geçici bir Input oluştur
     const input = document.createElement('input');
     input.type = 'text';
     input.className = 'edit-list-title-input';
     input.value = currentText;
 
-    // 2. Görünümü Değiştir
-    // Başlık divini geçici olarak gizle
     titleDiv.style.display = 'none';
 
-    // Inputu başlık divinin hemen öncesine (yani tam yerine) ekle
     titleDiv.parentNode.insertBefore(input, titleDiv);
 
-    // 3. Inputa odaklan ve içindeki metni seç (Hızlı düzenleme için)
     input.focus();
     input.select();
 
-    // --- KAYDETME MANTIĞI ---
-    const saveAndClose = () => {
-        const newTitle = input.value.trim();
+     const saveAndClose = async () => {
+         const newTitle = input.value.trim();
 
-        if (newTitle) {
-            // Sadece metin kısmını güncelle, ikona dokunma
-            textNode.nodeValue = newTitle + " ";
-        }
+         if (newTitle) {
+             textNode.nodeValue = newTitle + " ";
+         }
 
-        // Temizlik: Inputu sil, başlığı geri getir
-        input.remove();
-        titleDiv.style.display = 'block'; // block veya flex yapına göre değişebilir, genelde block yeterli
-    };
+         await fetch('/TaskGroup/ChangeTaskGroupName/', {
+             method: 'PATCH',
+             headers: {
+                 'Content-Type': 'application/json'
+             },
+             body: JSON.stringify({
+                 TaskGroupId: taskGroupId,
+                 NewTaskGroupName: newTitle
+             })
+         }).then(response => {
+             if (!response.ok) {
+                alert("Could not change task group name.");
+                return false;
+             }
+         })
+         
+         input.remove();
+         titleDiv.style.display = 'block';
+     };
 
-    // Enter tuşuna basınca kaydet
     input.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             saveAndClose();
         }
     });
 
-    // Inputun dışına tıklayınca da kaydet (Kullanıcı dostu)
     input.addEventListener('blur', saveAndClose);
 
-    // Menüyü kapat
     closeListMenu();
 }
 

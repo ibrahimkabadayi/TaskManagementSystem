@@ -1,8 +1,8 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
 using AutoMapper;
-using DataAccessLayer.Entities;
-using DataAccessLayer.Repositories.Interfaces;
+using DomainLayer.Entities;
+using DomainLayer.Interfaces;
 
 namespace Application.Services;
 
@@ -50,5 +50,13 @@ public class TaskGroupService : ITaskGroupService
         await _taskGroupRepository.AddAsync(newTaskGroup);
         
         return _mapper.Map<TaskGroupDto>(newTaskGroup);
+    }
+
+    public async Task<TaskGroupDto> ChangeTaskGroupNameAsync(int id, string newTaskGroupName)
+    {
+        var taskGroup = await _taskGroupRepository.GetByAsyncId(id);
+        taskGroup!.Name = newTaskGroupName;
+        await _taskGroupRepository.UpdateAsync(taskGroup);
+        return _mapper.Map<TaskGroupDto>(taskGroup);
     }
 }

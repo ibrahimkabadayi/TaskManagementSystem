@@ -1,4 +1,4 @@
-﻿using DataAccessLayer.Entities;
+﻿using DomainLayer.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

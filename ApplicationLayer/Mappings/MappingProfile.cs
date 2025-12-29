@@ -1,7 +1,7 @@
 ﻿using Application.DTOs;
 using AutoMapper;
-using DataAccessLayer.Entities;
-using Task = DataAccessLayer.Entities.Task;
+using DomainLayer.Entities;
+using Task = DomainLayer.Entities.Task;
 
 namespace Application.Mappings;
 

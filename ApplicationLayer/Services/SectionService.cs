@@ -1,7 +1,7 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
 using AutoMapper;
-using DataAccessLayer.Repositories.Interfaces;
+using DomainLayer.Interfaces;
 
 namespace Application.Services;
 

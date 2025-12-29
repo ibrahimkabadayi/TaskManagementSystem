@@ -1,14 +1,15 @@
 ﻿using Application.DTOs;
 using Application.Services;
-using DataAccessLayer.Repositories.Implementations;
-
+using AutoMapper;
+using DataAccessLayer.Context;
+using DataAccessLayer.Implementations;
+using DomainLayer.Entities;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using AutoMapper;
-using DataAccessLayer.Context;
-using DataAccessLayer.Entities;
 using Task = System.Threading.Tasks.Task;
+
+namespace TaskManegementSystem.Tests.ServicesTests;
 
 public class UserServiceTests : IDisposable
 {
@@ -46,7 +47,7 @@ public class UserServiceTests : IDisposable
             .Returns(userEntity);
         
         _mockMapper.Setup(m => m.Map<User, UserDto>(It.IsAny<User>()))
-                   .Returns(userDto);
+            .Returns(userDto);
 
         var result = await _userService.RegisterUserAsync(userDto);
 
