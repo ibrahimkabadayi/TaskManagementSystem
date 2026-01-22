@@ -9,7 +9,8 @@ public class Home : PageModel
     public UserDto UserData { get; set; } = new UserDto 
     { 
         Name = "default", 
-        Email = "default" 
+        Email = "default",
+        Password = "default"
     };
     public void OnGet()
     {
