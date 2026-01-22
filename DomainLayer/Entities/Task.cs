@@ -10,22 +10,17 @@ public class Task
     public DateTime StartDate { get; set; }
     public DateTime? DueDate { get; set; }
     public DateTime? CompletedDate { get; set; }
-    
-    public TaskState State { get; set; }
-    public TaskPriority Priority { get; set; }
 
-    public int Position { get; set; } = 0;
-    
-    public int TaskGroupId { get; set; }
-    public virtual required TaskGroup TaskGroup { get; set; }
-    
-    public int CreatedById { get; set; }
-    public virtual required ProjectUser CreatedBy { get; set; }
-    
-    public int AssignedToId { get; set; }
-    public virtual ProjectUser? AssignedTo { get; set; }
-    
+    public TaskState State { get; set; } = TaskState.Todo;
+    public TaskPriority Priority { get; set; } = TaskPriority.Low;
+    public int Position { get; set; }
+    public required int TaskGroupId { get; set; }
+    public virtual TaskGroup TaskGroup { get; set; }
+    public required int CreatedById { get; set; }
+    public virtual ProjectUser CreatedBy { get; set; }
+    public int? AssignedToId { get; set; }
+    public ProjectUser? AssignedTo { get; set; }
     public int? FinishedById { get; set; }
-    public virtual ProjectUser? FinishedBy { get; set; }
+    public ProjectUser? FinishedBy { get; set; }
     
 }

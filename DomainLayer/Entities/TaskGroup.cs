@@ -7,9 +7,9 @@ public class TaskGroup
     
     public List<Task>? Tasks { get; set; }
     
-    public int CreatedById { get; set; }
-    public required ProjectUser CreatedBy { get; set; }
+    public required int CreatedById { get; set; }
+    public virtual ProjectUser CreatedBy { get; set; }
     
-    public int SectionId { get; set; }
-    public required Section Section { get; set; }
+    public required int SectionId { get; set; }
+    public virtual Section Section { get; set; }
 }

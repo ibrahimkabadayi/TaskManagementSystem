@@ -1,13 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace DomainLayer.Entities;
+﻿namespace DomainLayer.Entities;
 
 public class Project
 {
     public int Id { get; set; }
     public required string Name { get; set; }
     public string? Description { get; set; }
-    [Required]
     public required DateTime StartDate { get; set; }
     public DateTime? EndDate { get; set; }
     

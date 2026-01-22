@@ -22,7 +22,7 @@ namespace DataAccessLayer.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("DataAccessLayer.Entities.Project", b =>
+            modelBuilder.Entity("DomainLayer.Entities.Project", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -50,7 +50,7 @@ namespace DataAccessLayer.Migrations
                     b.ToTable("Projects", (string)null);
                 });
 
-            modelBuilder.Entity("DataAccessLayer.Entities.ProjectUser", b =>
+            modelBuilder.Entity("DomainLayer.Entities.ProjectUser", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -67,32 +67,27 @@ namespace DataAccessLayer.Migrations
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ProjectId1")
-                        .HasColumnType("int");
-
                     b.Property<int>("Role")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
-                    b.Property<int?>("UserId1")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ProjectId");
 
-                    b.HasIndex("ProjectId1");
-
                     b.HasIndex("UserId");
-
-                    b.HasIndex("UserId1");
 
                     b.ToTable("ProjectUsers", (string)null);
                 });
 
-            modelBuilder.Entity("DataAccessLayer.Entities.Section", b =>
+            modelBuilder.Entity("DomainLayer.Entities.Section", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -120,7 +115,7 @@ namespace DataAccessLayer.Migrations
                     b.ToTable("Sections", (string)null);
                 });
 
-            modelBuilder.Entity("DataAccessLayer.Entities.Task", b =>
+            modelBuilder.Entity("DomainLayer.Entities.Task", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -128,7 +123,7 @@ namespace DataAccessLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AssignedToId")
+                    b.Property<int?>("AssignedToId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("CompletedDate")
@@ -146,6 +141,11 @@ namespace DataAccessLayer.Migrations
 
                     b.Property<int?>("FinishedById")
                         .HasColumnType("int");
+
+                    b.Property<int>("Position")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<int>("Priority")
                         .HasColumnType("int");
@@ -177,7 +177,7 @@ namespace DataAccessLayer.Migrations
                     b.ToTable("Tasks", (string)null);
                 });
 
-            modelBuilder.Entity("DataAccessLayer.Entities.TaskGroup", b =>
+            modelBuilder.Entity("DomainLayer.Entities.TaskGroup", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -198,15 +198,14 @@ namespace DataAccessLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedById")
-                        .IsUnique();
+                    b.HasIndex("CreatedById");
 
                     b.HasIndex("SectionId");
 
                     b.ToTable("TaskGroups", (string)null);
                 });
 
-            modelBuilder.Entity("DataAccessLayer.Entities.User", b =>
+            modelBuilder.Entity("DomainLayer.Entities.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -229,41 +228,43 @@ namespace DataAccessLayer.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("ProfileColor")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("ProfileLetters")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Users", (string)null);
                 });
 
-            modelBuilder.Entity("DataAccessLayer.Entities.ProjectUser", b =>
+            modelBuilder.Entity("DomainLayer.Entities.ProjectUser", b =>
                 {
-                    b.HasOne("DataAccessLayer.Entities.Project", "Project")
-                        .WithMany()
+                    b.HasOne("DomainLayer.Entities.Project", "Project")
+                        .WithMany("ProjectUsers")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("DataAccessLayer.Entities.Project", null)
+                    b.HasOne("DomainLayer.Entities.User", "User")
                         .WithMany("ProjectUsers")
-                        .HasForeignKey("ProjectId1");
-
-                    b.HasOne("DataAccessLayer.Entities.User", "User")
-                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("DataAccessLayer.Entities.User", null)
-                        .WithMany("ProjectUsers")
-                        .HasForeignKey("UserId1");
 
                     b.Navigation("Project");
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("DataAccessLayer.Entities.Section", b =>
+            modelBuilder.Entity("DomainLayer.Entities.Section", b =>
                 {
-                    b.HasOne("DataAccessLayer.Entities.Project", "Project")
+                    b.HasOne("DomainLayer.Entities.Project", "Project")
                         .WithMany("Sections")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -272,26 +273,25 @@ namespace DataAccessLayer.Migrations
                     b.Navigation("Project");
                 });
 
-            modelBuilder.Entity("DataAccessLayer.Entities.Task", b =>
+            modelBuilder.Entity("DomainLayer.Entities.Task", b =>
                 {
-                    b.HasOne("DataAccessLayer.Entities.User", "AssignedTo")
+                    b.HasOne("DomainLayer.Entities.ProjectUser", "AssignedTo")
                         .WithMany()
                         .HasForeignKey("AssignedToId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("DataAccessLayer.Entities.User", "CreatedBy")
+                    b.HasOne("DomainLayer.Entities.ProjectUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("DataAccessLayer.Entities.User", "FinishedBy")
+                    b.HasOne("DomainLayer.Entities.ProjectUser", "FinishedBy")
                         .WithMany()
                         .HasForeignKey("FinishedById")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("DataAccessLayer.Entities.TaskGroup", "TaskGroup")
+                    b.HasOne("DomainLayer.Entities.TaskGroup", "TaskGroup")
                         .WithMany("Tasks")
                         .HasForeignKey("TaskGroupId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -306,15 +306,15 @@ namespace DataAccessLayer.Migrations
                     b.Navigation("TaskGroup");
                 });
 
-            modelBuilder.Entity("DataAccessLayer.Entities.TaskGroup", b =>
+            modelBuilder.Entity("DomainLayer.Entities.TaskGroup", b =>
                 {
-                    b.HasOne("DataAccessLayer.Entities.User", "CreatedBy")
-                        .WithOne()
-                        .HasForeignKey("DataAccessLayer.Entities.TaskGroup", "CreatedById")
+                    b.HasOne("DomainLayer.Entities.ProjectUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("DataAccessLayer.Entities.Section", "Section")
+                    b.HasOne("DomainLayer.Entities.Section", "Section")
                         .WithMany("TaskGroups")
                         .HasForeignKey("SectionId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -325,24 +325,24 @@ namespace DataAccessLayer.Migrations
                     b.Navigation("Section");
                 });
 
-            modelBuilder.Entity("DataAccessLayer.Entities.Project", b =>
+            modelBuilder.Entity("DomainLayer.Entities.Project", b =>
                 {
                     b.Navigation("ProjectUsers");
 
                     b.Navigation("Sections");
                 });
 
-            modelBuilder.Entity("DataAccessLayer.Entities.Section", b =>
+            modelBuilder.Entity("DomainLayer.Entities.Section", b =>
                 {
                     b.Navigation("TaskGroups");
                 });
 
-            modelBuilder.Entity("DataAccessLayer.Entities.TaskGroup", b =>
+            modelBuilder.Entity("DomainLayer.Entities.TaskGroup", b =>
                 {
                     b.Navigation("Tasks");
                 });
 
-            modelBuilder.Entity("DataAccessLayer.Entities.User", b =>
+            modelBuilder.Entity("DomainLayer.Entities.User", b =>
                 {
                     b.Navigation("ProjectUsers");
                 });
