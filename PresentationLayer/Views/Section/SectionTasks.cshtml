@@ -1,0 +1,442 @@
+﻿@using System.Security.Claims
+@model Application.DTOs.SectionDto
+
+@{
+    Layout = "TaskFlowLayout";
+    var project = ViewBag.Project;
+    var currentUserName = User.Identity!.Name;
+    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var nameModifier = "";
+}
+
+<link rel="stylesheet" href="~/css/SectionTasksStyleSheet.css"/>
+<nav class="top-bar">
+    <div class="logo">
+        <span>📊 TaskFlow</span>
+    </div>
+    <div class="bar-account-section">
+        <div style="cursor: pointer; color: white; margin-right: 15px;" title="Notifications">🔔</div>
+        <div class="account" onclick="AccountClick(event)">
+            I
+        </div>
+    </div>
+</nav>
+<style>
+    body {
+        background-image: url('@Model.ImageUrl');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        display: flex;
+        flex-direction: column;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+</style>
+
+<div class="section-header">
+    <div class="section-header-left-side">
+        <div class="section-title" onclick="" project-id="@project.Id">
+            @project.Name | @Model.Name
+        </div>
+    </div>
+
+    <div class="section-header-right-side">
+        <div class="project-users">
+            @{
+                foreach (var projectUser in project.ProjectUsers)
+                {
+                    <div class="user-icon" id="@projectUser.Id" style="background-color: @projectUser.User.ProfileColor;" onclick="openUserProfile(event, '@projectUser.User.ProfileLetters')">@projectUser.User.ProfileLetters</div>
+                }
+            }
+        </div>
+
+        <div class="section-header-buttons">
+            <div class="settings button-style" onclick="toggleFilterMenu()">
+                <i class="fa-solid fa-filter"></i> Filter
+            </div>
+            <div class="share-button button-style" onclick="openShareModal()">
+                <i class="fa-solid fa-user-plus"></i> Share
+            </div>
+            <div class="change-background-button button-style icon-only" onclick="toggleBackgroundMenu(@Model.Id)">
+                <i class="fa-solid fa-image"></i> Backgrounds
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="task-groups-container">
+    @{
+        foreach (var taskGroup in Model.TasksGroupDtos)
+        {
+            
+            <div class="task-group">
+                <div class="task-group-title" id="@taskGroup.Id">
+                    @taskGroup.Name <i class="fa-solid fa-ellipsis" style="float:right; font-size:12px; cursor: pointer;" onclick="openListMenu(event, this, @taskGroup.Id)"></i>
+                </div>
+                
+                <div class="task-list-container" id="container-@taskGroup.Id">
+                    @foreach (var task in taskGroup.TaskDtos)
+                    {
+                        <div class="Task" id="@task.Id" data-id="@task.Id" onclick="openTaskModal(@task.Id)">
+                            <div class="Task-Title">
+                                @task.Title
+                            </div>
+                        
+                            @if (task.AssignedTo != null)
+                            {
+                                <div class="assigned-to-profile-icon" style="background-color: #4bbf6b;">
+                                    @task.AssignedTo.ProfileLetters
+                                </div>
+                            }
+                        
+                            @if (task.Description is not (null or ""))
+                            {
+                                <div class="task-desc-button">
+                                    <i class="fa-solid fa-align-left"></i>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+                
+                <div class="task-footer">
+
+                    <div class="add-task-btn" onclick="showAddCardForm(this)">
+                        <i class="fa-solid fa-plus"></i> Add Task
+                    </div>
+
+                    <div class="add-card-form" style="display: none;">
+                        <textarea class="card-composer-input" placeholder="Enter a task title..." rows="3" onkeydown="handleEnterKey(event, this, @currentUserId)"></textarea>
+
+                        <div class="composer-controls">
+                            <div class="composer-left">
+                                <button class="btn-add-card" onclick="saveNewCard(this, '@currentUserId', '@Model.Id')">Add Task</button>
+                            </div>
+
+                            <div class="composer-right">
+                                <button class="btn-close-composer" onclick="hideAddCardForm(this)" style="background:none; border:none; cursor:pointer; font-size:16px; color:#6b778c;">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    
+    <div class="add-list-wrapper">
+        <div class="add-list-btn-idle" onclick="showAddListForm(this)">
+            <i class="fa-solid fa-plus"></i> Add task group
+        </div>
+
+        <div class="add-list-form" style="display: none;">
+            <input class="list-name-input" type="text" placeholder="Enter task group title..." onkeydown="handleListEnterKey(event, this)">
+
+            <div class="composer-controls" style="margin-top: 8px;">
+                <button class="btn-add-card" onclick="saveNewList(this, @Model.Id, @currentUserId)">Add task group</button>
+                <button class="btn-close-composer" onclick="hideAddListForm(this)">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="taskModalOverlay" class="task-modal-overlay" style="display: none;" onclick="closeTaskModal(event)">
+
+    <div class="dynamic-task-container" onclick="event.stopPropagation()">
+
+        <button class="modal-close-btn" onclick="closeTaskModal(null)">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="task-modal-header">
+            <div class="title-section">
+                <div class="title-content" style="margin-left: 0;">
+                    <input type="text" id="modalTaskTitle" class="task-title-input" spellcheck="false">
+                    <div class="list-meta-info">
+                        <span class="list-name-link">At the <span id="modalListName">...</span></span> task group
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="task-body-section">
+
+            <div class="task-left-col">
+
+                <div class="people-row">
+                    <div class="people-col">
+                        <span class="people-label">Created By</span>
+                        <div class="user-chip-modern user-chip-static">
+                            <div id="modalCreatedByAvatar" class="user-avatar-sm"></div>
+                            <span id="modalCreatedByName" class="user-name-text"></span>
+                        </div>
+                    </div>
+
+                    <div class="people-col">
+                        <span class="people-label">Assigned To</span>
+                        <div id="modalAssignedWrapper" class="user-chip-modern user-chip-interactive">
+                            <div id="modalAssignedToAvatar" class="user-avatar-sm"></div>
+                            <span id="modalAssignedToName" class="user-name-text"></span>
+                            <i class="fa-solid fa-chevron-down chip-chevron"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="people-row" style="margin-top: 15px;">
+                    <div class="people-col">
+                        <span class="people-label">State</span>
+                        <select id="modalStateSelect" class="priority-select">
+                            <option value="todo">To-do</option>
+                            <option value="inprogress">In Progress</option>
+                            <option value="done">Done</option>
+                        </select>
+                    </div>
+
+                    <div class="people-col">
+                        <span class="people-label">Priority</span>
+                        <select id="modalPrioritySelect" class="priority-select">
+                            <option value="low">🟢 Low</option>
+                            <option value="medium">🟡 Medium</option>
+                            <option value="high">🔴 High</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="people-section">
+                    <span class="people-label">Timeline</span>
+                    <div class="date-row">
+                        <div class="date-item">
+                            <i class="fa-regular fa-calendar-plus"></i>
+                            <span id="modalCreatedDate">12 Dec 2025</span>
+                        </div>
+                        <div class="date-item">
+                            <i class="fa-regular fa-clock"></i>
+                            <input type="date" id="modalDueDateInput" class="date-picker-style">
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-delete-task">
+                    <i class="fa-regular fa-trash-can"></i> Delete Task
+                </button>
+
+            </div>
+
+            <div class="task-right-col">
+                <div class="desc-label">
+                    <i class="fa-solid fa-align-left"></i> Description
+                </div>
+
+                <textarea id="modalTaskDesc" class="task-desc-input" placeholder="Enter a detailed description..."></textarea>
+
+                <div class="desc-actions">
+                    <button class="btn-action-base btn-save-primary">
+                        <i class="fa-solid fa-check"></i> Save
+                    </button>
+
+                    <button class="btn-action-base btn-cancel-ghost" onclick="closeTaskModal(null)">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="backgroundMenu" class="sidebar-menu">
+    <div class="sidebar-header">
+        <span class="sidebar-title">Change Background</span>
+        <button class="sidebar-close-btn" onclick="toggleBackgroundMenu()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <div class="sidebar-content">
+        <div class="sidebar-section">
+            <h4 class="sidebar-subtitle">🎨 Colors</h4>
+            <div class="bg-grid" id="colorGrid">
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <h4 class="sidebar-subtitle">🖼️ Photos</h4>
+            <div class="bg-grid" id="photoGrid">
+            </div>
+        </div>
+    </div>
+</div>
+<div id="listActionMenu" class="list-menu-popup" style="display: none;">
+    <div class="list-menu-header">
+        <span class="list-menu-title">List Actions</span>
+        <button class="list-menu-close" onclick="closeListMenu()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+    <hr class="sidebar-divider" style="margin: 5px 0;">
+
+    <div class="list-menu-content">
+        <button class="list-menu-item" onclick="actionEditTitle()">
+            <i class="fa-solid fa-pen"></i> Change Title
+        </button>
+        <button class="list-menu-item" onclick="actionAddTask()">
+            <i class="fa-solid fa-plus"></i> Add Task
+        </button>
+
+        <div class="list-menu-separator"></div>
+        <div class="menu-label">Sort By</div>
+
+        <button class="list-menu-item" onclick="actionSortTasks('date')">
+            <i class="fa-solid fa-clock-rotate-left"></i> By Date (Latest)
+        </button>
+        <button class="list-menu-item" onclick="actionSortTasks('priority')">
+            <i class="fa-solid fa-arrow-up-wide-short"></i> By Priority
+        </button>
+        <button class="list-menu-item" onclick="actionSortTasks('state')">
+            <i class="fa-solid fa-list-check"></i> By state
+        </button>
+
+        <div class="list-menu-separator"></div>
+
+        <button id="btnDeleteTaskGroup" class="list-menu-item item-danger" onclick="actionDeleteList()">
+            <i class="fa-solid fa-trash"></i> Delete Task Group
+        </button>
+    </div>
+</div>
+<div id="shareModalOverlay" class="task-modal-overlay" style="display: none;" onclick="closeShareModal(event)">
+
+    <div class="share-modal-content" onclick="event.stopPropagation()">
+
+        <div class="share-header">
+            <span class="share-title">Share Board</span>
+            <button class="modal-close-btn-static" onclick="closeShareModal(null)">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="share-invite-section">
+            <div class="invite-input-group">
+                <input type="text" placeholder="Email address or username..." class="invite-input">
+                <select class="invite-role-select">
+                    <option>Member</option>
+                    <option>Visitor</option>
+                </select>
+                <button class="btn-share-invite">Share</button>
+            </div>
+        </div>
+
+        <div class="share-link-section">
+            <div class="link-icon-box">
+                <i class="fa-solid fa-link"></i>
+            </div>
+            <div class="link-details">
+                <div class="link-text">
+                    <strong>Anyone with link</strong> can join as a member
+                </div>
+                <div class="link-actions">
+                    <span class="link-action-btn">Copy link</span> •
+                    <span class="link-action-btn">Delete link</span>
+                </div>
+            </div>
+            <button class="btn-permissions">Change permissions <i class="fa-solid fa-chevron-down"></i></button>
+        </div>
+
+        <div class="share-members-section">
+            <div class="members-header">Board members (@project.ProjectUsers.Count)</div>
+
+            <div class="members-list">
+                @foreach (var projectUser in project.ProjectUsers)
+                {
+                    var pName = projectUser.User?.Name ?? "";
+                    var cName = currentUserName ?? "";
+                    nameModifier = pName == cName ? "(you)" : string.Empty;
+                    
+                    <div class="member-item-row">
+                        <div class="member-avatar" style="background-color: @projectUser.User.ProfileColor;">@projectUser.User.ProfileLetters</div>
+                        <div class="member-info">
+                            <div class="member-name">@projectUser.User.Name @nameModifier</div>
+                            <div class="member-username">@projectUser.User.Email • @projectUser.Title</div>
+                        </div>
+                        <button class="btn-member-role">@projectUser.Role <i class="fa-solid fa-chevron-down"></i></button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<div id="userProfileCard" class="user-profile-popup" style="display: none;" onclick="event.stopPropagation()">
+
+    <div class="profile-card-header">
+        <div class="profile-avatar-large" id="profileCardAvatar"></div>
+        <div class="profile-info-text">
+            <div class="profile-fullname" id="profileCardName"></div>
+            <div class="profile-email" id="profileCardEmail"></div>
+            <div class="profile-role-badge" id="profileCardRole"></div>
+        </div>
+        <button class="profile-close-btn" onclick="closeUserProfile()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <div class="profile-stats-row">
+        <div class="stat-box">
+            <span class="stat-value" id="profileCardCount">0</span>
+            <span class="stat-label">Active Tasks</span>
+        </div>
+        <div class="stat-box">
+            <span class="stat-value" style="color:#4bbf6b;">Online</span>
+            <span class="stat-label">Status</span>
+        </div>
+    </div>
+
+    <hr class="profile-divider">
+
+    <div class="profile-tasks-section">
+        <div class="profile-section-title">Assigned Tasks</div>
+        <div class="profile-task-list" id="profileCardTaskList">
+        </div>
+    </div>
+
+    <div class="profile-footer">
+        <button class="btn-profile-action">View Profile</button>
+    </div>
+</div>
+
+<div id="filterMenuPopup" class="filter-menu-popup" style="display: none;">
+    <div class="filter-header">
+        <span class="filter-title">Filter Cards</span>
+        <button class="filter-close-btn" onclick="toggleFilterMenu()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <div class="filter-content">
+        <div class="filter-section">
+            <div class="filter-label">Keywords</div>
+            <input type="text" id="filterSearchInput" class="filter-input" placeholder="Search card name..." onkeyup="applyFilters()">
+            <div class="filter-hint">Search in titles</div>
+        </div>
+
+        <div class="filter-section">
+            <div class="filter-label">Members</div>
+            
+            @foreach (var projectUser in project.ProjectUsers)
+            {
+                var pName = projectUser.User?.Name ?? "";
+                var cName = currentUserName ?? "";
+                nameModifier = pName == cName ? "(you)" : string.Empty;
+                
+                <label class="filter-checkbox-row">
+                    <input type="checkbox" class="filter-checkbox" value="@projectUser.User.ProfileLetters @nameModifier" onchange="applyFilters()">
+                    <div class="filter-avatar" style="background-color: @projectUser.User.ProfileColor;">@projectUser.User.ProfileLetters</div>
+                    <span class="filter-text">@projectUser.User.Name</span>
+                </label>
+            }
+        </div>
+
+        <button class="btn-clear-filters" onclick="clearAllFilters()">Clear Filters</button>
+    </div>
+</div>
+<script src="~/js/SectionTasksScript.js"></script>
