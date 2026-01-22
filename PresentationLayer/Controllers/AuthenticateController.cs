@@ -1,6 +1,7 @@
 ﻿using Application.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagementSystem.Models;
+using TaskManagementSystem.Models.AuthenticateRequests;
 using IAuthenticationService = Application.Interfaces.IAuthenticationService;
 
 namespace TaskManagementSystem.Controllers;

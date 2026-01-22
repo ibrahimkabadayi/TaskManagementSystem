@@ -1,4 +1,4 @@
-﻿using DataAccessLayer.Entities;
+﻿using DomainLayer.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -34,12 +34,12 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .HasMany(x => x.ProjectUsers)
             .WithOne(x => x.Project)
             .HasForeignKey(x => x.ProjectId)
-            .HasPrincipalKey(x => x.Id);
-        
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder
             .HasMany(x => x.Sections)
             .WithOne(x => x.Project)
             .HasForeignKey(x => x.ProjectId)
-            .HasPrincipalKey(x => x.Id);
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

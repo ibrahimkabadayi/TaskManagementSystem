@@ -1,6 +1,7 @@
 ﻿using DataAccessLayer.Configurations;
-using DataAccessLayer.Entities;
+using DomainLayer.Entities;
 using Microsoft.EntityFrameworkCore;
+using Task = DomainLayer.Entities.Task;
 
 namespace DataAccessLayer.Context;
 
@@ -8,7 +9,7 @@ public class ApplicationDbContext : DbContext
 {
     public DbSet<Project> Projects { get; set; }
     public DbSet<ProjectUser> ProjectUsers { get; set; }
-    public DbSet<Entities.Task> Tasks { get; set; }
+    public DbSet<Task> Tasks { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Section> Sections { get; set; }
     public DbSet<TaskGroup> TaskGroups { get; set; }

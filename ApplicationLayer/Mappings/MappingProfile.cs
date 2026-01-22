@@ -1,7 +1,7 @@
 ﻿using Application.DTOs;
 using AutoMapper;
-using DataAccessLayer.Entities;
-using Task = DataAccessLayer.Entities.Task;
+using DomainLayer.Entities;
+using Task = DomainLayer.Entities.Task;
 
 namespace Application.Mappings;
 
@@ -10,22 +10,27 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<User, UserDto>()
-            .ForMember(dest => dest.ProjectUserIds,
+            .ForMember(dest => dest.ProjectUsers,
                 opt => opt.MapFrom(
-                    src => src.ProjectUsers.Select(x => x.UserId)));
+                    src => src.ProjectUsers));
         
         CreateMap<UserDto, User>()
             .ForMember(dest => dest.ProjectUsers,
                 opt => opt.Ignore());
         
-        CreateMap<Task, TaskDto>();
+
+        CreateMap<Task, TaskDto>()
+            .ForMember(dest => dest.CreatedBy, 
+                opt => opt.MapFrom(src => src.CreatedBy != null ? src.CreatedBy.User : null))
+            .ForMember(dest => dest.AssignedTo, 
+                opt => opt.MapFrom(src => src.AssignedTo != null ? src.AssignedTo.User : null));
         
         CreateMap<TaskDto, Task>();
         
         CreateMap<Project, ProjectDto>()
-            .ForMember(dest => dest.ProjectUserIds,
+            .ForMember(dest => dest.ProjectUsers,
                 opt => opt.MapFrom(
-                    src => src.ProjectUsers.Select(x => x.UserId)));
+                    src => src.ProjectUsers));
         
         CreateMap<ProjectDto, Project>()
             .ForMember(src => src.ProjectUsers, opt => opt.Ignore());
@@ -43,7 +48,7 @@ public class MappingProfile : Profile
         CreateMap<TaskGroup, TaskGroupDto>()
             .ForMember(dest => dest.TaskDtos,
                 opt => opt.MapFrom(
-                    src => src.Tasks.Select(x => x.TaskGroup)));
+                    src => src.Tasks));
         
         CreateMap<TaskGroupDto, TaskGroup>()
             .ForMember(src => src.Tasks, opt => opt.Ignore());

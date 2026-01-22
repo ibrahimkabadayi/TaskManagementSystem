@@ -1,4 +1,4 @@
-﻿using DataAccessLayer.Entities;
+﻿using DomainLayer.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -24,16 +24,21 @@ public class ProjectUserConfiguration : IEntityTypeConfiguration<ProjectUser>
             .Property(x => x.JoinedDate)
             .IsRequired()
             .HasColumnType("datetime");
+
+        builder
+            .Property(x => x.Title)
+            .HasMaxLength(100)
+            .IsRequired();
         
         builder
             .HasOne(x => x.Project)
-            .WithMany()
+            .WithMany(x => x.ProjectUsers)
             .HasForeignKey(x => x.ProjectId)
             .OnDelete(DeleteBehavior.Restrict);
         
         builder
             .HasOne(x => x.User)
-            .WithMany()
+            .WithMany(x  => x.ProjectUsers)
             .HasForeignKey(x => x.UserId)
             .OnDelete(DeleteBehavior.Restrict);
     }

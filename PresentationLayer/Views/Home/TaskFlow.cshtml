@@ -7,82 +7,84 @@
 
 @model List<Application.DTOs.ProjectDto>
 
-<div class="recently-viewed-section">
-    <div class="section-header">
-        🕒 <span>Recently Viewed</span>
+<div class="main-container">
+    <div class="recently-viewed-section">
+        <div class="section-header">
+            🕒 <span>Recently Viewed</span>
+        </div>
+
+        <div class="boards-grid">
+            @{
+                foreach (var visitedSection in lastVisitedSections)
+                {
+                    <div class="board-card has-bg" onclick="SectionClick(this)" style="background-image: url('@lastVisitedSections.ImageUrl');">
+                        @visitedSection.Name
+                    </div>
+                }
+            }
+        </div>
     </div>
 
-    <div class="boards-grid">
+
+    <div class="workspaces-section">
+        <div class="section-header">
+            💼 <span>YOUR WORKSPACES</span>
+        </div>
         @{
-            foreach (var visitedSection in lastVisitedSections)
+            foreach (var project in Model)
             {
-                <div class="board-card has-bg" onclick="SectionClick(this)" style="background-image: url('@lastVisitedSections.ImageUrl');">
-                    @visitedSection.Name
+                <div class="workspace-item" style="margin-bottom: 50px;">
+                    <div class="workspace-title-bar">
+                        <div class="ws-left">
+                            <div class="ws-icon">@project.Name.First()</div>
+                            <div class="ws-name">@project.Name</div>
+                        </div>
+                        <div class="ws-actions">
+                            <button onclick="BoardsButtonClick()">Boards</button>
+                            <button onclick="MembersButtonClick()">Members</button>
+                            <button onclick="SettingsButtonClick()">Settings</button>
+                        </div>
+                    </div>
+
+                    <div class="boards-grid">
+                        @foreach (var projectSection in project.Sections)
+                        {
+                            <div class="board-card" onclick="SectionClick()" style="@projectSection.ImageUrl">
+                                @projectSection.Name
+                            </div>
+                        }
+                        <div class="board-card new-board" onclick="NewSectionClick()">
+                            Create New Board
+                        </div>
+                    </div>
                 </div>
             }
         }
     </div>
-</div>
-
-
-<div class="workspaces-section">
-    <div class="section-header">
-        💼 <span>YOUR WORKSPACES</span>
-    </div>
-    @{
-        foreach (var project in Model)
-        {
-            <div class="workspace-item" style="margin-bottom: 50px;">
-                <div class="workspace-title-bar">
-                    <div class="ws-left">
-                        <div class="ws-icon">@project.Name.First()</div>
-                        <div class="ws-name">@project.Name</div>
-                    </div>
-                    <div class="ws-actions">
-                        <button onclick="BoardsButtonClick()">Boards</button>
-                        <button onclick="MembersButtonClick()">Members</button>
-                        <button onclick="SettingsButtonClick()">Settings</button>
-                    </div>
-                </div>
-
-                <div class="boards-grid">
-                    @foreach (var projectSection in project.Sections)
-                    {
-                        <div class="board-card" onclick="SectionClick()" style="@projectSection.ImageUrl">
-                            @projectSection.Name
-                        </div>
-                    }
-                    <div class="board-card new-board" onclick="NewSectionClick()">
-                        Create New Board
-                    </div>
-                </div>
+    <div id="dynamicModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Başlık</h3>
+                <button class="close-btn" onclick="closeModal()">×</button>
             </div>
-        }
-    }
-</div>
-<div id="dynamicModal" class="modal-overlay">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3 id="modalTitle">Başlık</h3>
-            <button class="close-btn" onclick="closeModal()">×</button>
-        </div>
 
-        <div id="modalBody" class="modal-body">
-        </div>
+            <div id="modalBody" class="modal-body">
+            </div>
 
-        <div class="modal-footer">
-            <button class="btn-cancel" onclick="closeModal()">İptal</button>
-            <button id="modalConfirmBtn" class="btn-confirm">Kaydet</button>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeModal()">İptal</button>
+                <button id="modalConfirmBtn" class="btn-confirm">Kaydet</button>
+            </div>
         </div>
     </div>
-</div>
-<div id="sideModal" class="side-modal" style="display: none;">
-    <div class="side-modal-header">
-        <span class="back-btn" onclick="closeSideModal()">⬅️</span>
-        <span class="side-modal-title">Arkaplanlar</span>
-        <button class="close-btn" onclick="closeSideModal()">×</button>
-    </div>
-    <div id="sideModalBody" class="side-modal-body">
+    <div id="sideModal" class="side-modal" style="display: none;">
+        <div class="side-modal-header">
+            <span class="back-btn" onclick="closeSideModal()">⬅️</span>
+            <span class="side-modal-title">Arkaplanlar</span>
+            <button class="close-btn" onclick="closeSideModal()">×</button>
+        </div>
+        <div id="sideModalBody" class="side-modal-body">
+        </div>
     </div>
 </div>
 <script src="js/TaskFlowScript.js"></script>

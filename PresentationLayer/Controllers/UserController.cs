@@ -1,10 +1,7 @@
-﻿using Application.DTOs;
-using Application.Interfaces;
-using Application.Services;
-using AutoMapper;
-using DataAccessLayer.Repositories.Interfaces;
+﻿using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagementSystem.Models;
+using TaskManagementSystem.Models.UserRequests;
 
 namespace TaskManagementSystem.Controllers;
 

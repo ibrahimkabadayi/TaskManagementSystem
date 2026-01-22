@@ -1,13 +1,8 @@
-﻿using System.Linq.Expressions;
-using Application.DTOs;
+﻿using Application.DTOs;
 using Application.Interfaces;
 using AutoMapper;
-using DataAccessLayer.Context;
-using DataAccessLayer.Entities;
-using DataAccessLayer.Repositories.Implementations;
-using DataAccessLayer.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using Task = System.Threading.Tasks.Task;
+using DomainLayer.Entities;
+using DomainLayer.Interfaces;
 
 namespace Application.Services;
 

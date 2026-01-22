@@ -1,5 +1,4 @@
-﻿@model TaskManagementSystem.Views.TaskFlowLayout
-@Layout
+﻿@Layout
 
 @{
     Layout = null;
@@ -11,10 +10,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TaskFlow Dashboard</title>
-    <link rel="stylesheet" href="css/TaskFlowLayoutStyleSheet.css"/>
+    <link rel="stylesheet" href="~/css/TaskFlowLayoutStyleSheet.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
-<nav class="top-bar">
+@*<nav class="top-bar">
     <div class="logo">
         <span>📊 TaskFlow</span>
     </div>
@@ -24,13 +24,12 @@
             I
         </div>
     </div>
-</nav>
+</nav>*@
 
-<div class="main-container">
-    <main>
-        @RenderBody()
-    </main>
-</div>
+<main>
+    @RenderBody()
+</main>
+
 <div id="accountMenu" class="popup-menu account-menu-style">
     <div class="account-header">
         <div class="account-name">İbrahim Kabadayı</div>
@@ -45,6 +44,6 @@
         <li class="logout-item" onclick="window.location.href='/Logout'">🚪 Çıkış Yap</li>
     </ul>
 </div>
-<script src="js/TaskFlowLayoutScript.js"></script>
+<script src="~/js/TaskFlowLayoutScript.js"></script>
 </body>
 </html>

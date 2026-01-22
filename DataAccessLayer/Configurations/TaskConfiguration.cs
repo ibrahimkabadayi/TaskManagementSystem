@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Task = DataAccessLayer.Entities.Task;
+using Task = DomainLayer.Entities.Task;
 
 namespace DataAccessLayer.Configurations;
 

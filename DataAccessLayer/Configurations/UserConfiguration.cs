@@ -1,4 +1,4 @@
-﻿using DataAccessLayer.Entities;
+﻿using DomainLayer.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -35,6 +35,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .OnDelete(DeleteBehavior.Restrict);
         
         builder.Property(x => x.ProfileColor)
+            .HasMaxLength(10);
+        
+        builder.Property(x => x.ProfileLetters)
             .HasMaxLength(10);
     }
 }

@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccessLayer", "DataAcce
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManagementSystem.Tests", "TaskManagementSystem.Tests\TaskManagementSystem.Tests.csproj", "{38C13621-91D0-4F94-B462-38F16E8A3E93}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainLayer", "DomainLayer\DomainLayer.csproj", "{DA9220FC-7DE9-475F-BB25-784724555598}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{38C13621-91D0-4F94-B462-38F16E8A3E93}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38C13621-91D0-4F94-B462-38F16E8A3E93}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38C13621-91D0-4F94-B462-38F16E8A3E93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA9220FC-7DE9-475F-BB25-784724555598}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA9220FC-7DE9-475F-BB25-784724555598}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA9220FC-7DE9-475F-BB25-784724555598}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA9220FC-7DE9-475F-BB25-784724555598}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

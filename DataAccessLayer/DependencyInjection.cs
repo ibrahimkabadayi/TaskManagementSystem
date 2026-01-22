@@ -1,6 +1,6 @@
 ﻿using DataAccessLayer.Context;
-using DataAccessLayer.Repositories.Implementations;
-using DataAccessLayer.Repositories.Interfaces;
+using DataAccessLayer.Implementations;
+using DomainLayer.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

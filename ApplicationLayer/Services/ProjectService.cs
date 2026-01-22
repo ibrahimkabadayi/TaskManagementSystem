@@ -1,7 +1,7 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
 using AutoMapper;
-using DataAccessLayer.Repositories.Interfaces;
+using DomainLayer.Interfaces;
 
 namespace Application.Services;
 
@@ -25,5 +25,11 @@ public class ProjectService : IProjectService
     {
         var projects = await _projectRepository.GetAllAsync();
         return (projects == null ? null : _mapper.Map<List<ProjectDto>>(projects))!;
+    }
+
+    public async Task<ProjectDto?> GetProjectWithSectionAsync(int id)
+    {
+        var project = await _projectRepository.GetProjectWithSectionAsync(id);
+        return project == null ? null : _mapper.Map<ProjectDto>(project);
     }
 }
