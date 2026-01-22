@@ -36,4 +36,16 @@ public class SectionService : ISectionService
         await _sectionRepository.UpdateAsync(section);
         return section.ImageUrl;
     }
+
+    public async Task<SectionDto?> GetSectionWithTasksAsync(int sectionId)
+    {
+        var section = await _sectionRepository.GetSectionWithTasksAsync(sectionId);
+        return _mapper.Map<SectionDto>(section);
+    }
+    
+    public async Task<List<SectionDto>> GetSectionsByProjectAsync(int projectId)
+    {
+        var section = await _sectionRepository.GetSectionsWithTaskGroupsAsync(projectId);
+        return _mapper.Map<List<SectionDto>>(section);
+    }
 }

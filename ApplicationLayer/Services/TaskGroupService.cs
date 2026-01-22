@@ -3,6 +3,7 @@ using Application.Interfaces;
 using AutoMapper;
 using DomainLayer.Entities;
 using DomainLayer.Interfaces;
+using Task = System.Threading.Tasks.Task;
 
 namespace Application.Services;
 
@@ -38,12 +39,12 @@ public class TaskGroupService : ITaskGroupService
         if (createdBy is null)
             return null;
 
-        var section = await _sectionRepository.GetByAsyncId(sectionId);
+        var section = await _sectionRepository.GetSectionWithTasksAsync(sectionId);
 
         var newTaskGroup = new TaskGroup
         {
-            Section = section!,
-            CreatedBy = createdBy,
+            SectionId = section!.Id,
+            CreatedById = createdBy.Id,
             Name = taskGroupName
         };
 
@@ -58,5 +59,16 @@ public class TaskGroupService : ITaskGroupService
         taskGroup!.Name = newTaskGroupName;
         await _taskGroupRepository.UpdateAsync(taskGroup);
         return _mapper.Map<TaskGroupDto>(taskGroup);
+    }
+
+    public async Task DeleteTaskGroupAsync(int id)
+    {
+        await _taskGroupRepository.DeleteAsync(id);
+    }
+
+    public async Task<List<TaskDto>> GetAllTasksAsync(int id)
+    {
+        var taskGroup = await _taskGroupRepository.GetByAsyncId(id);
+        return taskGroup!.Tasks!.Select(task => _mapper.Map<TaskDto>(task)).ToList();
     }
 }

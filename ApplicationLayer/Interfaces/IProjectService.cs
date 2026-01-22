@@ -6,4 +6,5 @@ public interface IProjectService
 {
     Task<ProjectDto?> GetProjectByIdAsync(int id);
     Task<List<ProjectDto?>> GetAllProjectsAsync();
+    Task<ProjectDto?> GetProjectWithSectionAsync(int id);
 }

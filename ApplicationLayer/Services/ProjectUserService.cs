@@ -22,9 +22,26 @@ public class ProjectUserService : IProjectUserService
         return _mapper.Map<ProjectUserDto>(user) ?? null;
     }
 
-    public async Task<List<ProjectUserDto?>> GetAllProjectsAsync()
+    public async Task<List<ProjectUserDto?>> GetAllProjectUsersOfOneProjectAsync(int projectId)
     {
-        var allProjectUsers = await _projectUserRepository.GetAllAsync();
+        var allProjectUsers = await _projectUserRepository.GetProjectUsersWithDetailsAsync(projectId);
         return _mapper.Map<List<ProjectUserDto>>(allProjectUsers)!;
+    }
+
+    public async Task<List<ProjectUserDetailsDto>> GetAllProjectUserDetailsOfOneProjectAsync(int projectId)
+    {
+        var allProjectUsers = await GetAllProjectUsersOfOneProjectAsync(projectId);
+
+        List<ProjectUserDetailsDto> details = [];
+        details.AddRange(allProjectUsers.Select(projectUser => new ProjectUserDetailsDto
+        {
+            Id = projectUser!.Id,
+            FullName = projectUser!.User.Name!,
+            Email = projectUser!.User.Email!,
+            ProfileColor = projectUser!.User.ProfileColor!,
+            Role = projectUser.Role.ToString()
+        }));
+
+        return details;
     }
 }
