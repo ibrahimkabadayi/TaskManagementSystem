@@ -412,27 +412,28 @@
         .title-content { width: 100%; }
 
         /* Başlık Input Düzenlemesi (Okları/Scrollbarı Yok Etme) */
+        /* --- BAŞLIK ALANI DÜZELTMESİ --- */
+        /* --- YENİ TEK SATIR BAŞLIK STİLİ --- */
         .task-title-input {
             width: 100%;
-            font-size: 20px;
-            font-weight: 600;
+            height: 40px; /* Sabit yükseklik, çökme yapmaz */
+            font-size: 24px;
+            font-weight: 700;
             color: #172b4d;
             background: transparent;
-            border: 2px solid transparent; /* Odaklanınca açılacak */
+            border: 2px solid transparent; /* Çerçeve için yer ayır ama gösterme */
             border-radius: 3px;
-            resize: none; /* Köşedeki çekme işaretini kaldırır */
-            height: 34px;
-            padding: 2px 6px;
-            margin-left: -6px;
-            overflow: hidden; /* Scrollbar çıkmasın */
-            line-height: 24px;
-            font-family: inherit;
-        }
-        .task-title-input:focus {
-            background-color: #ffffff;
-            border-color: #0079bf;
-            box-shadow: inset 0 0 0 1px #0079bf;
+            padding: 0 6px; /* Yazıyı hafif içeri al */
+            margin-left: -6px; /* Hizayı korumak için sola çek */
             outline: none;
+            transition: all 0.2s;
+        }
+
+        /* Sadece odaklanınca (tıklayınca) çerçeve çıksın */
+        .task-title-input:focus {
+            background-color: #fff;
+            border-color: #0079bf;
+            box-shadow: 0 0 0 2px rgba(0, 121, 191, 0.2);
         }
 
         .list-meta-info { font-size: 14px; color: #5e6c84; margin-top: 2px; }
@@ -449,53 +450,174 @@
             display: flex;
             gap: 30px;
             margin-top: 15px;
+            align-items: stretch; /* ÖNEMLİ: İki sütun da eşit boyda olsun */
         }
 
-        /* --- SOL SÜTUN (Meta Bilgiler) --- */
-        .task-left-col {
-            flex: 0 0 240px; /* Genişlik 240px'e sabitlendi */
+        /* Sol ve Sağ Sütun: İçerik düzeni */
+        .task-left-col, .task-right-col {
             display: flex;
-            flex-direction: column;
-            gap: 20px;
-            border-right: 1px solid #dfe1e6; /* Sağ taraftan ayıran çizgi */
-            padding-right: 20px;
+            flex-direction: column; /* İçindekiler alt alta dizilsin */
         }
 
-        /* Kişiler Alanı (Yan yana yuvarlaklar) */
-        .people-section {
+        /* Sol Sütun Genişlik Ayarı */
+        .task-left-col {
+            flex: 0 0 250px; /* Sabit genişlik veya min-width */
+            gap: 20px;
+        }
+
+        /* Sağ Sütun Genişlik Ayarı */
+        .task-right-col {
+            flex: 1; /* Kalan alanı kapla */
+        }
+
+        /* Açıklama kutusu kalan boşluğu doldursun ama butonları ezmesin */
+        .task-desc-input {
+            flex-grow: 1; /* Mümkün olduğunca uza */
+            min-height: 150px;
+            margin-bottom: 10px;
+        }
+
+        /* Kişiler Satırı: Yan yana durmaları için */
+        .people-row {
+            display: flex;
+            gap: 15px; /* Oluşturan ve Atanan arasındaki boşluk */
+            width: 100%;
+        }
+
+        .people-col {
+            flex: 1; /* Eşit genişlikte dağılsınlar */
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
+
         .people-label {
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 11px;
+            font-weight: 700;
             color: #5e6c84;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        .avatars-container {
+
+        /* --- KULLANICI KARTLARI (YENİ MODERN TASARIM) --- */
+        .user-chip-modern {
             display: flex;
             align-items: center;
-            gap: -8px; /* İkonlar hafif iç içe geçsin */
+            gap: 10px;
+            padding: 6px 12px 6px 6px; /* Sol taraf avatar için dar, sağ taraf geniş */
+            background-color: #ffffff;
+            border: 1px solid #dfe1e6; /* İnce gri çerçeve */
+            border-radius: 24px; /* Tam yuvarlak (Pill) kenarlar */
+            box-shadow: 0 1px 2px rgba(9, 30, 66, 0.05); /* Çok hafif gölge */
+            transition: all 0.2s ease;
+            width: fit-content;
+            min-width: 140px; /* Minimum bir genişlik vererek hizalı durmasını sağla */
         }
-        .user-avatar-lg {
-            width: 36px;
-            height: 36px;
+
+        /* Sadece görüntüleme amaçlı olan (Oluşturan) */
+        .user-chip-static {
+            background-color: #f4f5f7; /* Arka planı biraz daha koyu */
+            border-color: transparent;
+            cursor: default;
+            box-shadow: none;
+        }
+
+        /* Tıklanabilir olan (Atanan Kişi) */
+        .user-chip-interactive {
+            cursor: pointer;
+            position: relative;
+            padding-right: 30px; /* Ok ikonu için sağdan boşluk bırak */
+        }
+
+        .user-chip-interactive:hover {
+            background-color: #ebecf0;
+            border-color: #b3bac5;
+            box-shadow: 0 2px 4px rgba(9, 30, 66, 0.1);
+            transform: translateY(-1px); /* Hafif yukarı kalkma efekti */
+        }
+
+        /* Avatar Tasarımı */
+        .user-avatar-sm {
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             color: white;
-            font-size: 14px;
-            font-weight: bold;
             display: flex;
             justify-content: center;
             align-items: center;
-            border: 2px solid #fff; /* Beyaz çerçeve ile ayrım */
-            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
-            cursor: pointer;
-            position: relative;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+            box-shadow: 0 0 0 2px #fff; /* Avatar etrafında beyaz halka */
         }
-        .user-avatar-lg:hover {
-            z-index: 10;
-            transform: translateY(-2px);
+
+        /* İsim Yazısı */
+        .user-name-text {
+            font-size: 13px;
+            color: #172b4d;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100px; /* İsim çok uzunsa taşmasın */
+        }
+
+        /* Dropdown Oku (Sadece Atanan Kişi için) */
+        .chip-chevron {
+            position: absolute;
+            right: 12px;
+            color: #6b778c;
+            font-size: 12px;
+            transition: transform 0.2s;
+        }
+
+        .user-chip-interactive:hover .chip-chevron {
+            color: #172b4d;
+            transform: translateY(1px);
+        }
+        /* --- KULLANICI KARTLARI --- */
+        .user-chip-static, .user-chip-interactive {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 8px 4px 0; /* Sağ tarafa biraz boşluk verdik */
+            border-radius: 4px;
+            /* width: 100%; SİLDİK -> Sadece yazı kadar geniş olsun */
+            width: fit-content;
+            transition: background 0.2s;
+        }
+
+        /* Geri kalan stiller aynı kalabilir... */
+        .user-chip-static { cursor: default; }
+        .user-chip-interactive { cursor: pointer; margin-left: -4px; padding-left: 4px; }
+        .user-chip-interactive:hover { background-color: rgba(9, 30, 66, 0.08); }
+
+        /* --- AVATAR GÜNCELLEMESİ --- */
+        .user-avatar-sm {
+            width: 32px;  /* Eskisi: 28px -> Büyüttük */
+            height: 32px; /* Eskisi: 28px -> Büyüttük */
+            border-radius: 50%;
+            background-color: #dfe1e6;
+            color: #172b4d;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px; /* Yazıyı da 11px'den 12px'e çıkardık, daha okunaklı oldu */
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .user-name-text {
+            font-size: 14px;
+            color: #172b4d;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        /* Boş (Atanmamış) İkon Stili */
+        .unassigned-icon {
+            font-size: 18px; /* Artı işaretini de biraz büyütelim */
+            line-height: 1;
         }
 
         /* Tarihler */
@@ -513,20 +635,34 @@
         }
         .date-item i { color: #5e6c84; width: 16px; }
 
+        .date-picker-style {
+            border: 1px solid #dfe1e6;
+            background-color: #fafbfc;
+            padding: 6px;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 13px;
+            color: #172b4d;
+            cursor: pointer;
+            outline: none;
+        }
+        .date-picker-style:focus {
+            border-color: #0079bf;
+            box-shadow: 0 0 0 2px rgba(0,121,191,0.2);
+        }
+
         /* Öncelik Combo Box */
         .priority-select {
             width: 100%;
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid #dfe1e6;
-            background-color: #fafbfc;
-            color: #172b4d;
-            font-weight: 600;
-            font-size: 14px;
+            padding: 6px;
+            font-size: 13px;
+            height: 36px; /* Avatar boyutuyla dengeli olsun */
+            background-color: #f4f5f7;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
-            outline: none;
-            transition: all 0.2s;
         }
+        
         .priority-select:focus {
             border-color: #0079bf;
             box-shadow: 0 0 0 2px rgba(0,121,191,0.2);
@@ -534,23 +670,32 @@
 
         /* Sil Butonu (En altta kırmızı) */
         .btn-delete-task {
-            margin-top: auto; /* En alta it */
-            background-color: #ffebe6;
-            color: #bf2600;
-            border: none;
+            width: 100%; /* Sütunu kaplasın */
+            margin-top: auto; /* En alta itilsin */
             padding: 10px;
-            border-radius: 5px;
+            background-color: #ffebe6; /* Çok açık kırmızı */
+            color: #bf2600; /* Koyu kırmızı yazı */
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            transition: background 0.2s;
+            transition: all 0.2s ease;
         }
+
         .btn-delete-task:hover {
-            background-color: #ffbdad;
-            color: #9e2000;
+            background-color: #de350b; /* Canlı kırmızı */
+            color: white; /* Beyaz yazı */
+            box-shadow: 0 2px 5px rgba(222, 53, 11, 0.3);
+        }
+
+        /* İkon boyutunu ayarla */
+        .btn-delete-task i {
+            font-size: 14px;
         }
 
         /* --- SAĞ SÜTUN (Açıklama & Action) --- */
@@ -558,6 +703,50 @@
             flex: 1; /* Kalan tüm alanı kapla */
             display: flex;
             flex-direction: column;
+        }
+
+        .desc-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 12px; /* Butonlar arası boşluk */
+            align-items: center;
+        }
+
+        .btn-action-base {
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-save-primary {
+            background-color: #0079bf; /* Tema Mavisi */
+            color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .btn-save-primary:hover {
+            background-color: #026aa7; /* Koyu Mavi */
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0, 121, 191, 0.25);
+        }
+
+        /* İptal Butonu (Secondary/Ghost) */
+        .btn-cancel-ghost {
+            background-color: transparent;
+            color: #5e6c84; /* Gri yazı */
+        }
+
+        .btn-cancel-ghost:hover {
+            background-color: #e4f0f6; /* Çok hafif mavi/gri zemin */
+            color: #172b4d; /* Koyu yazı */
+            text-decoration: none;
         }
 
         /* Açıklama Başlığı */
@@ -1312,7 +1501,7 @@
         <div class="task-modal-header">
             <div class="title-section">
                 <div class="title-content" style="margin-left: 0;">
-                    <textarea id="modalTaskTitle" class="task-title-input" rows="1"></textarea>
+                    <input type="text" id="modalTaskTitle" class="task-title-input" spellcheck="false">
                     <div class="list-meta-info">
                         <span class="list-name-link"><span id="modalListName">...</span></span> listesinde
                     </div>
@@ -1324,21 +1513,43 @@
 
             <div class="task-left-col">
 
-                <div class="people-section">
-                    <span class="people-label">İlgililer</span>
-                    <div class="avatars-container">
-                        <div id="modalCreatedByAvatar" class="user-avatar-lg" title="Oluşturan"></div>
-                        <div id="modalAssignedToAvatar" class="user-avatar-lg" title="Atanan"></div>
+                <div class="people-row">
+                    <div class="people-col">
+                        <span class="people-label">Oluşturan</span>
+                        <div class="user-chip-modern user-chip-static">
+                            <div id="modalCreatedByAvatar" class="user-avatar-sm"></div>
+                            <span id="modalCreatedByName" class="user-name-text"></span>
+                        </div>
+                    </div>
+
+                    <div class="people-col">
+                        <span class="people-label">Atanan Kişi</span>
+                        <div id="modalAssignedWrapper" class="user-chip-modern user-chip-interactive" onclick="toggleAssigneeMenu()">
+                            <div id="modalAssignedToAvatar" class="user-avatar-sm"></div>
+                            <span id="modalAssignedToName" class="user-name-text"></span>
+                            <i class="fa-solid fa-chevron-down chip-chevron"></i>
+                        </div>
                     </div>
                 </div>
 
-                <div class="people-section">
-                    <span class="people-label">Öncelik</span>
-                    <select id="modalPrioritySelect" class="priority-select">
-                        <option value="low">🟢 Düşük Öncelik</option>
-                        <option value="medium" selected>🟡 Orta Öncelik</option>
-                        <option value="high">🔴 Yüksek Öncelik</option>
-                    </select>
+                <div class="people-row" style="margin-top: 15px;">
+                    <div class="people-col">
+                        <span class="people-label">Durum</span>
+                        <select id="modalStateSelect" class="priority-select">
+                            <option value="todo">Yapılacaklar</option>
+                            <option value="inprogress">Devam Ediyor</option>
+                            <option value="done">Tamamlandı</option>
+                        </select>
+                    </div>
+
+                    <div class="people-col">
+                        <span class="people-label">Öncelik</span>
+                        <select id="modalPrioritySelect" class="priority-select">
+                            <option value="low">🟢 Düşük</option>
+                            <option value="medium">🟡 Orta</option>
+                            <option value="high">🔴 Yüksek</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="people-section">
@@ -1350,13 +1561,13 @@
                         </div>
                         <div class="date-item">
                             <i class="fa-regular fa-clock"></i>
-                            <span id="modalDueDate" style="font-weight: 500; color:#d93535;">30 Ara 2025</span>
+                            <input type="date" id="modalDueDateInput" class="date-picker-style">
                         </div>
                     </div>
                 </div>
 
                 <button class="btn-delete-task">
-                    <i class="fa-solid fa-trash"></i> Sil
+                    <i class="fa-regular fa-trash-can"></i> Kartı Sil
                 </button>
 
             </div>
@@ -1369,8 +1580,13 @@
                 <textarea id="modalTaskDesc" class="task-desc-input" placeholder="Detaylı açıklama yazın..."></textarea>
 
                 <div class="desc-actions">
-                    <button class="btn-primary">Kaydet</button>
-                    <button class="btn-ghost" onclick="closeTaskModal(null)">İptal</button>
+                    <button class="btn-action-base btn-save-primary">
+                        <i class="fa-solid fa-check"></i> Kaydet
+                    </button>
+
+                    <button class="btn-action-base btn-cancel-ghost" onclick="closeTaskModal(null)">
+                        İptal
+                    </button>
                 </div>
             </div>
         </div>
@@ -1424,6 +1640,9 @@
         </button>
         <button class="list-menu-item" onclick="actionSortTasks('priority')">
             <i class="fa-solid fa-arrow-up-wide-short"></i> Önceliğe Göre
+        </button>
+        <button class="list-menu-item" onclick="actionSortTasks('state')">
+            <i class="fa-solid fa-list-check"></i> Duruma Göre
         </button>
 
         <div class="list-menu-separator"></div>
@@ -1589,10 +1808,6 @@
     </div>
 </div>
 <script>
-    /* =========================================
-   GÜNCELLENMİŞ TASK MODAL AÇMA (Profil Kartı Destekli)
-   ========================================= */
-
     function openTaskModal(taskData, cardElement) {
         // 1. Tıklanan kartı global değişkene ata
         currentActiveCard = cardElement;
@@ -1602,33 +1817,26 @@
 
         // --- MEVCUT VERİLERİ DOLDURMA ---
 
-        // 1. Başlık
+        // 1. Başlık (DÜZELTİLDİ: Sadece değeri atıyoruz, yükseklik ayarını sildik)
         const titleInput = document.getElementById('modalTaskTitle');
         titleInput.value = taskData.title || '';
-        // Yüksekliği ayarla
-        titleInput.style.height = 'auto';
-        titleInput.style.height = titleInput.scrollHeight + 'px';
 
         // 2. Liste Adı
         document.getElementById('modalListName').innerText = taskData.listName || "Yapılacaklar";
 
-        // 3. OLUŞTURAN KİŞİ (BURASI GÜNCELLENDİ: onclick EKLENDİ)
+        // 3. OLUŞTURAN KİŞİ
         const createdAvatar = document.getElementById('modalCreatedByAvatar');
-        const cInitial = taskData.createdByInitial || 'İK'; // Varsayılan İK olsun
+        const cInitial = taskData.createdByInitial || 'İK';
 
         createdAvatar.innerText = cInitial;
-        // MockData'da varsa rengini al, yoksa gri yap
         createdAvatar.style.backgroundColor = mockUserData[cInitial] ? mockUserData[cInitial].color : '#607d8b';
         createdAvatar.title = `Oluşturan: ${taskData.createdByName || 'Bilinmiyor'}`;
 
-        // TIKLAMA ÖZELLİĞİ EKLENDİ
-        // onclick eventini dinamik olarak bağlıyoruz
         createdAvatar.onclick = function(event) {
             openUserProfile(event, cInitial);
         };
 
-
-        // 4. ATANAN KİŞİ (BURASI GÜNCELLENDİ: onclick EKLENDİ)
+        // 4. ATANAN KİŞİ
         const assignedAvatar = document.getElementById('modalAssignedToAvatar');
 
         if (taskData.assignedToName) {
@@ -1637,23 +1845,35 @@
             assignedAvatar.style.display = 'flex';
             assignedAvatar.innerText = aInitial;
 
-            // MockData'dan veya parametreden renk al
             assignedAvatar.style.backgroundColor = mockUserData[aInitial] ? mockUserData[aInitial].color : (taskData.assignedColor || '#0079bf');
             assignedAvatar.title = `Atanan: ${taskData.assignedToName}`;
 
-            // TIKLAMA ÖZELLİĞİ EKLENDİ
             assignedAvatar.style.cursor = 'pointer';
             assignedAvatar.onclick = function(event) {
                 openUserProfile(event, aInitial);
             };
 
         } else {
-            assignedAvatar.style.display = 'none'; // Atanan yoksa gizle
+            assignedAvatar.style.display = 'none';
         }
 
         // 5. Tarihler
-        document.getElementById('modalCreatedDate').innerText = taskData.createdDate || '12 Ara 2025';
-        document.getElementById('modalDueDate').innerText = taskData.dueDate || '30 Ara 2025';
+        const dueDateInput = document.getElementById('modalDueDateInput');
+        const dateStr = taskData.dueDate || "";
+
+        if(dateStr) {
+            const months = {"Oca":"01", "Şub":"02", "Mar":"03", "Nis":"04", "May":"05", "Haz":"06", "Tem":"07", "Ağu":"08", "Eyl":"09", "Eki":"10", "Kas":"11", "Ara":"12"};
+            const parts = dateStr.split(' ');
+
+            if(parts.length === 3) {
+                const day = parts[0].padStart(2, '0');
+                const month = months[parts[1]];
+                const year = parts[2];
+                dueDateInput.value = `${year}-${month}-${day}`;
+            }
+        } else {
+            dueDateInput.value = "";
+        }
 
         // 6. Açıklama
         document.getElementById('modalTaskDesc').value = taskData.description || '';
@@ -1666,10 +1886,23 @@
             prioritySelect.value = 'medium';
         }
 
+        // 8. Durum (State) Ayarı
+        const stateSelect = document.getElementById('modalStateSelect');
+        const currentList = (taskData.listName || "").toLowerCase();
+
+        if (currentList.includes('yapılacak') || currentList.includes('todo')) {
+            stateSelect.value = 'todo';
+        } else if (currentList.includes('devam') || currentList.includes('progress')) {
+            stateSelect.value = 'inprogress';
+        } else if (currentList.includes('tamam') || currentList.includes('done') || currentList.includes('bitti')) {
+            stateSelect.value = 'done';
+        } else {
+            stateSelect.value = 'todo';
+        }
+
         // Modalı Aç
         modal.style.display = 'flex';
     }
-
     function closeTaskModal(event) {
         // Eğer event null ise (X butonuna basıldıysa) direkt kapat
         if (!event) {
@@ -1831,9 +2064,6 @@
         }
     }
     
-    /* =========================================
-   DRAG & DROP MOTORU
-   ========================================= */
 
     // Sayfa yüklendiğinde mevcut kartları sürüklenebilir yap
     document.addEventListener('DOMContentLoaded', () => {
@@ -1900,9 +2130,6 @@
         }, { offset: Number.NEGATIVE_INFINITY }).element;
     }
 
-    /* =========================================
-   ARKAPLAN DEĞİŞTİRİCİ MANTIĞI
-   ========================================= */
 
     // 1. Menüyü Aç/Kapa
     function toggleBackgroundMenu() {
@@ -1968,9 +2195,6 @@
         document.querySelector('.top-bar').style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
     }
 
-    /* =========================================
-   LİSTE MENÜSÜ FONKSİYONLARI
-   ========================================= */
 
     let currentListElement = null; // Hangi liste üzerinde işlem yapıyoruz?
 
@@ -2094,25 +2318,40 @@
     function actionSortTasks(criteria) {
         if (!currentListElement) return;
 
-        // Kartların olduğu container'ı bulmak lazım.
-        // Senin HTML yapında kartlar direkt .task-group içinde, footer'dan önce.
-        // O yüzden footer hariç tüm .Task elemanlarını alacağız.
-
         const tasks = Array.from(currentListElement.querySelectorAll('.Task'));
         const footer = currentListElement.querySelector('.task-footer');
 
         if (criteria === 'date') {
-            // Tarih verisi olmadığı için DOM sırasını tersine çeviriyoruz (En yeni en üstte)
             tasks.reverse().forEach(task => {
                 currentListElement.insertBefore(task, footer);
             });
         }
         else if (criteria === 'priority') {
-            // İçinde "Yüksek" yazanları en üste al
             tasks.sort((a, b) => {
                 const priorityA = a.innerText.toLowerCase().includes('yüksek') ? 1 : 0;
                 const priorityB = b.innerText.toLowerCase().includes('yüksek') ? 1 : 0;
-                return priorityB - priorityA; // 1 olan (yüksek) üste çıkar
+                return priorityB - priorityA;
+            });
+
+            tasks.forEach(task => {
+                currentListElement.insertBefore(task, footer);
+            });
+        }
+        else if (criteria === 'state') {
+            const stateWeights = {
+                'done': 3,       
+                'inprogress': 2, 
+                'todo': 1   
+            };
+
+            tasks.sort((a, b) => {
+                const stateA = a.getAttribute('data-state') || 'todo';
+                const stateB = b.getAttribute('data-state') || 'todo';
+
+                const weightA = stateWeights[stateA] || 0;
+                const weightB = stateWeights[stateB] || 0;
+
+                return weightB - weightA;
             });
 
             tasks.forEach(task => {
@@ -2122,9 +2361,6 @@
 
         closeListMenu();
     }
-    /* =========================================
-   PAYLAŞIM MENÜSÜ FONKSİYONLARI
-   ========================================= */
 
     function openShareModal() {
         const modal = document.getElementById('shareModalOverlay');
@@ -2139,9 +2375,6 @@
             modal.style.display = 'none';
         }
     }
-    /* =========================================
-   KULLANICI PROFİL MANTIĞI
-   ========================================= */
 
     // 1. Sanal Kullanıcı Veritabanı
     const mockUserData = {
@@ -2242,9 +2475,6 @@
             closeUserProfile();
         }
     });
-    /* =========================================
-   FİLTRELEME FONKSİYONLARI
-   ========================================= */
 
     // 1. Menüyü Aç/Kapa
     function toggleFilterMenu() {

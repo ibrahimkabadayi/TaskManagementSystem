@@ -1,97 +1,201 @@
-
-
-async function openTaskModal(taskName, taskGroupName, sectionName) {
-    
+let currentOpenedTaskId = 0;
+async function openTaskModal(TaskId) {
+    currentOpenedTaskId = TaskId;
     const modal = document.getElementById('taskModalOverlay');
     if (!modal) return;
-    let taskData;
-    
-    await fetch('/Task/GetTaskDetails',
-        {
+
+    try {
+        const response = await fetch(`/Task/GetTaskDetails/${TaskId}`, {
             method: 'GET',
-            body: JSON.stringify({
-                TaskTitle: taskName,
-                TaskGroupName: taskGroupName,
-                SectionName: sectionName
-            })
-        })
-        .then((response) => {
+            headers: { 'Content-Type': 'application/json' }
+        });
+
         if (!response.ok) {
-             alert(response.message);
+            alert("Could not get task details.");
+            return;
         }
-        return response.json;
-    }).then((result) => {
-            taskData = {
-                title: result.title,
-                description: result.description,
-                createdByName: result.createdByName,
-                createdByInitial: result.createdByInitial,
-                createdByColor: result.createdByColor,
-                assignedToName: result.assignedToName,
-                assignedInitial: result.assignedInitial,
-                assignedColor: result.assignedColor,
-                createdDate: result.createdDate,
-                dueDate: result.dueDate,
-                priorityValue: result.priority
-            }
-    })
-    
 
-    const titleInput = document.getElementById('modalTaskTitle');
-    titleInput.value = taskData.title || '';
-    titleInput.style.height = 'auto';
-    titleInput.style.height = titleInput.scrollHeight + 'px';
+        const result = await response.json();
 
-    document.getElementById('modalListName').innerText = taskData.listName;
-
-    const createdAvatar = document.getElementById('modalCreatedByAvatar');
-    const cInitial = taskData.createdByInitial; 
-
-    createdAvatar.innerText = cInitial;
-    createdAvatar.style.backgroundColor = taskData.createdByColor;
-    createdAvatar.title = `Created By: ${taskData.createdByName}`;
-
-    createdAvatar.onclick = function(event) {
-        openUserProfile(event, cInitial);
-    };
-
-
-    const assignedAvatar = document.getElementById('modalAssignedToAvatar');
-
-    if (taskData.assignedToName) {
-        const aInitial = taskData.assignedInitial;
-
-        assignedAvatar.style.display = 'flex';
-        assignedAvatar.innerText = aInitial;
-
-        assignedAvatar.style.backgroundColor = mockUserData[aInitial] ? mockUserData[aInitial].color : (taskData.assignedColor || '#0079bf');
-        assignedAvatar.title = `Assigned: ${taskData.assignedToName}`;
-
-        assignedAvatar.style.cursor = 'pointer';
-        assignedAvatar.onclick = function(event) {
-            openUserProfile(event, aInitial);
+        const taskData = {
+            title: result.title,
+            description: result.description,
+            listName: result.listName,
+            createdByName: result.createdByName,
+            createdByInitial: result.createdByInitial,
+            createdColor: result.createdByColor,
+            assignedToName: result.assignedToName,
+            assignedInitial: result.assignedInitial,
+            assignedColor: result.assignedColor,
+            createdDate: result.createdDate,
+            dueDate: result.dueDate,
+            priorityValue: result.priority,
+            state: result.state
         };
 
-    } else {
-        assignedAvatar.style.display = 'none'; 
+        const titleInput = document.getElementById('modalTaskTitle');
+        titleInput.value = taskData.title || '';
+        titleInput.style.height = 'auto';
+        titleInput.style.height = titleInput.scrollHeight + 'px';
+
+        const listNameEl = document.getElementById('modalListName');
+        if (listNameEl) listNameEl.innerText = taskData.listName || '...';
+
+        const createdAvatar = document.getElementById('modalCreatedByAvatar');
+        const createdName = document.getElementById('modalCreatedByName');
+
+        if (createdAvatar) {
+            createdAvatar.innerText = taskData.createdByInitial || '?';
+            createdAvatar.style.backgroundColor = taskData.createdColor || '#dfe1e6';
+
+            createdAvatar.onclick = function(event) {
+                if(typeof openUserProfile === 'function') openUserProfile(event, taskData.createdByInitial);
+            };
+        }
+        if (createdName) {
+            createdName.innerText = taskData.createdByName || 'Unknown';
+        }
+
+        const assignedAvatar = document.getElementById('modalAssignedToAvatar');
+        const assignedName = document.getElementById('modalAssignedToName');
+        const assignedWrapper = document.getElementById('modalAssignedWrapper');
+
+        if (assignedAvatar && assignedName) {
+            if (taskData.assignedToName) {
+                assignedAvatar.innerText = taskData.assignedInitial || '';
+                assignedAvatar.style.backgroundColor = taskData.assignedColor || '#0079bf';
+                assignedAvatar.style.color = '#fff';
+                assignedAvatar.classList.remove('unassigned-icon');
+
+                assignedName.innerText = taskData.assignedToName;
+                assignedName.style.color = '#172b4d';
+                assignedName.style.fontStyle = 'normal';
+
+                if (assignedWrapper) {
+                    assignedWrapper.onclick = function(event) {
+                        if(typeof openUserProfile === 'function') openUserProfile(event, taskData.assignedInitial);
+                    };
+                }
+            } else {
+                assignedAvatar.innerText = '+';
+                assignedAvatar.style.backgroundColor = 'transparent';
+                assignedAvatar.style.color = '#5e6c84';
+                assignedAvatar.classList.add('unassigned-icon');
+
+                assignedName.innerText = 'Kişi Ata';
+                assignedName.style.color = '#5e6c84';
+                assignedName.style.fontStyle = 'italic';
+
+                if (assignedWrapper) assignedWrapper.onclick = null;
+            }
+        }
+
+        const createdDateEl = document.getElementById('modalCreatedDate');
+        if (createdDateEl) createdDateEl.innerText = taskData.createdDate || '-';
+
+        const dueDateEl = document.getElementById('modalDueDate');
+        if (dueDateEl) dueDateEl.innerText = taskData.dueDate || 'No date';
+
+        const dueDateInput = document.getElementById('modalDueDateInput');
+        if (dueDateInput) {
+            const dateStr = taskData.dueDate || "";
+            if (dateStr) {
+                const months = {
+                    "Jan": "01", "Feb": "02", "Mar": "03", "Apr": "04", "May": "05", "Jun": "06",
+                    "Jul": "07", "Aug": "08", "Sep": "09", "Oct": "10", "Nov": "11", "Dec": "12"
+                };
+                const parts = dateStr.split(' ');
+
+                if (parts.length === 3) {
+                    const day = parts[0].padStart(2, '0');
+                    const month = months[parts[1]];
+                    const year = parts[2];
+                    dueDateInput.value = `${year}-${month}-${day}`;
+                }
+            } else {
+                dueDateInput.value = "";
+            }
+        }
+
+        const descInput = document.getElementById('modalTaskDesc');
+        if (descInput) descInput.value = taskData.description || '';
+
+        const prioritySelect = document.getElementById('modalPrioritySelect');
+        if (prioritySelect) {
+            prioritySelect.value = (taskData.priorityValue || 'medium').toLowerCase();
+        }
+
+        modal.style.display = 'flex';
+
+    } catch (error) {
+        console.error(error);
     }
-
-    document.getElementById('modalCreatedDate').innerText = taskData.createdDate;
-    document.getElementById('modalDueDate').innerText = taskData.dueDate;
-
-    document.getElementById('modalTaskDesc').value = taskData.description;
-
-    const prioritySelect = document.getElementById('modalPrioritySelect');
-    if(taskData.priorityValue) {
-        prioritySelect.value = taskData.priorityValue;
-    } else {
-        prioritySelect.value = 'medium';
-    }
-
-    modal.style.display = 'flex';
 }
 
+async function changeTaskPriority() {
+    const prioritySelect = document.getElementById('modalPrioritySelect');
+    const priority = await prioritySelect.value;
+    
+    await fetch('Task/ChangeTaskPriority', {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: {
+            TaskId: currentOpenedTaskId,
+            Priority: priority
+        }
+    }).then((response) => {
+        if (!response.ok) {
+            alert("Fetch error for changing task priority");
+        }
+    })
+}
+
+async function deleteTask(userId) {
+    const taskId = currentOpenedTaskId;
+
+    const sectionTitle = document.querySelector('.section-title') || document.querySelector('.task-group-title');
+    const projectId = sectionTitle ? sectionTitle.getAttribute('project-id') : 0;
+
+    try {
+        const response = await fetch('/Task/DeleteTask/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                TaskId: taskId,
+                UserId: userId,
+                ProjectId: projectId
+            })
+        });
+
+        if (response.ok) {
+            const taskCard = document.getElementById(taskId);
+
+            if (taskCard) {
+                taskCard.remove();
+            } else {
+                const taskCardByData = document.querySelector(`.Task[data-id="${taskId}"]`);
+                if (taskCardByData) taskCardByData.remove();
+            }
+
+            closeTaskModal(null);
+
+            console.log(`Task ${taskId} successfully deleted.`);
+
+        } else {
+            alert("There was a problem deleting task.!");
+        }
+
+    } catch (error) {
+        console.error("Deleting error:", error);
+        alert("Could not send api.");
+    }
+}
 function closeTaskModal(event) {
+    currentOpenedTaskId = 0;
     if (!event) {
         document.getElementById('taskModalOverlay').style.display = 'none';
         return;
@@ -124,9 +228,14 @@ function hideAddCardForm(btnElement) {
     addBtn.style.display = 'flex';
 }
 
-async function saveNewCard(btnElement, userId) {
-    const taskGroupName = btnElement.parentElement.querySelector('.task-group').children.item(0).textContent;
-    const sectionName = document.getElementsByClassName('section-title').item(0).textContent;
+async function saveNewCard(btnElement, userId, sectionId) {
+    const taskGroup = btnElement.closest('.task-group');
+
+    const taskGroupName = taskGroup.querySelector('.task-group-title').innerText.trim();
+
+    const sectionElement = document.querySelector('.section-title');
+    const sectionName = sectionElement ? sectionElement.textContent.trim() : "Default Section";
+
     const footer = btnElement.closest('.task-footer');
     const input = footer.querySelector('textarea');
     const title = input.value.trim();
@@ -137,11 +246,14 @@ async function saveNewCard(btnElement, userId) {
         await fetch('/Task/SaveTask', 
             {
                 method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify({
                     UserId: userId,
-                    TaskTitle: taskGroupName,
+                    TaskTitle: title,
                     TaskGroupName: taskGroupName,
-                    SectionName: sectionName,
+                    SectionId: parseInt(sectionId),
                 })
             })
             .then((response) => {
@@ -198,24 +310,30 @@ async function saveNewList(btnElement, sectionId, userId) {
     const listTitle = input.value.trim();
 
     if (listTitle) {
-        
+
+        let newTaskGroupId;
+
         await fetch('/TaskGroup/SaveNewTaskGroup/',
             {
                 method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify({
                     Name: listTitle,
                     SectionId: sectionId,
-                    userId: userId
+                    UserId: userId
                 })
             }).then(async (response) => {
                 if (!response.ok) {
                     alert("Could not add another task group please try again.");
                     return false;
                 }
+                newTaskGroupId = response.id;
         })
         
         const newListHTML = `
-            <div class="task-group">
+            <div class="task-group" id="${newTaskGroupId}">
                 <div class="task-group-header" style="display: flex; justify-content: space-between; align-items: center;">
                     <div class="task-group-title">${listTitle}</div>
                     <div class="task-group-menu" style="margin-left: auto; cursor: pointer;" onclick="openListMenu(event, this)">
@@ -260,7 +378,7 @@ function handleListEnterKey(event, inputElement, sectionId, userId) {
 
 document.addEventListener('DOMContentLoaded', () => {
     const cards = document.querySelectorAll('.Task');
-    const columns = document.querySelectorAll('.task-group');
+    const columns = document.querySelectorAll('.task-list-container');
 
     cards.forEach(card => makeCardDraggable(card));
     columns.forEach(column => makeColumnDroppable(column));
@@ -278,7 +396,7 @@ function makeCardDraggable(card) {
     });
 }
 
-function makeColumnDroppable(column) {
+async function makeColumnDroppable(column) {
 
     column.addEventListener('dragover', e => {
         e.preventDefault();
@@ -418,17 +536,19 @@ function setBackgroundColor(color) {
     document.querySelector('.top-bar').style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
 }
 
-/* =========================================
-LİSTE MENÜSÜ FONKSİYONLARI
-========================================= */
-
 let currentListElement = null;
 
-function openListMenu(event, iconElement) {
+function openListMenu(event, iconElement, taskGroupId) {
     event.stopPropagation();
     const menu = document.getElementById('listActionMenu');
 
-    currentListElement = iconElement.closest('.task-group');
+    const taskGroup = iconElement.closest('.task-group');
+
+    const deleteBtn = document.getElementById('btnDeleteTaskGroup');
+
+    deleteBtn.setAttribute('onclick', `actionDeleteList(${taskGroupId})`);
+
+    currentListElement = taskGroup;
 
     menu.style.display = 'flex';
 
@@ -448,7 +568,7 @@ document.addEventListener('click', (e) => {
     }
 });
 
-function actionEditTitle() {
+async function actionEditTitle() {
     if (!currentListElement) return;
 
     const titleDiv = currentListElement.querySelector('.task-group-title');
@@ -507,55 +627,139 @@ function actionEditTitle() {
     closeListMenu();
 }
 
-// B. Yeni Task Ekle (Footer'daki butonu tetikler)
 function actionAddTask() {
     if (!currentListElement) return;
 
-    // Footer'daki "Add Task" butonunu bul ve tıkla
     const addTaskBtn = currentListElement.querySelector('.add-task-btn');
     if (addTaskBtn) {
-        // Scroll ile en alta git ki form görünsün
-        const listContent = currentListElement; // Scroll edilecek alan
+        const listContent = currentListElement;
         addTaskBtn.click();
-        // Hafif bir gecikmeyle inputa odaklan
         setTimeout(() => listContent.scrollTop = listContent.scrollHeight, 100);
     }
     closeListMenu();
 }
 
-// C. Listeyi Sil
-function actionDeleteList() {
-    if (!currentListElement) return;
+async function actionDeleteList(taskGroupId) {
+    if (!currentListElement && !taskGroupId) return;
 
-    if (confirm("Bu listeyi ve içindeki tüm kartları silmek istediğinize emin misiniz?")) {
-        currentListElement.remove();
+    if (confirm("Are you sure to delete this task group and every task in it?")) {
+
+        await fetch(`/TaskGroup/DeleteTaskGroup/${taskGroupId}`, { 
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(response => {
+            if (!response.ok) {
+                alert("There was an error");
+                return false;
+            }
+
+            if(currentListElement) {
+                currentListElement.remove();
+                closeListMenu();
+            }
+        });
     }
-    closeListMenu();
 }
 
-// D. Sıralama (Basit Algoritma)
-function actionSortTasks(criteria) {
+async function actionSortTasks(criteria) {
     if (!currentListElement) return;
-
-    // Kartların olduğu container'ı bulmak lazım.
-    // Senin HTML yapında kartlar direkt .task-group içinde, footer'dan önce.
-    // O yüzden footer hariç tüm .Task elemanlarını alacağız.
-
+    
     const tasks = Array.from(currentListElement.querySelectorAll('.Task'));
+    const taskGroupId = currentListElement.id;
     const footer = currentListElement.querySelector('.task-footer');
 
     if (criteria === 'date') {
-        // Tarih verisi olmadığı için DOM sırasını tersine çeviriyoruz (En yeni en üstte)
-        tasks.reverse().forEach(task => {
-            currentListElement.insertBefore(task, footer);
-        });
+        try {
+            const response = await fetch('/TaskGroup/GetTaskStartDates/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    TaskGroupId: taskGroupId
+                })
+            });
+
+            if (!response.ok) return false;
+
+            const dateData = await response.json();
+
+            tasks.sort((a, b) => {
+                const idA = a.getAttribute('data-id');
+                const idB = b.getAttribute('data-id');
+
+                const taskInfoA = dateData.find(x => x.id === idA);
+                const taskInfoB = dateData.find(x => x.id === idB);
+
+                const dateA = taskInfoA && taskInfoA.startDate ? new Date(taskInfoA.startDate) : new Date(8640000000000000);
+                const dateB = taskInfoB && taskInfoB.startDate ? new Date(taskInfoB.startDate) : new Date(8640000000000000);
+
+                return dateA - dateB;
+            });
+
+            tasks.forEach(task => {
+                currentListElement.insertBefore(task, footer);
+            });
+
+        } catch (error) {
+            console.error("Sorting error:", error);
+        }
     }
     else if (criteria === 'priority') {
-        // İçinde "Yüksek" yazanları en üste al
+        try {
+            const response = await fetch('/TaskGroup/GetTaskPriorities/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    TaskGroupId: taskGroupId
+                })
+            });
+
+            if (!response.ok) return false;
+
+            const priorityData = await response.json();
+
+            tasks.sort((a, b) => {
+                const idA = a.getAttribute('data-id');
+                const idB = b.getAttribute('data-id');
+
+                const infoA = priorityData.find(x => x.id === idA);
+                const infoB = priorityData.find(x => x.id === idB);
+
+                const valA = infoA ? infoA.priority : -1;
+                const valB = infoB ? infoB.priority : -1;
+
+                return valB - valA;
+            });
+    
+            tasks.forEach(task => {
+                currentListElement.insertBefore(task, footer);
+            });
+            
+        } catch (error) {
+            console.error("Sorting Error:", error);
+        }
+        
+    }
+    else if (criteria === 'state') {
+        const stateWeights = {
+            'done': 3,
+            'inprogress': 2,
+            'todo': 1
+        };
+
         tasks.sort((a, b) => {
-            const priorityA = a.innerText.toLowerCase().includes('yüksek') ? 1 : 0;
-            const priorityB = b.innerText.toLowerCase().includes('yüksek') ? 1 : 0;
-            return priorityB - priorityA; // 1 olan (yüksek) üste çıkar
+            const stateA = a.getAttribute('data-state') || 'todo';
+            const stateB = b.getAttribute('data-state') || 'todo';
+
+            const weightA = stateWeights[stateA] || 0;
+            const weightB = stateWeights[stateB] || 0;
+
+            return weightB - weightA;
         });
 
         tasks.forEach(task => {
@@ -565,107 +769,141 @@ function actionSortTasks(criteria) {
 
     closeListMenu();
 }
-/* =========================================
-PAYLAŞIM MENÜSÜ FONKSİYONLARI
-========================================= */
 
 function openShareModal() {
     const modal = document.getElementById('shareModalOverlay');
-    modal.style.display = 'flex'; // Overlay'i görünür yap
+    modal.style.display = 'flex';
 }
 
 function closeShareModal(event) {
     const modal = document.getElementById('shareModalOverlay');
 
-    // Eğer null gönderildiyse (X butonu) veya direkt overlay'e tıklandıysa kapat
     if (!event || event.target === modal) {
         modal.style.display = 'none';
     }
 }
-/* =========================================
-KULLANICI PROFİL MANTIĞI
-========================================= */
 
-// 1. Sanal Kullanıcı Veritabanı
-const mockUserData = {
-    'MK': { fullName: 'Mehmet Kaya', email: 'mehmet.kaya@taskflow.com', role: 'Frontend Dev', color: '#df5c4e' },
-    'CY': { fullName: 'Can Yılmaz', email: 'can.yilmaz@taskflow.com', role: 'Backend Lead', color: '#4bbf6b' },
-    'İK': { fullName: 'İbrahim Kabadayı', email: 'ibrahim@taskflow.com', role: 'Project Manager', color: '#0079bf' }
-};
+let projectUsersData = {};
+document.addEventListener("DOMContentLoaded", async () => {
+
+    const sectionTitle = document.querySelector('.section-title');
+    const projectId = sectionTitle ? sectionTitle.getAttribute('project-id') : 1;
+    
+
+    try {
+        const response = await fetch(`/Section/GetProjectUsers/${projectId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const userList = await response.json();
+
+            userList.forEach(user => {
+
+                const names = user.fullName.split(' ');
+                let initials = names[0][0];
+                if (names.length > 1) {
+                    initials += names[names.length - 1][0];
+                }
+                initials = initials.toUpperCase();
+
+                projectUsersData[initials] = {
+                    fullName: user.fullName,
+                    email: user.email,
+                    role: user.role,
+                    color: user.profileColor || '#0079bf'
+                };
+            });
+
+        } else {
+            console.error("Kullanıcılar çekilemedi.");
+        }
+
+    } catch (error) {
+        console.error("Fetch hatası:", error);
+    }
+});
 
 let activeProfilePopup = null;
 
-// 2. Profili Açan Fonksiyon
 function openUserProfile(event, initials) {
-    event.stopPropagation(); // Sayfa tıklamasını durdur
+    event.stopPropagation(); 
+    closeUserProfile();
 
     const popup = document.getElementById('userProfileCard');
-    const user = mockUserData[initials];
+
+    const user = projectUsersData[initials];
 
     if (!user) {
-        console.error("Kullanıcı verisi bulunamadı: " + initials);
+        console.warn(`Kullanıcı verisi bulunamadı: ${initials}. Veriler henüz yüklenmemiş olabilir.`);
         return;
     }
 
-    // A. Bilgileri Doldur
     document.getElementById('profileCardAvatar').innerText = initials;
-    document.getElementById('profileCardAvatar').style.backgroundColor = user.color;
+    document.getElementById('profileCardAvatar').style.backgroundColor = user.color || '#0079bf'; 
     document.getElementById('profileCardName').innerText = user.fullName;
     document.getElementById('profileCardEmail').innerText = user.email;
     document.getElementById('profileCardRole').innerText = user.role;
 
-    // B. Taskları Tara ve Bul (DOM'dan okuma)
     const taskData = findTasksForUser(initials);
 
     document.getElementById('profileCardCount').innerText = taskData.count;
 
-    // Task Listesini Render Et
     const listContainer = document.getElementById('profileCardTaskList');
-    listContainer.innerHTML = ''; // Temizle
+    listContainer.innerHTML = '';
 
     if (taskData.tasks.length === 0) {
-        listContainer.innerHTML = '<div class="empty-task-msg">Şu an aktif görevi yok.</div>';
+        listContainer.innerHTML = '<div class="empty-task-msg" style="padding:10px; color:#5e6c84; font-size:13px; font-style:italic;">Şu an aktif görevi yok.</div>';
     } else {
         taskData.tasks.forEach(taskTitle => {
             const div = document.createElement('div');
             div.className = 'mini-task-item';
+            div.style.padding = "4px 0";
+            div.style.fontSize = "13px";
+            div.style.borderBottom = "1px solid #eee";
+            div.style.color = "#172b4d";
+
             div.innerText = taskTitle;
             listContainer.appendChild(div);
         });
     }
 
-    // C. Pozisyonlama (Tıklanan ikonun altına)
     popup.style.display = 'flex';
 
     const rect = event.currentTarget.getBoundingClientRect();
-    // Popup'ı ikonun ortasına hizala ama ekran dışına taşmasın
+
+    const popupWidth = 320;
+
     let leftPos = rect.left;
-    if(leftPos + 320 > window.innerWidth) {
-        leftPos = window.innerWidth - 340; // Sağa çok yakınsa sola çek
+    if (leftPos + popupWidth > window.innerWidth) {
+        leftPos = window.innerWidth - popupWidth - 20;
     }
 
-    popup.style.top = (rect.bottom + 10) + 'px';
+    popup.style.top = (rect.bottom + 8) + 'px';
     popup.style.left = leftPos + 'px';
 }
 
-// 3. Kullanıcının Tasklarını Bulan Fonksiyon
 function findTasksForUser(targetInitials) {
     const allTasks = document.querySelectorAll('.Task');
     let count = 0;
     let taskTitles = [];
 
     allTasks.forEach(task => {
-        // Task içindeki avatarı bul
         const avatar = task.querySelector('.assigned-to-profile-icon');
+
         if (avatar) {
-            // Avatarın içindeki metni (Örn: 'MK') al ve boşlukları temizle
             const assignedInitials = avatar.innerText.trim();
 
             if (assignedInitials === targetInitials) {
                 count++;
-                // Task başlığını al
-                const title = task.querySelector('.Task-Title').innerText;
-                taskTitles.push(title);
+
+                const titleEl = task.querySelector('.Task-Title');
+                if (titleEl) {
+                    taskTitles.push(titleEl.innerText.trim());
+                }
             }
         }
     });
@@ -673,93 +911,75 @@ function findTasksForUser(targetInitials) {
     return { count: count, tasks: taskTitles };
 }
 
-// 4. Kapatma Fonksiyonu
 function closeUserProfile() {
-    document.getElementById('userProfileCard').style.display = 'none';
+    const popup = document.getElementById('userProfileCard');
+    if (popup) {
+        popup.style.display = 'none';
+    }
 }
 
-// Dışarı tıklayınca kapat
 document.addEventListener('click', (e) => {
     const popup = document.getElementById('userProfileCard');
-    if (!popup.contains(e.target)) {
+    if (popup && popup.style.display === 'flex' && !popup.contains(e.target)) {
         closeUserProfile();
     }
 });
-/* =========================================
-FİLTRELEME FONKSİYONLARI
-========================================= */
 
-// 1. Menüyü Aç/Kapa
 function toggleFilterMenu() {
     const menu = document.getElementById('filterMenuPopup');
-    const btn = document.querySelector('.settings'); // Filtrele butonu class'ı
+    const btn = document.querySelector('.settings');
 
     if (menu.style.display === 'none') {
         menu.style.display = 'flex';
-        // Butonun altına hizala
         const rect = btn.getBoundingClientRect();
         menu.style.top = (rect.bottom + 10) + 'px';
-        menu.style.left = rect.left + 'px'; // Sola hizalı kalsın
+        menu.style.left = rect.left + 'px';
     } else {
         menu.style.display = 'none';
     }
 }
 
-// 2. Filtreleri Uygula (Ana Motor)
 function applyFilters() {
     const searchVal = document.getElementById('filterSearchInput').value.toLowerCase();
 
-    // Seçili checkbox'ları bul
     const checkboxes = document.querySelectorAll('.filter-checkbox:checked');
     const selectedMembers = Array.from(checkboxes).map(cb => cb.value); // ['MK', 'CY'] gibi
 
-    // Tüm kartları gez
     const allTasks = document.querySelectorAll('.Task');
 
     allTasks.forEach(task => {
         let isVisible = true;
 
-        // A. Kelime Kontrolü
         const title = task.querySelector('.Task-Title').innerText.toLowerCase();
         if (searchVal && !title.includes(searchVal)) {
             isVisible = false;
         }
 
-        // B. Üye Kontrolü (Eğer en az bir üye seçiliyse)
         if (isVisible && selectedMembers.length > 0) {
             const avatarDiv = task.querySelector('.assigned-to-profile-icon');
 
             if (avatarDiv) {
-                // Kartın üstündeki harfleri al (Örn: CY)
                 const assignedInitial = avatarDiv.innerText.trim();
 
-                // Seçilenlerin içinde bu kişi var mı?
                 if (!selectedMembers.includes(assignedInitial)) {
                     isVisible = false;
                 }
             } else {
-                // Kartta avatar yok (Atanmamış)
-                // Eğer "NO_ASSIGN" seçili değilse gizle
                 if (!selectedMembers.includes('NO_ASSIGN')) {
                     isVisible = false;
                 }
             }
         }
 
-        // Kararı uygula
         task.style.display = isVisible ? 'block' : 'none';
     });
 }
 
-// 3. Filtreleri Temizle
 function clearAllFilters() {
-    // Inputu temizle
     document.getElementById('filterSearchInput').value = '';
 
-    // Checkboxları kaldır
     const checkboxes = document.querySelectorAll('.filter-checkbox');
     checkboxes.forEach(cb => cb.checked = false);
 
-    // Filtre fonksiyonunu tekrar çağır (Hepsi görünür olacak)
     applyFilters();
 }
