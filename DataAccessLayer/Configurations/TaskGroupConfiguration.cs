@@ -15,8 +15,8 @@ public class TaskGroupConfiguration : IEntityTypeConfiguration<TaskGroup>
         builder.Property(x => x.Name).IsRequired().HasMaxLength(50);
         
         builder.HasOne(x => x.CreatedBy)
-            .WithOne()
-            .HasForeignKey<TaskGroup>(x => x.CreatedById)
+            .WithMany()
+            .HasForeignKey(x => x.CreatedById)
             .OnDelete(DeleteBehavior.Restrict);
         
         builder.HasMany(x => x.Tasks)
