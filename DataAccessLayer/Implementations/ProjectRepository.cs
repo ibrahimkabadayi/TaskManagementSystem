@@ -38,4 +38,39 @@ public class ProjectRepository : Repository<Project>, IProjectRepository
 
         return projectUser?.User ?? throw new Exception("Project not found");
     }
+
+    public async Task<Project?> GetProjectWithSectionAsync(int projectId)
+    {
+        return await _context.Projects
+            .Where(x => x.Id == projectId)
+            .Select(x => new Project
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Description = x.Description,
+                StartDate = x.StartDate,
+                EndDate = x.EndDate,
+                ProjectUsers = x.ProjectUsers!.Select(t => new ProjectUser
+                {
+                    Id = t.Id,
+                    JoinedDate = t.JoinedDate,
+                    IsActive = t.IsActive,
+                    Project = t.Project,
+                    ProjectId = t.ProjectId,
+                    Role = t.Role,
+                    Title = t.Title,
+                    User = t.User,
+                    UserId = t.UserId
+                }).ToList(),
+                Sections = x.Sections!.Select(s => new Section
+                {
+                    Id = s.Id,
+                    ImageUrl = s.ImageUrl,
+                    Name = s.Name,
+                    Project = s.Project,
+                    ProjectId = s.ProjectId,
+                    TaskGroups = s.TaskGroups!.ToList()
+                }).ToList()
+            }).FirstOrDefaultAsync();
+    }
 }
