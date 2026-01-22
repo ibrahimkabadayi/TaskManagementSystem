@@ -34,12 +34,12 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .HasMany(x => x.ProjectUsers)
             .WithOne(x => x.Project)
             .HasForeignKey(x => x.ProjectId)
-            .HasPrincipalKey(x => x.Id);
-        
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder
             .HasMany(x => x.Sections)
             .WithOne(x => x.Project)
             .HasForeignKey(x => x.ProjectId)
-            .HasPrincipalKey(x => x.Id);
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

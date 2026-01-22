@@ -36,5 +36,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         
         builder.Property(x => x.ProfileColor)
             .HasMaxLength(10);
+        
+        builder.Property(x => x.ProfileLetters)
+            .HasMaxLength(10);
     }
 }
