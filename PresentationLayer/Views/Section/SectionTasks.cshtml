@@ -75,7 +75,7 @@
                 </div>
                 
                 <div class="task-list-container" id="container-@taskGroup.Id">
-                    @foreach (var task in taskGroup.TaskDtos)
+                    @foreach (var task in taskGroup.TaskDtos!)
                     {
                         <div class="Task" id="@task.Id" data-id="@task.Id" onclick="openTaskModal(@task.Id)">
                             <div class="Task-Title">
@@ -84,7 +84,7 @@
                         
                             @if (task.AssignedTo != null)
                             {
-                                <div class="assigned-to-profile-icon" style="background-color: #4bbf6b;">
+                                <div class="assigned-to-profile-icon" style="background-color: @task.AssignedTo.ProfileColor;">
                                     @task.AssignedTo.ProfileLetters
                                 </div>
                             }
@@ -188,7 +188,7 @@
                 <div class="people-row" style="margin-top: 15px;">
                     <div class="people-col">
                         <span class="people-label">State</span>
-                        <select id="modalStateSelect" class="priority-select">
+                        <select id="modalStateSelect" class="priority-select" onchange="changeTaskState(@currentUserId, @project.Id)">
                             <option value="todo">To-do</option>
                             <option value="inprogress">In Progress</option>
                             <option value="done">Done</option>
@@ -197,7 +197,7 @@
 
                     <div class="people-col">
                         <span class="people-label">Priority</span>
-                        <select id="modalPrioritySelect" class="priority-select">
+                        <select id="modalPrioritySelect" class="priority-select" onchange="changeTaskPriority()">
                             <option value="low">🟢 Low</option>
                             <option value="medium">🟡 Medium</option>
                             <option value="high">🔴 High</option>
@@ -219,7 +219,7 @@
                     </div>
                 </div>
 
-                <button class="btn-delete-task">
+                <button class="btn-delete-task" onclick="deleteTask(@currentUserId)">
                     <i class="fa-regular fa-trash-can"></i> Delete Task
                 </button>
 
@@ -233,7 +233,7 @@
                 <textarea id="modalTaskDesc" class="task-desc-input" placeholder="Enter a detailed description..."></textarea>
 
                 <div class="desc-actions">
-                    <button class="btn-action-base btn-save-primary">
+                    <button class="btn-action-base btn-save-primary" onclick="saveTaskDescription(@currentUserId, @project.Id)">
                         <i class="fa-solid fa-check"></i> Save
                     </button>
 

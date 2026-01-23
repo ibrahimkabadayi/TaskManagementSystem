@@ -11,4 +11,6 @@ public interface ITaskService
     Task<int> ChangeTaskGroup(int taskId, int taskGroupId, int newPosition);
     Task<int> ChangeTaskPriority(int taskId, string priority);
     Task<string> DeleteTask(int taskId, int userId, int projectId);
+    Task<int> ChangeTaskState(int taskId, int taskState, int userId, int projectId);
+    Task<int> ChangeTaskDescription(int userId, int taskId, int projectId, string description);
 }

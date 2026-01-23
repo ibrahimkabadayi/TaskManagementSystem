@@ -12,17 +12,32 @@ public class TaskController : Controller
         _taskService = taskService;
     }
 
-    [HttpGet("GetTaskDetails/$TaskId")]
-    public async Task<IActionResult> GetTaskDetails([FromQuery] GetTaskDetailsRequest request)
+    [HttpGet("Task/GetTaskDetails/{taskId:int}")]
+    public async Task<IActionResult> GetTaskDetails([FromRoute] int taskId)
     {
-        var details = await _taskService.GetTaskDetailsAsync(request.TaskId);
+        var details = await _taskService.GetTaskDetailsAsync(taskId);
         return Json(details);
     }
 
-    [HttpPatch]
+    [HttpPost("Task/UpdatePriority")]
     public async Task<IActionResult> ChangeTaskPriority([FromBody] ChangeTaskPriorityRequest request)
     {
         var result = await _taskService.ChangeTaskPriority(request.TaskId, request.Priority);
+        return (result == request.TaskId) ? Ok()  : BadRequest();
+    }
+    
+    [HttpPost("Task/UpdateTaskState")]
+    public async Task<IActionResult> ChangeTaskState([FromBody] ChangeTaskStateRequest request)
+    {
+        var state = request.State switch
+        {
+            "todo" => 0,
+            "inprogress" => 1,
+            "done" => 2,
+            _ => -1
+        };
+        
+        var result = await _taskService.ChangeTaskState(request.TaskId, state, request.UserId, request.ProjectId);
         return (result == request.TaskId) ? Ok()  : BadRequest();
     }
 
@@ -30,7 +45,14 @@ public class TaskController : Controller
     public async Task<IActionResult> DeleteTask([FromBody] DeleteTaskRequest request)
     {
         var result = await _taskService.DeleteTask(request.TaskId, request.UserId, request.ProjectId);
-        return (result == "TaskDeleted") ? Ok()  : BadRequest();
+        return (result == "Task deleted") ? Ok()  : BadRequest();
+    }
+
+    [HttpPost("Task/UpdateDescription")]
+    public async Task<IActionResult> ChangeTaskDescription([FromBody] ChangeTaskDescriptionRequest request)
+    {
+        var result = await _taskService.ChangeTaskDescription(request.UserId, request.TaskId, request.ProjectId, request.Description);
+        return (result == request.TaskId) ? Ok()  : BadRequest();
     }
     
     [HttpPost] 

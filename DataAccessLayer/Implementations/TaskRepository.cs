@@ -42,4 +42,18 @@ public class TaskRepository : Repository<Task>, ITaskRepository
             .Where(t => t.TaskGroupId == sectionId && t.State == TaskState.Done)
             .ToListAsync();
     }
+
+    public async Task<Task> GetTaskWithDetailsAsync(int taskId)
+    {
+        return await _context.Tasks
+            .Include(t => t.CreatedBy)
+            .ThenInclude(t => t.User)
+            .Include(t => t.AssignedTo)
+            .ThenInclude(t => t.User)
+            .Include(t => t.FinishedBy)
+            .ThenInclude(t => t.User)
+            .Include(t => t.TaskGroup)
+            .Where(t => t.Id == taskId)
+            .FirstOrDefaultAsync();
+    }
 }

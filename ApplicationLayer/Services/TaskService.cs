@@ -3,6 +3,7 @@ using Application.Interfaces;
 using AutoMapper;
 using DomainLayer.Enums;
 using DomainLayer.Interfaces;
+using Microsoft.IdentityModel.Tokens;
 using Task = DomainLayer.Entities.Task;
 
 namespace Application.Services;
@@ -39,29 +40,53 @@ public class TaskService : ITaskService
 
     public async Task<TaskDetailsDto> GetTaskDetailsAsync(int id)
     {
-        var task = await _taskRepository.GetByAsyncId(id);
+        var task = await _taskRepository.GetTaskWithDetailsAsync(id);
 
         var createdByName = task!.CreatedBy.User.Name;
-        var createdByArray = createdByName.Split(' ');
-        var createdByInitial = (createdByArray.Length == 2) ? createdByName.Split(' ')[0][0] + "" + createdByName.Split(' ')[1][0] : createdByArray[0][0].ToString();
+        var createdByInitial = task.CreatedBy.User.ProfileLetters;
         var createdByColor = task.CreatedBy.User.ProfileColor;
+
+
+        var assignedToName = string.Empty;
+        var assignedToInitial = string.Empty;
+        var assignedToColor =  string.Empty;
         
-        var assignedToName = task.AssignedTo!.User.Name;
-        var assignedToArray = assignedToName.Split(' ');
-        var assignedToInitial = (assignedToArray.Length == 2) ? assignedToName.Split(' ')[0][0] + "" + assignedToName.Split(' ')[1][0] : assignedToArray[0][0].ToString();
-        var assignedToColor = task.AssignedTo.User.ProfileColor;
+        if (task.AssignedTo != null)
+        {
+            assignedToName = task.AssignedTo.User.Name;
+            assignedToInitial = task.AssignedTo.User.ProfileLetters;
+            assignedToColor= task.AssignedTo.User.ProfileColor;
+        }
+
+        var finishedByName = string.Empty;
+        var finishedByInitial = string.Empty;
+        var finishedByColor = string.Empty;
+        
+        if (task.FinishedBy != null)
+        {
+            finishedByName = task.FinishedBy.User.Name;
+            finishedByInitial = task.FinishedBy.User.ProfileLetters;
+            finishedByColor = task.FinishedBy.User.ProfileColor;
+        }
         
         return new TaskDetailsDto
         {
             Title = task.Title,
             ListName = task.TaskGroup.Name,
             Description = task.Description,
+            
             CreatedByName = createdByName,
             CreatedByInitial = createdByInitial,
             CreatedByColor = createdByColor,
+            
             AssignedToName = assignedToName,
             AssignedInitial = assignedToInitial,
             AssignedColor = assignedToColor,
+            
+            FinishedByName = finishedByName,
+            FinishedByInitial = finishedByInitial,
+            FinishedByColor = finishedByColor,
+            
             CreatedDate = task.StartDate.ToShortDateString(),
             DueDate = task.DueDate.HasValue ? task.DueDate.Value.ToShortDateString() : "",
             Priority = task.Priority.ToString(),
@@ -124,10 +149,10 @@ public class TaskService : ITaskService
 
         task!.Priority = priority switch
         {
-            "🟢 Low Priority" => TaskPriority.Low,
-            "🟡 Medium Priority" => TaskPriority.Medium,
-            "🔴 High Priority" => TaskPriority.High,
-            _ => task!.Priority
+            "low" => TaskPriority.Low,
+            "medium" => TaskPriority.Medium,
+            "high" => TaskPriority.High,
+            _ => task.Priority
         };
 
         await _taskRepository.UpdateAsync(task);
@@ -144,5 +169,37 @@ public class TaskService : ITaskService
         await _taskRepository.DeleteAsync(taskId);
         
         return "Task deleted";
+    }
+
+    public async Task<int> ChangeTaskState(int taskId, int taskState, int userId, int projectId)
+    {
+        var projectUser = await _projectUserRepository.FindFirstAsync(x => x.UserId == userId && x.ProjectId == projectId);
+        var task = await _taskRepository.GetTaskWithDetailsAsync(taskId);
+
+        if (projectUser!.Role != ProjectRole.Leader && projectUser.Id != task.AssignedToId) return -1;
+
+        task.State = taskState switch
+        {
+            0 => TaskState.Todo,
+            1 => TaskState.InProgress,
+            2 => TaskState.Done,
+            _ => task.State
+        };
+        
+        await _taskRepository.UpdateAsync(task);
+        return taskId;
+    }
+
+    public async Task<int> ChangeTaskDescription(int userId, int taskId, int projectId, string description)
+    {
+        var projectUser = await _projectUserRepository.FindFirstAsync(x => x.UserId == userId && x.ProjectId == projectId);
+        var task = await _taskRepository.GetTaskWithDetailsAsync(taskId);
+
+        if (projectUser!.Role != ProjectRole.Leader && projectUser.Id != task.AssignedToId) return -1;
+
+        task.Description = description;
+
+        await _taskRepository.UpdateAsync(task);
+        return taskId;
     }
 }
