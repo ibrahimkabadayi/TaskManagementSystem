@@ -2,5 +2,5 @@
 
 public class GetTaskDetailsRequest
 {
-    public required int TaskId;
+    public required int TaskId { get; set; }
 }

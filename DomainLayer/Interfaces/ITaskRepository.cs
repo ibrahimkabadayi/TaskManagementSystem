@@ -7,4 +7,5 @@ public interface ITaskRepository : IRepository<Task>
     Task<IEnumerable<Task>> GetTasksByUserAsync(int userId);
     Task<IEnumerable<Task>> GetPendingTasksAsync();
     Task<IEnumerable<Task>> GetCompletedTasksAsync(int sectionId);
+    Task<Task> GetTaskWithDetailsAsync(int taskId);
 }

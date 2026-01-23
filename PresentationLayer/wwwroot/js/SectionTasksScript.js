@@ -1,11 +1,11 @@
 let currentOpenedTaskId = 0;
-async function openTaskModal(TaskId) {
-    currentOpenedTaskId = TaskId;
+async function openTaskModal(taskId) {
+    currentOpenedTaskId = taskId;
     const modal = document.getElementById('taskModalOverlay');
     if (!modal) return;
 
     try {
-        const response = await fetch(`/Task/GetTaskDetails/${TaskId}`, {
+        const response = await fetch(`/Task/GetTaskDetails/${taskId}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
         });
@@ -27,6 +27,9 @@ async function openTaskModal(TaskId) {
             assignedToName: result.assignedToName,
             assignedInitial: result.assignedInitial,
             assignedColor: result.assignedColor,
+            finishedByName: result.finishedByName,
+            finishedByInitial: result.finishedByInitial,
+            finishedByColor: result.finishedByColor,
             createdDate: result.createdDate,
             dueDate: result.dueDate,
             priorityValue: result.priority,
@@ -134,17 +137,63 @@ async function openTaskModal(TaskId) {
 
 async function changeTaskPriority() {
     const prioritySelect = document.getElementById('modalPrioritySelect');
-    const priority = await prioritySelect.value;
+    const priority = prioritySelect.value;
     
-    await fetch('Task/ChangeTaskPriority', {
-        method: 'PATCH',
+    await fetch('/Task/UpdatePriority', {
+        method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: {
+        body: JSON.stringify({
             TaskId: currentOpenedTaskId,
             Priority: priority
+        })
+    }).then((response) => {
+        if (!response.ok) {
+            alert("Fetch error for changing task priority");
         }
+    })
+}
+
+async function changeTaskState(userId, projectId) {
+    const stateSelect = document.getElementById('modalStateSelect');
+    const state = stateSelect.value;
+
+    await fetch('/Task/UpdateTaskState', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            TaskId: currentOpenedTaskId,
+            State: state,
+            UserId: userId,
+            ProjectId: projectId
+        })
+    }).then((response) => {
+        if (!response.ok) {
+            alert("Fetch error for changing task priority");
+        }
+    })
+}
+
+async function saveTaskDescription(userId, projectId){
+    const taskId = currentOpenedTaskId;
+    
+    const taskDescription = document.getElementById('modalTaskDesc');
+    const description = taskDescription.value;
+
+    await fetch('/Task/UpdateDescription', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            TaskId: taskId,
+            UserId: userId,
+            ProjectId: projectId,
+            Description: description,
+        })
     }).then((response) => {
         if (!response.ok) {
             alert("Fetch error for changing task priority");
@@ -159,7 +208,7 @@ async function deleteTask(userId) {
     const projectId = sectionTitle ? sectionTitle.getAttribute('project-id') : 0;
 
     try {
-        const response = await fetch('/Task/DeleteTask/', {
+        const response = await fetch('/Task/DeleteTask', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
