@@ -55,18 +55,39 @@ public class TaskController : Controller
         return (result == request.TaskId) ? Ok()  : BadRequest();
     }
     
+    [HttpPost("Task/UpdateDueDate")]
+    public async Task<IActionResult> ChangeTaskDueDate([FromBody] ChangeTaskDueDateRequest request)
+    {
+        var result = await _taskService.ChangeTaskDueDate(request.UserId, request.TaskId, request.ProjectId, request.DueDate);
+        return (result == request.TaskId) ? Ok()  : BadRequest();
+    }
+    
+    [HttpPost("Task/AssignUser")]
+    public async Task<IActionResult> AssignUserToTask([FromBody] AssignUserToTaskRequest request)
+    {
+        var result = await _taskService.AssignUserToTask(request.UserId, request.TaskId, request.ProjectId, request.UserEmail);
+        return (result == request.TaskId) ? Ok()  : BadRequest();
+    }
+    
     [HttpPost] 
     [IgnoreAntiforgeryToken]
     public async Task<IActionResult> SaveTask([FromBody] AddTaskRequest request)
     {
         var result = await _taskService.SaveTaskAsync(request.UserId, request.TaskTitle, request.TaskGroupName, request.SectionId);
-        return (result.Title == request.TaskTitle)  ? Ok() : BadRequest();
+        return (result.Title == request.TaskTitle) ? Ok(new { id = result.Id }) : BadRequest();
     }
 
     [HttpPatch]
     public async Task<IActionResult> ChangeTaskGroup([FromBody] ChangeTaskGroupRequest request)
     {
         var result = await _taskService.ChangeTaskGroup(request.TaskId, request.TaskGroupId, request.NewPosition);
-        return (result == request.TaskGroupId)? Ok() : BadRequest();
+        return (result == request.TaskGroupId) ? Ok() : BadRequest();
+    }
+    
+    [HttpPost("Task/UpdateTitle")]
+    public async Task<IActionResult> UpdateTitle([FromBody] UpdateTaskTitleRequest request)
+    {
+        var result = await _taskService.UpdateTitle(request.TaskId, request.Title, request.UserId, request.ProjectId);
+        return Ok(new { message = "Title updated successfully" });
     }
 }

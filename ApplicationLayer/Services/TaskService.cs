@@ -117,10 +117,12 @@ public class TaskService : ITaskService
 
     public async Task<int> ChangeTaskGroup(int taskId, int taskGroupId, int newPosition)
     {
-        var currentTask = await _taskRepository.GetByAsyncId(taskId);
+        var currentTask = await _taskRepository.GetTaskWithDetailsAsync(taskId);
         var droppedTaskGroup = await _taskGroupRepository.GetByAsyncId(taskGroupId);
 
-        var oldTaskList = currentTask!.TaskGroup.Tasks;
+        if (droppedTaskGroup == null) return -1;
+
+        var oldTaskList = currentTask.TaskGroup.Tasks;
 
         foreach (var task in oldTaskList!.Where(task => task.Position > currentTask.Position))
         {
@@ -128,15 +130,18 @@ public class TaskService : ITaskService
             await _taskRepository.UpdateAsync(task);
         }
 
-        currentTask.TaskGroup = droppedTaskGroup!;
+        currentTask.TaskGroup = droppedTaskGroup;
         currentTask.Position = newPosition;
 
-        var newTaskList = droppedTaskGroup!.Tasks;
-
-        foreach (var task in newTaskList!.Where(task => task.Position >= currentTask.Position))
+        if (droppedTaskGroup.Tasks != null)
         {
-            task.Position++;
-            await _taskRepository.UpdateAsync(task);
+            var newTaskList = droppedTaskGroup.Tasks;
+
+            foreach (var task in newTaskList.Where(task => task.Position >= currentTask.Position && task.Id != droppedTaskGroup.Id))
+            {
+                task.Position++;
+                await _taskRepository.UpdateAsync(task);
+            }
         }
         
         await _taskRepository.UpdateAsync(currentTask);
@@ -199,6 +204,67 @@ public class TaskService : ITaskService
 
         task.Description = description;
 
+        await _taskRepository.UpdateAsync(task);
+        return taskId;
+    }
+
+    public async Task<int> ChangeTaskDueDate(int userId, int taskId, int projectId, string dueDate)
+    {
+        var projectUser = await _projectUserRepository.FindFirstAsync(x => x.UserId == userId && x.ProjectId == projectId);
+        var task = await _taskRepository.GetTaskWithDetailsAsync(taskId);
+
+        if (projectUser!.Role != ProjectRole.Leader && projectUser.Id != task.AssignedToId) return -1;
+        
+        var splitDate = dueDate.Split('-');
+        var year = int.Parse(splitDate[0]);
+        var month = int.Parse(splitDate[1]);
+        var day = int.Parse(splitDate[2]);
+        
+        var date = new DateTime(year, month, day);
+        task.DueDate = date;
+        
+        await _taskRepository.UpdateAsync(task);
+        return taskId;
+    }
+
+    public async Task<int> AssignUserToTask(int userId, int taskId, int projectId, string userEmail)
+    {
+        var projectUser = await _projectUserRepository.FindFirstAsync(x => x.UserId == userId && x.ProjectId == projectId);
+
+        if (projectUser!.Role != ProjectRole.Leader) return -1;
+        
+        var user =  await _userRepository.FindFirstAsync(x => x.Email == userEmail);
+        
+        if (user == null)
+        {
+            Console.WriteLine("Could not find user with email: " + userEmail);
+            return -1;
+        }
+
+        var assignUser =
+            await _projectUserRepository.FindFirstAsync(x => x.User.Email == userEmail && x.ProjectId == projectId);
+
+        if (assignUser == null)
+        {
+            Console.WriteLine("Could not find project user with email: " + userEmail + ", project id: " + projectId);
+            return -1;
+        }
+
+        var task = await _taskRepository.GetTaskWithDetailsAsync(taskId);
+
+        task.AssignedToId = assignUser.Id;
+        await _taskRepository.UpdateAsync(task);
+        return taskId;
+    }
+
+    public async Task<int> UpdateTitle(int taskId, string title, int userId, int projectId)
+    {
+        var projectUser = await _projectUserRepository.FindFirstAsync(x => x.UserId == userId && x.ProjectId == projectId);
+        var task = await _taskRepository.GetTaskWithDetailsAsync(taskId);
+
+        if (projectUser!.Role != ProjectRole.Leader && projectUser.Id != task.AssignedToId) return -1;
+
+        task.Title = title;
         await _taskRepository.UpdateAsync(task);
         return taskId;
     }
