@@ -38,8 +38,6 @@ async function openTaskModal(taskId) {
 
         const titleInput = document.getElementById('modalTaskTitle');
         titleInput.value = taskData.title || '';
-        titleInput.style.height = 'auto';
-        titleInput.style.height = titleInput.scrollHeight + 'px';
 
         const listNameEl = document.getElementById('modalListName');
         if (listNameEl) listNameEl.innerText = taskData.listName || '...';
@@ -76,7 +74,7 @@ async function openTaskModal(taskId) {
 
                 if (assignedWrapper) {
                     assignedWrapper.onclick = function(event) {
-                        if(typeof openUserProfile === 'function') openUserProfile(event, taskData.assignedInitial);
+                        openUserSelectionMenu(event);
                     };
                 }
             } else {
@@ -89,7 +87,11 @@ async function openTaskModal(taskId) {
                 assignedName.style.color = '#5e6c84';
                 assignedName.style.fontStyle = 'italic';
 
-                if (assignedWrapper) assignedWrapper.onclick = null;
+                if (assignedWrapper) {
+                    assignedWrapper.onclick = function(event) {
+                        openUserSelectionMenu(event);
+                    };
+                }
             }
         }
 
@@ -101,23 +103,27 @@ async function openTaskModal(taskId) {
 
         const dueDateInput = document.getElementById('modalDueDateInput');
         if (dueDateInput) {
-            const dateStr = taskData.dueDate || "";
-            if (dateStr) {
-                const months = {
-                    "Jan": "01", "Feb": "02", "Mar": "03", "Apr": "04", "May": "05", "Jun": "06",
-                    "Jul": "07", "Aug": "08", "Sep": "09", "Oct": "10", "Nov": "11", "Dec": "12"
-                };
-                const parts = dateStr.split(' ');
+            dueDateInput.value = "";
 
-                if (parts.length === 3) {
-                    const day = parts[0].padStart(2, '0');
-                    const month = months[parts[1]];
-                    const year = parts[2];
-                    dueDateInput.value = `${year}-${month}-${day}`;
+            const dateStr = taskData.dueDate;
+
+            if (dateStr) {
+                const dateObj = new Date(dateStr);
+
+                if (!isNaN(dateObj.getTime())) {
+                    const yyyy = dateObj.getFullYear();
+                    const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+                    const dd = String(dateObj.getDate()).padStart(2, '0');
+
+                    dueDateInput.value = `${yyyy}-${mm}-${dd}`;
                 }
-            } else {
-                dueDateInput.value = "";
             }
+
+            const today = new Date();
+            const t_yyyy = today.getFullYear();
+            const t_mm = String(today.getMonth() + 1).padStart(2, '0');
+            const t_dd = String(today.getDate()).padStart(2, '0');
+            dueDateInput.min = `${t_yyyy}-${t_mm}-${t_dd}`;
         }
 
         const descInput = document.getElementById('modalTaskDesc');
@@ -133,6 +139,211 @@ async function openTaskModal(taskId) {
     } catch (error) {
         console.error(error);
     }
+}
+
+function closeTaskModal(event) {
+    const userSelectionPopup = document.getElementById('userSelectionPopup');
+    if (userSelectionPopup) {
+        userSelectionPopup.remove();
+    }
+    currentOpenedTaskId = 0;
+    if (!event) {
+        document.getElementById('taskModalOverlay').style.display = 'none';
+        return;
+    }
+    if (event.target.id === 'taskModalOverlay') {
+        document.getElementById('taskModalOverlay').style.display = 'none';
+    }
+}
+
+async function saveTaskTitle(inputElement) {
+    const newTitle = inputElement.value.trim();
+    const taskId = currentOpenedTaskId;
+
+    if (!newTitle) {
+        alert("Task title can't be empty!");
+        return;
+    }
+
+    try {
+        const response = await fetch('/Task/UpdateTitle', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                TaskId: taskId,
+                Title: newTitle,
+                UserId: document.querySelector('.section-title').getAttribute('current-user-id'),
+                ProjectId: document.querySelector('.section-title').getAttribute('project-id'),
+            })
+        });
+
+        if (!response.ok) {
+            console.error("Title could not be updated!.");
+            return;
+        }
+
+        const taskCard = document.querySelector(`.Task[data-id="${taskId}"]`);
+        if (taskCard) {
+            const titleDiv = taskCard.querySelector('.Task-Title');
+            if (titleDiv) {
+                titleDiv.innerText = newTitle;
+            }
+        }
+
+        console.log("Title Updated.");
+
+    } catch (error) {
+        console.error("Fetch error:", error);
+    }
+}
+
+function openUserSelectionMenu(event) {
+    event.stopPropagation();
+
+    if (document.getElementById('userSelectionPopup')) {
+        document.getElementById('userSelectionPopup').remove();
+    }
+
+    const menu = document.createElement('div');
+    menu.id = 'userSelectionPopup';
+    menu.className = 'list-menu-popup';
+    menu.style.display = 'flex';
+    menu.style.flexDirection = 'column';
+    menu.style.zIndex = '25000';
+
+    const header = document.createElement('div');
+    header.className = 'list-menu-header';
+    header.innerHTML = '<span class="list-menu-title">Kişi Seç</span>';
+    menu.appendChild(header);
+
+    const content = document.createElement('div');
+    content.className = 'list-menu-content';
+
+    Object.values(projectUsersData).forEach(user => {
+
+        const item = document.createElement('button');
+        item.className = 'list-menu-item';
+        item.style.display = 'flex';
+        item.style.alignItems = 'center';
+        item.style.gap = '10px';
+
+        item.innerHTML = `
+            <div class="user-avatar-sm" style="background-color:${user.color}; width:24px; height:24px; font-size:10px;">${user.initials}</div>
+            <span>${user.fullName}</span>
+        `;
+
+        item.onclick = async function() {
+            await assignUserToTask(user.email);
+            menu.remove();
+        };
+
+        content.appendChild(item);
+    });
+
+    menu.appendChild(content);
+    document.body.appendChild(menu);
+
+    const rect = event.currentTarget.getBoundingClientRect();
+    menu.style.position = 'fixed';
+    menu.style.top = (rect.bottom + 5) + 'px';
+    menu.style.left = rect.left + 'px';
+
+    document.addEventListener('click', function closeMenu(e) {
+        if (!menu.contains(e.target) && e.target !== event.currentTarget) {
+            menu.remove();
+            document.removeEventListener('click', closeMenu);
+        }
+    });
+}
+
+async function assignUserToTask(userEmail) {
+    const selectedUserData = projectUsersData[userEmail];
+    const selectedUserInitials = selectedUserData ? selectedUserData.initials : '';
+
+    const taskId = currentOpenedTaskId;
+    const sectionTitle = document.querySelector('.section-title') || document.querySelector('.task-group-title');
+    const projectId = sectionTitle ? sectionTitle.getAttribute('project-id') : 0;
+
+    const userId = sectionTitle ? sectionTitle.getAttribute('current-user-id') : 0;
+
+    await fetch('/Task/AssignUser', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            UserEmail: userEmail,
+            TaskId: taskId,
+            ProjectId: projectId,
+            UserId: userId,
+        })
+    }).then((response) => {
+        if (!response.ok) {
+            alert("Atama işlemi sırasında bir hata oluştu.");
+        } else {
+
+            if (selectedUserData) {
+                const assignedAvatar = document.getElementById('modalAssignedToAvatar');
+                const assignedName = document.getElementById('modalAssignedToName');
+
+                if (assignedAvatar && assignedName) {
+                    assignedAvatar.innerText = selectedUserInitials;
+                    assignedAvatar.style.backgroundColor = selectedUserData.color;
+                    assignedAvatar.style.color = '#fff';
+                    assignedAvatar.classList.remove('unassigned-icon');
+
+                    assignedName.innerText = selectedUserData.fullName;
+                    assignedName.style.color = '#172b4d';
+                    assignedName.style.fontStyle = 'normal';
+                }
+
+                const taskCard = document.getElementById(taskId);
+                if (taskCard) {
+                    let cardIcon = taskCard.querySelector('.assigned-to-profile-icon');
+
+                    if (!cardIcon) {
+                        cardIcon = document.createElement('div');
+                        cardIcon.className = 'assigned-to-profile-icon';
+
+                        const titleEl = taskCard.querySelector('.Task-Title');
+                        if(titleEl) titleEl.after(cardIcon);
+                        else taskCard.appendChild(cardIcon);
+                    }
+
+                    cardIcon.innerText = selectedUserInitials;
+                    cardIcon.style.backgroundColor = selectedUserData.color;
+                    cardIcon.style.display = 'flex';
+                }
+            }
+
+            const menu = document.getElementById('userSelectionPopup');
+            if (menu) menu.remove();
+        }
+    })
+}
+
+async function changeTaskDueDate(userId, projectId){
+    const dateSelect = document.getElementById('modalDueDateInput');
+    const dueDate = dateSelect.value;
+    
+    await fetch('/Task/UpdateDueDate', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            TaskId: currentOpenedTaskId,
+            DueDate: dueDate,
+            ProjectId: projectId,
+            UserId: userId,
+        })
+    }).then((response) => {
+        if (!response.ok) {
+            alert(response.message);
+        }
+    })
 }
 
 async function changeTaskPriority() {
@@ -180,8 +391,8 @@ async function changeTaskState(userId, projectId) {
 async function saveTaskDescription(userId, projectId){
     const taskId = currentOpenedTaskId;
     
-    const taskDescription = document.getElementById('modalTaskDesc');
-    const description = taskDescription.value;
+    const taskDescriptionInput = document.getElementById('modalTaskDesc');
+    const description = taskDescriptionInput.value.trim();
 
     await fetch('/Task/UpdateDescription', {
         method: 'POST',
@@ -198,7 +409,24 @@ async function saveTaskDescription(userId, projectId){
         if (!response.ok) {
             alert("Fetch error for changing task priority");
         }
-    })
+
+        const taskCard = document.getElementById(taskId);
+
+        if (taskCard) {
+            const existingIcon = taskCard.querySelector('.task-desc-button');
+
+            if (description && !existingIcon) {
+                const iconDiv = document.createElement('div');
+                iconDiv.className = 'task-desc-button';
+                iconDiv.innerHTML = '<i class="fa-solid fa-align-left"></i>';
+                taskCard.appendChild(iconDiv);
+            }
+            else if (!description && existingIcon) {
+                existingIcon.remove();
+            }
+        }
+        closeTaskModal(null);
+    });
 }
 
 async function deleteTask(userId) {
@@ -243,16 +471,7 @@ async function deleteTask(userId) {
         alert("Could not send api.");
     }
 }
-function closeTaskModal(event) {
-    currentOpenedTaskId = 0;
-    if (!event) {
-        document.getElementById('taskModalOverlay').style.display = 'none';
-        return;
-    }
-    if (event.target.id === 'taskModalOverlay') {
-        document.getElementById('taskModalOverlay').style.display = 'none';
-    }
-}
+
 function showAddCardForm(btnElement) {
     const footer = btnElement.parentElement;
 
@@ -282,15 +501,14 @@ async function saveNewCard(btnElement, userId, sectionId) {
 
     const taskGroupName = taskGroup.querySelector('.task-group-title').innerText.trim();
 
-    const sectionElement = document.querySelector('.section-title');
-    const sectionName = sectionElement ? sectionElement.textContent.trim() : "Default Section";
-
     const footer = btnElement.closest('.task-footer');
     const input = footer.querySelector('textarea');
     const title = input.value.trim();
 
     if (title) {
         const newCard = document.createElement('div');
+        
+        let taskId;
         
         await fetch('/Task/SaveTask', 
             {
@@ -305,16 +523,23 @@ async function saveNewCard(btnElement, userId, sectionId) {
                     SectionId: parseInt(sectionId),
                 })
             })
-            .then((response) => {
+            .then(async (response) => {
                 if (!response.ok) {
                     alert("Could not add another task please try again.");
                 }
+                const data = await response.json();
+                
+                taskId = data.id;
             });
         
         
         newCard.className = 'Task';
+
+        newCard.id = taskId;
+        newCard.setAttribute('data-id', taskId);
+        
         newCard.onclick = function() {
-            openTaskModal(title, taskGroupName, sectionName)
+            openTaskModal(taskId);
         };
         
         newCard.innerHTML = `
@@ -474,7 +699,7 @@ async function makeColumnDroppable(column) {
         const newPositionIndex = currentTasksInOrder.indexOf(draggable);
 
         const taskId = draggable.id;
-        const newTaskGroupId = column.id;
+        const newTaskGroupId = column.id.replace('container-', '');
         
         try {
             const response = await fetch('/Task/ChangeTaskGroup', {
@@ -837,21 +1062,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const sectionTitle = document.querySelector('.section-title');
     const projectId = sectionTitle ? sectionTitle.getAttribute('project-id') : 1;
-    
 
     try {
         const response = await fetch(`/Section/GetProjectUsers/${projectId}`, {
             method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            headers: { 'Content-Type': 'application/json' }
         });
 
         if (response.ok) {
             const userList = await response.json();
 
             userList.forEach(user => {
-
                 const names = user.fullName.split(' ');
                 let initials = names[0][0];
                 if (names.length > 1) {
@@ -859,7 +1080,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
                 initials = initials.toUpperCase();
 
-                projectUsersData[initials] = {
+                // HATA DÜZELTME: Key olarak initials değil, email kullanıyoruz.
+                // Initials bilgisini objenin içine saklıyoruz.
+                projectUsersData[user.email] = {
+                    initials: initials, // Baş harfleri burada sakla
                     fullName: user.fullName,
                     email: user.email,
                     role: user.role,

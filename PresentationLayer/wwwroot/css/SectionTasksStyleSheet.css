@@ -166,7 +166,7 @@ body {
 .task-list-container {
     flex: 1; /* Boş kalan TÜM alanı bu kaplasın */
     overflow-y: auto; /* Görevler çoksa sadece burası scroll olsun */
-    min-height: 50px; /* İçi boş olsa bile sürükleme yapılabilsin diye yükseklik ver */
+    min-height: 10px; /* İçi boş olsa bile sürükleme yapılabilsin diye yükseklik ver */
     display: flex;
     flex-direction: column;
 }

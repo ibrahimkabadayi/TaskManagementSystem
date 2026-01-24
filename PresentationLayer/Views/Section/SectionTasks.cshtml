@@ -35,7 +35,7 @@
 
 <div class="section-header">
     <div class="section-header-left-side">
-        <div class="section-title" onclick="" project-id="@project.Id">
+        <div class="section-title" onclick="" project-id="@project.Id" current-user-id="@currentUserId">
             @project.Name | @Model.Name
         </div>
     </div>
@@ -154,7 +154,13 @@
         <div class="task-modal-header">
             <div class="title-section">
                 <div class="title-content" style="margin-left: 0;">
-                    <input type="text" id="modalTaskTitle" class="task-title-input" spellcheck="false">
+                    <input type="text" 
+                           id="modalTaskTitle" 
+                           class="task-title-input" 
+                           spellcheck="false" 
+                           placeholder="Task Title..."
+                           onblur="saveTaskTitle(this)" 
+                           onkeydown="if(event.key === 'Enter') { this.blur(); }">
                     <div class="list-meta-info">
                         <span class="list-name-link">At the <span id="modalListName">...</span></span> task group
                     </div>
@@ -214,7 +220,7 @@
                         </div>
                         <div class="date-item">
                             <i class="fa-regular fa-clock"></i>
-                            <input type="date" id="modalDueDateInput" class="date-picker-style">
+                            <input type="date" id="modalDueDateInput" class="date-picker-style" onchange="changeTaskDueDate(@currentUserId, @project.Id)">
                         </div>
                     </div>
                 </div>
