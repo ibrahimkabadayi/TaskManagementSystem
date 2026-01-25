@@ -45,7 +45,7 @@
             @{
                 foreach (var projectUser in project.ProjectUsers)
                 {
-                    <div class="user-icon" id="@projectUser.Id" style="background-color: @projectUser.User.ProfileColor;" onclick="openUserProfile(event, '@projectUser.User.ProfileLetters')">@projectUser.User.ProfileLetters</div>
+                    <div class="user-icon" id="@projectUser.Id" style="background-color: @projectUser.User.ProfileColor;" onclick="openUserProfile(event, '@projectUser.User.Email')">@projectUser.User.ProfileLetters</div>
                 }
             }
         </div>
@@ -69,7 +69,7 @@
         foreach (var taskGroup in Model.TasksGroupDtos)
         {
             
-            <div class="task-group">
+            <div class="task-group" id="@taskGroup.Id">
                 <div class="task-group-title" id="@taskGroup.Id">
                     @taskGroup.Name <i class="fa-solid fa-ellipsis" style="float:right; font-size:12px; cursor: pointer;" onclick="openListMenu(event, this, @taskGroup.Id)"></i>
                 </div>
@@ -77,7 +77,7 @@
                 <div class="task-list-container" id="container-@taskGroup.Id">
                     @foreach (var task in taskGroup.TaskDtos!)
                     {
-                        <div class="Task" id="@task.Id" data-id="@task.Id" onclick="openTaskModal(@task.Id)">
+                        <div class="Task" id="@task.Id" data-id="@task.Id" data-state="@task.State" data-priority="@task.Priority" onclick="openTaskModal(@task.Id)">
                             <div class="Task-Title">
                                 @task.Title
                             </div>
@@ -388,7 +388,7 @@
 
     <div class="profile-stats-row">
         <div class="stat-box">
-            <span class="stat-value" id="profileCardCount">0</span>
+            <span class="stat-value" id="profileCardCount">Offline</span>
             <span class="stat-label">Active Tasks</span>
         </div>
         <div class="stat-box">
@@ -435,9 +435,10 @@
                 nameModifier = pName == cName ? "(you)" : string.Empty;
                 
                 <label class="filter-checkbox-row">
-                    <input type="checkbox" class="filter-checkbox" value="@projectUser.User.ProfileLetters @nameModifier" onchange="applyFilters()">
+                    <input type="checkbox" class="filter-checkbox" value="@projectUser.User.ProfileLetters" onchange="applyFilters()">
+    
                     <div class="filter-avatar" style="background-color: @projectUser.User.ProfileColor;">@projectUser.User.ProfileLetters</div>
-                    <span class="filter-text">@projectUser.User.Name</span>
+                    <span class="filter-text">@projectUser.User.Name @nameModifier</span>
                 </label>
             }
         </div>

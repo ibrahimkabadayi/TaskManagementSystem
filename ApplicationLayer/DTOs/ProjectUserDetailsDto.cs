@@ -7,4 +7,5 @@ public class ProjectUserDetailsDto
     public required string Email { get; set; }
     public required string Role { get; set; }
     public required string ProfileColor { get; set; }
+    public required string IsActive { get; set; }
 }

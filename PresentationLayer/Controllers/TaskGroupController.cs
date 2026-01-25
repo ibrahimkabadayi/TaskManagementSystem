@@ -17,7 +17,7 @@ public class TaskGroupController : Controller
     public async Task<IActionResult> SaveNewTaskGroup([FromBody] AddTaskGroupRequest request)
     {
         var taskGroupDto = await _taskGroupService.SaveTaskGroupAsync(request.Name, request.SectionId, request.UserId);
-        return Ok(new JsonResult(new { id = taskGroupDto!.Id }));
+        return Ok(new { id = taskGroupDto!.Id });
     }
 
     [HttpPatch]
@@ -49,7 +49,7 @@ public class TaskGroupController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> GetTaskPriorities(GetTaskPrioritiesRequest request)
+    public async Task<IActionResult> GetTaskPriorities([FromBody] GetTaskPrioritiesRequest request)
     {
         var allTasks = await _taskGroupService.GetAllTasksAsync(request.TaskGroupId);
         

@@ -134,6 +134,22 @@ async function openTaskModal(taskId) {
             prioritySelect.value = (taskData.priorityValue || 'medium').toLowerCase();
         }
 
+        const stateSelect = document.getElementById('modalStateSelect');
+        if (stateSelect) {
+            let stateValue = taskData.state;
+
+            if (typeof stateValue === 'string') {
+                stateValue = stateValue.toLowerCase();
+            }
+            else if (typeof stateValue === 'number') {
+                if (stateValue === 0) stateValue = 'todo';
+                else if (stateValue === 1) stateValue = 'inprogress';
+                else if (stateValue === 2) stateValue = 'done';
+            }
+
+            stateSelect.value = stateValue;
+        }
+
         modal.style.display = 'flex';
 
     } catch (error) {
@@ -281,7 +297,7 @@ async function assignUserToTask(userEmail) {
         })
     }).then((response) => {
         if (!response.ok) {
-            alert("Atama işlemi sırasında bir hata oluştu.");
+            alert("There was a problem assigning user to task. Please try again.");
         } else {
 
             if (selectedUserData) {
@@ -349,12 +365,15 @@ async function changeTaskDueDate(userId, projectId){
 async function changeTaskPriority() {
     const prioritySelect = document.getElementById('modalPrioritySelect');
     const priority = prioritySelect.value;
-    
+
+    let priorityVal = 0;
+    if(priority === 'high') priorityVal = 2;
+    else if(priority === 'medium') priorityVal = 1;
+    else priorityVal = 0;
+
     await fetch('/Task/UpdatePriority', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             TaskId: currentOpenedTaskId,
             Priority: priority
@@ -362,6 +381,11 @@ async function changeTaskPriority() {
     }).then((response) => {
         if (!response.ok) {
             alert("Fetch error for changing task priority");
+        } else {
+            const taskCard = document.getElementById(currentOpenedTaskId) || document.querySelector(`.Task[data-id="${currentOpenedTaskId}"]`);
+            if(taskCard) {
+                taskCard.setAttribute('data-priority', priorityVal); 
+            }
         }
     })
 }
@@ -372,9 +396,7 @@ async function changeTaskState(userId, projectId) {
 
     await fetch('/Task/UpdateTaskState', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             TaskId: currentOpenedTaskId,
             State: state,
@@ -383,7 +405,12 @@ async function changeTaskState(userId, projectId) {
         })
     }).then((response) => {
         if (!response.ok) {
-            alert("Fetch error for changing task priority");
+            alert("Fetch error for changing task state");
+        } else {
+            const taskCard = document.getElementById(currentOpenedTaskId) || document.querySelector(`.Task[data-id="${currentOpenedTaskId}"]`);
+            if(taskCard) {
+                taskCard.setAttribute('data-state', state);
+            }
         }
     })
 }
@@ -583,48 +610,60 @@ async function saveNewList(btnElement, sectionId, userId) {
     const input = wrapper.querySelector('input');
     const listTitle = input.value.trim();
 
-    if (listTitle) {
+    if (!listTitle) return;
 
-        let newTaskGroupId;
+    try {
+        const response = await fetch('/TaskGroup/SaveNewTaskGroup/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                Name: listTitle,
+                SectionId: sectionId,
+                UserId: userId
+            })
+        });
 
-        await fetch('/TaskGroup/SaveNewTaskGroup/',
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    Name: listTitle,
-                    SectionId: sectionId,
-                    UserId: userId
-                })
-            }).then(async (response) => {
-                if (!response.ok) {
-                    alert("Could not add another task group please try again.");
-                    return false;
-                }
-                newTaskGroupId = response.id;
-        })
+        if (!response.ok) {
+            alert("List could not be saved. Please try again.");
+            return;
+        }
+
+        const data = await response.json();
+
+
+        const newTaskGroupId = data.id;
         
         const newListHTML = `
             <div class="task-group" id="${newTaskGroupId}">
-                <div class="task-group-header" style="display: flex; justify-content: space-between; align-items: center;">
-                    <div class="task-group-title">${listTitle}</div>
-                    <div class="task-group-menu" style="margin-left: auto; cursor: pointer;" onclick="openListMenu(event, this)">
-                        <i class="fa-solid fa-ellipsis"></i>
-                    </div>
+                <div class="task-group-title" id="${newTaskGroupId}">
+                    ${listTitle} 
+                    <i class="fa-solid fa-ellipsis" style="float:right; font-size:12px; cursor: pointer;" 
+                       onclick="openListMenu(event, this, ${newTaskGroupId})"></i>
+                </div>
+                
+                <div class="task-list-container" id="container-${newTaskGroupId}">
                 </div>
                 
                 <div class="task-footer">
                     <div class="add-task-btn" onclick="showAddCardForm(this)">
-                        <i class="fa-solid fa-plus"></i> Kart ekle
+                        <i class="fa-solid fa-plus"></i> Add Task
                     </div>
+
                     <div class="add-card-form" style="display: none;">
-                        <textarea class="card-composer-input" placeholder="Kart başlığı..." rows="3" onkeydown="handleEnterKey(event, this)"></textarea>
+                        <textarea class="card-composer-input" placeholder="Enter a task title..." rows="3" 
+                                  onkeydown="handleEnterKey(event, this, ${userId})"></textarea>
+
                         <div class="composer-controls">
                             <div class="composer-left">
-                                <button class="btn-add-card" onclick="saveNewCard(this)">Ekle</button>
-                                <button class="btn-close-composer" onclick="hideAddCardForm(this)"><i class="fa-solid fa-xmark"></i></button>
+                                <button class="btn-add-card" 
+                                        onclick="saveNewCard(this, '${userId}', '${newTaskGroupId}')">Add Task</button>
+                            </div>
+
+                            <div class="composer-right">
+                                <button class="btn-close-composer" onclick="hideAddCardForm(this)" 
+                                        style="background:none; border:none; cursor:pointer; font-size:16px; color:#6b778c;">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -633,13 +672,20 @@ async function saveNewList(btnElement, sectionId, userId) {
 
         wrapper.insertAdjacentHTML('beforebegin', newListHTML);
 
-        const newListElement = wrapper.previousElementSibling;
-        if(newListElement) {
-            makeColumnDroppable(newListElement);
+        const newTaskGroupDiv = document.getElementById(newTaskGroupId);
+        if (newTaskGroupDiv) {
+            const newContainer = newTaskGroupDiv.querySelector('.task-list-container');
+            if(newContainer) {
+                makeColumnDroppable(newContainer);
+            }
         }
 
         input.value = '';
         hideAddListForm(btnElement);
+
+    } catch (error) {
+        console.error("List saving error:", error);
+        alert("There was a problem saving list. Please try again.");
     }
 }
 
@@ -939,107 +985,97 @@ async function actionDeleteList(taskGroupId) {
 
 async function actionSortTasks(criteria) {
     if (!currentListElement) return;
-    
+
     const tasks = Array.from(currentListElement.querySelectorAll('.Task'));
     const taskGroupId = currentListElement.id;
-    const footer = currentListElement.querySelector('.task-footer');
+
+    const taskContainer = currentListElement.querySelector('.task-list-container');
+    if (!taskContainer) return;
 
     if (criteria === 'date') {
         try {
-            const response = await fetch('/TaskGroup/GetTaskStartDates/', {
+            const response = await fetch('/TaskGroup/GetTaskStartDates', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    TaskGroupId: taskGroupId
-                })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ TaskGroupId: taskGroupId })
             });
 
             if (!response.ok) return false;
-
             const dateData = await response.json();
 
             tasks.sort((a, b) => {
                 const idA = a.getAttribute('data-id');
                 const idB = b.getAttribute('data-id');
 
-                const taskInfoA = dateData.find(x => x.id === idA);
-                const taskInfoB = dateData.find(x => x.id === idB);
+                const taskInfoA = dateData.find(x => x.id == idA);
+                const taskInfoB = dateData.find(x => x.id == idB);
 
-                const dateA = taskInfoA && taskInfoA.startDate ? new Date(taskInfoA.startDate) : new Date(8640000000000000);
-                const dateB = taskInfoB && taskInfoB.startDate ? new Date(taskInfoB.startDate) : new Date(8640000000000000);
+                const dateA = taskInfoA && taskInfoA.startDate ? new Date(taskInfoA.startDate) : new Date(0);
+                const dateB = taskInfoB && taskInfoB.startDate ? new Date(taskInfoB.startDate) : new Date(0);
 
-                return dateA - dateB;
-            });
-
-            tasks.forEach(task => {
-                currentListElement.insertBefore(task, footer);
+                return dateB - dateA;
             });
 
         } catch (error) {
             console.error("Sorting error:", error);
+            return;
         }
     }
     else if (criteria === 'priority') {
         try {
-            const response = await fetch('/TaskGroup/GetTaskPriorities/', {
+            const response = await fetch('/TaskGroup/GetTaskPriorities', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    TaskGroupId: taskGroupId
-                })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ TaskGroupId: taskGroupId })
             });
 
             if (!response.ok) return false;
-
             const priorityData = await response.json();
 
             tasks.sort((a, b) => {
                 const idA = a.getAttribute('data-id');
                 const idB = b.getAttribute('data-id');
 
-                const infoA = priorityData.find(x => x.id === idA);
-                const infoB = priorityData.find(x => x.id === idB);
+                const infoA = priorityData.find(x => x.id == idA);
+                const infoB = priorityData.find(x => x.id == idB);
 
                 const valA = infoA ? infoA.priority : -1;
                 const valB = infoB ? infoB.priority : -1;
 
                 return valB - valA;
             });
-    
-            tasks.forEach(task => {
-                currentListElement.insertBefore(task, footer);
-            });
-            
+
         } catch (error) {
             console.error("Sorting Error:", error);
+            return;
         }
-        
     }
     else if (criteria === 'state') {
         const stateWeights = {
             'done': 3,
             'inprogress': 2,
-            'todo': 1
+            'todo': 1,
+            '2': 3, 
+            '1': 2,
+            '0': 1
         };
 
         tasks.sort((a, b) => {
-            const stateA = a.getAttribute('data-state') || 'todo';
-            const stateB = b.getAttribute('data-state') || 'todo';
+            let stateA = (a.getAttribute('data-state') || '').toString().toLowerCase();
+            let stateB = (b.getAttribute('data-state') || '').toString().toLowerCase();
+
+            if (!stateA) stateA = 'todo';
+            if (!stateB) stateB = 'todo';
 
             const weightA = stateWeights[stateA] || 0;
             const weightB = stateWeights[stateB] || 0;
 
             return weightB - weightA;
         });
-
-        tasks.forEach(task => {
-            currentListElement.insertBefore(task, footer);
-        });
     }
+    tasks.forEach(task => {
+        taskContainer.appendChild(task);
+    });
 
     closeListMenu();
 }
@@ -1080,48 +1116,65 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
                 initials = initials.toUpperCase();
 
-                // HATA DÜZELTME: Key olarak initials değil, email kullanıyoruz.
-                // Initials bilgisini objenin içine saklıyoruz.
                 projectUsersData[user.email] = {
-                    initials: initials, // Baş harfleri burada sakla
+                    initials: initials,
                     fullName: user.fullName,
                     email: user.email,
                     role: user.role,
-                    color: user.profileColor || '#0079bf'
+                    color: user.profileColor || '#0079bf',
+                    isActive: (user.isActive === "True" || user.isActive === true)
                 };
             });
 
         } else {
-            console.error("Kullanıcılar çekilemedi.");
+            console.error("Could not get project users.");
         }
 
     } catch (error) {
-        console.error("Fetch hatası:", error);
+        console.error("Fetch Error:", error);
     }
 });
 
 let activeProfilePopup = null;
 
-function openUserProfile(event, initials) {
-    event.stopPropagation(); 
+function openUserProfile(event, identifier) {
+    event.stopPropagation();
     closeUserProfile();
 
-    const popup = document.getElementById('userProfileCard');
-
-    const user = projectUsersData[initials];
+    let user = projectUsersData[identifier];
 
     if (!user) {
-        console.warn(`Kullanıcı verisi bulunamadı: ${initials}. Veriler henüz yüklenmemiş olabilir.`);
+        user = Object.values(projectUsersData).find(u => u.initials === identifier);
+    }
+
+    if (!user) {
+        console.warn(`Could not find user data: ${identifier}`);
         return;
     }
 
-    document.getElementById('profileCardAvatar').innerText = initials;
-    document.getElementById('profileCardAvatar').style.backgroundColor = user.color || '#0079bf'; 
+    document.getElementById('profileCardAvatar').innerText = user.initials;
+    document.getElementById('profileCardAvatar').style.backgroundColor = user.color || '#0079bf';
     document.getElementById('profileCardName').innerText = user.fullName;
     document.getElementById('profileCardEmail').innerText = user.email;
     document.getElementById('profileCardRole').innerText = user.role;
 
-    const taskData = findTasksForUser(initials);
+    const statusEl = document.getElementById('profileCardStatus');
+
+    if (statusEl) {
+        const isActive = (String(user.isActive).toLowerCase() === 'true');
+
+        if (isActive) {
+            statusEl.innerText = "Online";
+            statusEl.style.color = "#4bbf6b";
+        } else {
+            statusEl.innerText = "Offline";
+            statusEl.style.color = "#6b778c";
+        }
+    } else {
+        console.warn("Error could not find element.");
+    }
+
+    const taskData = findTasksForUser(user.initials);
 
     document.getElementById('profileCardCount').innerText = taskData.count;
 
@@ -1129,7 +1182,7 @@ function openUserProfile(event, initials) {
     listContainer.innerHTML = '';
 
     if (taskData.tasks.length === 0) {
-        listContainer.innerHTML = '<div class="empty-task-msg" style="padding:10px; color:#5e6c84; font-size:13px; font-style:italic;">Şu an aktif görevi yok.</div>';
+        listContainer.innerHTML = '<div class="empty-task-msg" style="padding:10px; color:#5e6c84; font-size:13px; font-style:italic;">There are no active tasks.</div>';
     } else {
         taskData.tasks.forEach(taskTitle => {
             const div = document.createElement('div');
@@ -1138,19 +1191,18 @@ function openUserProfile(event, initials) {
             div.style.fontSize = "13px";
             div.style.borderBottom = "1px solid #eee";
             div.style.color = "#172b4d";
-
             div.innerText = taskTitle;
             listContainer.appendChild(div);
         });
     }
 
+    const popup = document.getElementById('userProfileCard');
     popup.style.display = 'flex';
 
     const rect = event.currentTarget.getBoundingClientRect();
-
     const popupWidth = 320;
-
     let leftPos = rect.left;
+
     if (leftPos + popupWidth > window.innerWidth) {
         leftPos = window.innerWidth - popupWidth - 20;
     }
@@ -1216,7 +1268,7 @@ function applyFilters() {
     const searchVal = document.getElementById('filterSearchInput').value.toLowerCase();
 
     const checkboxes = document.querySelectorAll('.filter-checkbox:checked');
-    const selectedMembers = Array.from(checkboxes).map(cb => cb.value); // ['MK', 'CY'] gibi
+    const selectedMembers = Array.from(checkboxes).map(cb => cb.value);
 
     const allTasks = document.querySelectorAll('.Task');
 

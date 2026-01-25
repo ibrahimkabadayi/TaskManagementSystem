@@ -1,4 +1,5 @@
-﻿using Application.DTOs;
+﻿using System.Diagnostics;
+using Application.DTOs;
 using Application.Interfaces;
 using AutoMapper;
 using DomainLayer.Entities;
@@ -35,11 +36,13 @@ public class TaskGroupService : ITaskGroupService
 
     public async Task<TaskGroupDto?> SaveTaskGroupAsync(string taskGroupName, int sectionId, int userId)
     {
-        var createdBy = await _projectUserRepository.FindFirstAsync(x => x.UserId == userId && x.Project.Sections.Any(s => s.Id == sectionId));
+        var section = await _sectionRepository.GetSectionWithTasksAsync(sectionId);
+
+        if (section == null) return null;
+
+        var createdBy = await _projectUserRepository.FindFirstAsync(x => x.UserId == userId && x.ProjectId == section.ProjectId);
         if (createdBy is null)
             return null;
-
-        var section = await _sectionRepository.GetSectionWithTasksAsync(sectionId);
 
         var newTaskGroup = new TaskGroup
         {
@@ -68,7 +71,8 @@ public class TaskGroupService : ITaskGroupService
 
     public async Task<List<TaskDto>> GetAllTasksAsync(int id)
     {
-        var taskGroup = await _taskGroupRepository.GetByAsyncId(id);
-        return taskGroup!.Tasks!.Select(task => _mapper.Map<TaskDto>(task)).ToList();
+        var taskGroup = await _taskGroupRepository.GetAllTasksAsync(id);
+        taskGroup.Tasks ??= [];
+        return taskGroup.Tasks.Select(task => _mapper.Map<TaskDto>(task)).ToList();
     }
 }

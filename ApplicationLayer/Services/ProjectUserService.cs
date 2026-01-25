@@ -39,7 +39,8 @@ public class ProjectUserService : IProjectUserService
             FullName = projectUser!.User.Name!,
             Email = projectUser!.User.Email!,
             ProfileColor = projectUser!.User.ProfileColor!,
-            Role = projectUser.Role.ToString()
+            Role = projectUser.Role.ToString(),
+            IsActive = projectUser.IsActive.ToString()
         }));
 
         return details;
