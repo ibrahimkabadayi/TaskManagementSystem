@@ -1,0 +1,102 @@
+﻿@{
+    Layout = "TaskFlowLayout";
+    ViewData["Title"] = "Privacy Policy";
+}
+
+<link rel="stylesheet" href="~/css/PrivacyStyle.css" />
+
+<div class="privacy-wrapper">
+    <header class="privacy-header">
+        <div class="header-content">
+            <div class="icon-badge">
+                <i class="fa-solid fa-user-shield"></i>
+            </div>
+            <h1>Privacy Policy</h1>
+            <p class="subtitle">At TaskFlow, the security of your data is our top priority.</p>
+            <span class="last-updated">
+                <i class="fa-regular fa-clock"></i> Last Updated: @DateTime.Now.ToString("dd MMMM yyyy")
+            </span>
+        </div>
+    </header>
+
+    <main class="privacy-content">
+        
+        <section class="policy-section">
+            <div class="section-icon blue">
+                <i class="fa-solid fa-database"></i>
+            </div>
+            <div class="section-text">
+                <h2>1. Information We Collect</h2>
+                <p>When using our service, we may collect the following information to provide you with a better experience and ensure system continuity:</p>
+                <ul class="policy-list">
+                    <li>
+                        <strong>Account Information:</strong> 
+                        Your name, email address, and password (stored with high-level encryption).
+                    </li>
+                    <li>
+                        <strong>Task Data:</strong> 
+                        Boards, tasks, descriptions, and project details you create.
+                    </li>
+                    <li>
+                        <strong>Usage Data:</strong> 
+                        Anonymous performance logs and error reports for system improvements.
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="policy-section">
+            <div class="section-icon green">
+                <i class="fa-solid fa-server"></i>
+            </div>
+            <div class="section-text">
+                <h2>2. How We Use Your Data</h2>
+                <p>The data we collect is processed in the following ways to offer you a smoother workflow:</p>
+                <ul class="policy-list">
+                    <li>Providing and maintaining the TaskFlow task management service.</li>
+                    <li>Ensuring your account security and preventing unauthorized access.</li>
+                    <li>System analysis aimed at enhancing user experience.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="policy-section">
+            <div class="section-icon red">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <div class="section-text">
+                <h2>3. Data Security</h2>
+                <p>
+                    The security of your data is strictly non-negotiable for us. Your passwords are stored in our database using industry-standard <strong>Hashing (Salted)</strong> algorithms and are never kept as plain text.
+                </p>
+                <p class="note-text">
+                    However, we would like to remind you that no method of data transmission over the internet is 100% secure, although we take measures that meet universal standards.
+                </p>
+            </div>
+        </section>
+
+        <section class="policy-section">
+            <div class="section-icon yellow">
+                <i class="fa-solid fa-cookie-bite"></i>
+            </div>
+            <div class="section-text">
+                <h2>4. Cookies</h2>
+                <p>
+                    We use cookies to ensure your session remains secure and to remember your preferences.
+                    You can disable cookies at any time through your browser settings.
+                </p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="privacy-footer">
+        <div class="contact-box">
+            <h3>Have Questions?</h3>
+            <p>You can contact us for any questions regarding our privacy policy.</p>
+            <a href="mailto:contact@taskflow.com" class="contact-btn">
+                <i class="fa-solid fa-envelope"></i> contact@taskflow.com
+            </a>
+        </div>
+    </footer>
+</div>

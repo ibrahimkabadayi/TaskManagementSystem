@@ -2,7 +2,7 @@
 
 namespace TaskManagementSystem.Views;
 
-public class Pricacy : PageModel
+public class Privacy : PageModel
 {
     public void OnGet()
     {
