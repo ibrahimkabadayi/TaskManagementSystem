@@ -40,6 +40,7 @@ The solution follows **Clean Architecture** rules to ensure scalability and test
 
 The solution is organized into specific layers to enforce separation of concerns and dependency rules.
 
+```text
 TaskManagementSystem
 ├── 📂 ApplicationLayer           # Business logic, DTOs, and Interfaces
 │   ├── 📂 DTOs                   # Data Transfer Objects
