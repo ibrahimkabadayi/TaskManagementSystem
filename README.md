@@ -36,6 +36,34 @@ The solution follows **Clean Architecture** rules to ensure scalability and test
     * Depends on ApplicationLayer and DataAccessLayer (via DI).
 * **TaskManagementSystem.Tests:** Contains unit and integration tests for the solution.
 
+## 📂 Project Structure
+
+The solution is organized into specific layers to enforce separation of concerns and dependency rules.
+
+TaskManagementSystem
+├── 📂 ApplicationLayer           # Business logic, DTOs, and Interfaces
+│   ├── 📂 DTOs                   # Data Transfer Objects
+│   ├── 📂 Interfaces             # Abstractions for Services and Repositories
+│   ├── 📂 Mappings               # AutoMapper profiles
+│   └── 📂 Services               # Concrete business logic implementations
+│
+├── 📂 DataAccessLayer            # Database interactions (Infrastructure)
+│   ├── 📂 Context                # EF Core DbContext
+│   ├── 📂 Implementations        # Repository implementations
+│   └── 📂 Migrations             # Database migrations
+│
+├── 📂 DomainLayer                # Enterprise logic (The Core)
+│   ├── 📂 Entities               # Database models (Task, Project, User)
+│   └── 📂 Enums                  # Global enumerations
+│
+├── 📂 PresentationLayer          # The UI Entry Point (ASP.NET MVC)
+│   ├── 📂 Controllers            # Handling HTTP requests
+│   ├── 📂 Models                 # Request/Response models
+│   ├── 📂 Views                  # Razor pages
+│   └── 📂 wwwroot                # Static files (CSS, JS, Libs)
+│
+└── 📂 TaskManagementSystem.Tests # Unit and Integration tests
+
 ## 🛠️ Tech Stack
 
 * **Backend:** ASP.NET Core 9.0 (MVC)
