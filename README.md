@@ -64,7 +64,7 @@ TaskManagementSystem
 │   └── 📂 wwwroot                # Static files (CSS, JS, Libs)
 │
 └── 📂 TaskManagementSystem.Tests # Unit and Integration tests
-
+```
 ## 🛠️ Tech Stack
 
 * **Backend:** ASP.NET Core 9.0 (MVC)
