@@ -105,7 +105,6 @@ public class SectionController : Controller
             ]
         };
 
-        // 2. Örnek Task Grupları ve Tasklar (Kanban Tahtası)
         var mockSection = new SectionDto
         {
             Id = 50,
@@ -141,9 +140,6 @@ public class SectionController : Controller
                     }
                 },
 
-                // --- GRUP 2: DEVAM EDENLER ---
-
-
                 taskGroupDto2 = new TaskGroupDto
                 {
                     Id = 2, Name = "Devam Edenler (In Progress)",
@@ -161,9 +157,6 @@ public class SectionController : Controller
                         }
                     }
                 },
-
-                // --- GRUP 3: TAMAMLANANLAR ---
-
 
                 taskGroupDto1 = new TaskGroupDto
                 {
@@ -221,6 +214,93 @@ public class SectionController : Controller
         var sections = await _sectionService.GetSectionsByProjectAsync(projectId);
 
         return View("SectionTasks",sections.FirstOrDefault());
+    }
+    
+    [HttpGet]
+    public IActionResult Members(int projectId = 1)
+    {
+        
+        ViewBag.ProjectName = "TaskFlow Web UI | Sprint 1";
+        
+        var dummyMembers = new List<ProjectUserDto>
+        {
+               
+            new ProjectUserDto
+            {
+                Id = 101,
+                ProjectId = projectId,
+                Role = ProjectRole.Leader, 
+                Title = "Team Lead",
+                IsActive = true,
+                JoinedDate = DateTime.Now.AddMonths(-6),
+                User = new UserDto
+                {
+                     
+                    Id = 1,
+                    Name = "İbrahim Kabadayı",
+                    Email = "ibrahim@test.com",
+                    ProfileLetters = "İK",
+                    ProfileColor = "#0079bf",
+                    Password = "123456"
+                }
+            },
+            new ProjectUserDto
+            {
+                Id = 102,
+                ProjectId = projectId,
+                Role = ProjectRole.Developer,
+                Title = "Backend Developer",
+                IsActive = true,
+                JoinedDate = DateTime.Now.AddMonths(-2),
+                User = new UserDto
+                {
+                    Id = 2,
+                    Name = "Can Yılmaz",
+                    Email = "can.yilmaz@test.com",
+                    ProfileLetters = "CY",
+                    ProfileColor = "#4bbf6b",
+                    Password = "123456"
+                }
+            },
+            new ProjectUserDto
+            {
+                Id = 103,
+                ProjectId = projectId,
+                Role = ProjectRole.Viewer,
+                Title = "UI/UX Designer",
+                IsActive = false,
+                JoinedDate = DateTime.Now.AddDays(-15),
+                User = new UserDto
+                { 
+                    Id = 3,
+                    Name = "Ayşe Demir",
+                    Email = "ayse.d@test.com",
+                    ProfileLetters = "AD",
+                    ProfileColor = "#ff9f1a",
+                    Password = "123456"
+                }
+            },
+            new ProjectUserDto
+            {
+                Id = 104,
+                ProjectId = projectId,
+                Role = ProjectRole.Developer,
+                Title = "QA Tester",
+                IsActive = false,
+                JoinedDate = DateTime.Now.AddDays(-5),
+                User = new UserDto
+                { 
+                    Id = 4, 
+                    Name = "Mehmet Öz",
+                    Email = "mehmet.oz@test.com",
+                    ProfileLetters = "MÖ",
+                    ProfileColor = "#eb5a46",
+                    Password = "123456"
+                    
+                }
+            }
+        };
+        return View("SectionUsers", dummyMembers);
     }
 }
 

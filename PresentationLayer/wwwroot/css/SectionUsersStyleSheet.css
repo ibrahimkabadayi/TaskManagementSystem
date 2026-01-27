@@ -1,0 +1,166 @@
+.members-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    overflow: hidden;
+}
+
+.members-header {
+    padding: 30px;
+    background: linear-gradient(135deg, #0079bf 0%, #00aecc 100%);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-info h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.header-info p {
+    margin: 5px 0 0;
+    opacity: 0.9;
+    font-size: 0.95rem;
+}
+
+.btn-invite {
+    background-color: rgba(255,255,255,0.2);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.4);
+    padding: 10px 20px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-invite:hover {
+    background-color: rgba(255,255,255,0.3);
+    color: white;
+}
+
+.members-list {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.member-row {
+    display: flex;
+    align-items: center;
+    padding: 20px 30px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s;
+}
+
+.member-row:last-child {
+    border-bottom: none;
+}
+
+.member-row:hover {
+    background-color: #f9fafb;
+}
+
+/* Avatar Tasarımı */
+.member-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    margin-right: 20px;
+    position: relative;
+}
+
+.status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid white;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+.status-active { background-color: #4bbf6b; }
+.status-inactive { background-color: #dfe1e6; }
+
+/* Kişi Bilgileri */
+.member-info {
+    flex-grow: 1;
+}
+
+.member-name {
+    font-weight: 600;
+    color: #172b4d;
+    font-size: 1rem;
+    display: block;
+}
+
+.member-meta {
+    color: #5e6c84;
+    font-size: 0.85rem;
+    margin-top: 4px;
+}
+
+.member-title-badge {
+    background-color: #ebecf0;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    margin-left: 8px;
+    color: #42526e;
+}
+
+/* Aksiyonlar */
+.member-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.role-select {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #dfe1e6;
+    background-color: #fff;
+    color: #172b4d;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.role-select:focus {
+    border-color: #0079bf;
+    outline: none;
+}
+
+.btn-remove {
+    background: none;
+    border: none;
+    color: #eb5a46;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.btn-remove:hover {
+    background-color: #ffebe6;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 50px;
+    color: #5e6c84;
+}
