@@ -24,6 +24,12 @@ public class UserService : IUserService
         return user == null ? null : _mapper.Map<User, UserDto>(user);
     }
 
+    public async Task<UserDto?> GetUserWithProjectUsersAsync(int id)
+    {
+        var user = await _userRepository.GetUserWithProjectUsersAsync(id);
+        return _mapper.Map<User, UserDto>(user);
+    }
+
     public async Task<UserDto?> RegisterUserAsync(UserDto user)
     {
         try
@@ -69,5 +75,34 @@ public class UserService : IUserService
     {
         var user = await _userRepository.GetByEmailAsync(email);
         return user != null;
+    }
+    
+    public async Task<bool> UpdateUserProfileAsync(int userId, string fullName, string profileColor)
+    {
+        var user = await _userRepository.GetByAsyncId(userId);
+        if (user == null) return false;
+
+        user.Name = fullName;
+        user.ProfileColor = profileColor;
+        if (!string.IsNullOrWhiteSpace(fullName))
+        {
+            var parts = fullName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            switch (parts.Length)
+            {
+                case >= 2:
+                    user.ProfileLetters = $"{parts[0][0]}{parts[^1][0]}".ToUpper();
+                    break;
+                case 1:
+                {
+                    var singleName = parts[0];
+                    user.ProfileLetters = (singleName.Length > 1 ? singleName.Substring(0, 2) : singleName).ToUpper();
+                    break;
+                }
+            }
+        }
+    
+        await _userRepository.UpdateAsync(user);
+        return true;
     }
 }
