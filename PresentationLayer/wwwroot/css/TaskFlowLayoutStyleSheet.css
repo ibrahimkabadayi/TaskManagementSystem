@@ -12,46 +12,73 @@ body {
 }
 
 /* Navbar Design */
+/* =========================================
+   NAVBAR (ÜST MENÜ) - SectionTasks ile Eşitlendi
+   ========================================= */
 .top-bar {
-    height: 50px;
-    background-color: #ffffff;
-    border-bottom: 1px solid #dfe1e6;
+    height: 48px;
+    background-color: #0079bf; /* Şeffaf Koyu Arka Plan */
+    backdrop-filter: blur(4px); /* Buzlu cam efekti */
+    border-bottom: 1px solid rgba(255,255,255,0.1);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 20px;
+    padding: 0 15px;
     box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     position: sticky;
     top: 0;
     z-index: 100;
+    color: white; /* Tüm yazı rengi beyaz */
 }
 
+/* Logo Tasarımı */
 .logo {
-    font-weight: bold;
-    font-size: 1.2rem;
-    color: #0052cc; /* Vibrant blue for TaskFlow Logo */
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
+.logo span {
+    font-weight: bold;
+    font-size: 18px;
+    color: white; /* Mavi yerine Beyaz */
+    opacity: 0.9;
+    text-decoration: none;
+}
+
+/* Sağ Taraf (Bildirim ve Profil) */
 .bar-account-section {
     display: flex;
     align-items: center;
     gap: 15px;
 }
 
+/* Bildirim İkonu */
+.notification-icon {
+    cursor: pointer;
+    color: white;
+    font-size: 16px;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+.notification-icon:hover { opacity: 1; }
+
+/* Profil Yuvarlağı */
 .account {
-    background-color: #0052cc;
+    background-color: #0079bf; /* TaskFlow Mavisi */
     color: white;
     border-radius: 50%;
-    width: 32px;
-    height: 32px;
+    width: 30px; /* 32px'den 30px'e düşürüldü */
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
     cursor: pointer;
+    font-size: 14px;
+}
+.account:hover {
+    background-color: #026aa7;
 }
 /* Main Content Container */
 .main-container {

@@ -37,4 +37,12 @@ public class UserRepository : Repository<User>, IUserRepository
             .Select(pu => pu.Project)
             .ToListAsync();
     }
+
+    public async Task<User> GetUserWithProjectUsersAsync(int id)
+    {
+        return (await _context.Users
+            .Where(u => u.Id == id)
+            .Include(u => u.ProjectUsers)
+            .FirstOrDefaultAsync())!;
+    }
 }

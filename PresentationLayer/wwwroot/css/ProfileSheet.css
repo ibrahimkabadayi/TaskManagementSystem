@@ -1,0 +1,346 @@
+﻿/* === MODERN CSS STYLES === */
+:root {
+    --tf-primary: #0079bf;
+    --tf-bg: #f4f5f7;
+    --tf-card: #ffffff;
+    --tf-text: #172b4d;
+    --tf-muted: #5e6c84;
+    --tf-border: #dfe1e6;
+}
+
+body {
+    background-color: var(--tf-bg);
+    font-family: 'Inter', sans-serif; /* Modern font */
+}
+
+.profile-container {
+    max-width: 960px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+/* --- ÜST KISIM (BANNER & INFO) --- */
+.profile-header-card {
+    background-color: var(--tf-card);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-bottom: 25px;
+    position: relative;
+}
+
+.profile-cover {
+    height: 180px;
+    position: relative;
+}
+
+.profile-user-info-bar {
+    padding: 0 30px 30px 170px; /* Avatar için soldan boşluk */
+    position: relative;
+    min-height: 100px;
+}
+
+/* Yüzen Avatar */
+.profile-avatar-wrapper {
+    position: absolute;
+    top: -60px; /* Banner'ın üstüne taşsın */
+    left: 30px;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid var(--tf-card);
+    background-color: var(--tf-card);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    z-index: 2;
+}
+
+.profile-avatar-content {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 48px;
+    font-weight: 700;
+    color: white;
+}
+
+.user-main-details {
+    padding-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.user-texts h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--tf-text);
+}
+
+.user-texts p {
+    margin: 5px 0 0;
+    color: var(--tf-muted);
+    font-size: 15px;
+}
+
+.user-stats {
+    display: flex;
+    gap: 30px;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    display: block;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--tf-text);
+}
+
+.stat-label {
+    font-size: 12px;
+    color: var(--tf-muted);
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* --- SEKME (TAB) YAPISI --- */
+.profile-content-grid {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 25px;
+}
+
+.menu-sidebar {
+    background-color: var(--tf-card);
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    height: fit-content;
+}
+
+.menu-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 15px;
+    border: none;
+    background: transparent;
+    color: var(--tf-muted);
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+}
+
+.menu-btn:hover {
+    background-color: #f4f5f7;
+    color: var(--tf-primary);
+}
+
+.menu-btn.active {
+    background-color: #e6f0ff;
+    color: var(--tf-primary);
+    font-weight: 600;
+}
+
+.menu-btn i {
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+}
+
+/* --- SAĞ İÇERİK ALANI --- */
+.content-panel {
+    background-color: var(--tf-card);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    display: none; /* JS ile açılacak */
+    animation: fadeIn 0.3s ease;
+}
+
+.content-panel.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.panel-header {
+    margin-bottom: 25px;
+    border-bottom: 1px solid var(--tf-border);
+    padding-bottom: 15px;
+}
+
+.panel-header h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--tf-text);
+    margin: 0;
+}
+
+/* Form Stilleri */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.full-width { grid-column: span 2; }
+
+.form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--tf-text);
+    margin-bottom: 8px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid var(--tf-border);
+    border-radius: 6px;
+    font-size: 14px;
+    color: var(--tf-text);
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.form-input:focus {
+    border-color: var(--tf-primary);
+}
+
+.form-input[readonly] {
+    background-color: #fafbfc;
+    color: #7a869a;
+}
+
+/* Renk Seçici */
+.color-picker {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.color-dot {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+    border: 2px solid transparent;
+}
+
+.color-dot:hover { transform: scale(1.1); }
+
+.color-dot.selected {
+    border-color: var(--tf-text);
+    transform: scale(1.1);
+}
+
+.color-dot i {
+    color: white;
+    font-size: 14px;
+    display: none;
+}
+
+.color-dot.selected i { display: block; }
+
+/* Proje Listesi Kartları */
+.project-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.project-card-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    border: 1px solid var(--tf-border);
+    border-radius: 8px;
+    transition: border-color 0.2s;
+}
+
+.project-card-row:hover {
+    border-color: var(--tf-primary);
+    background-color: #fafbfc;
+}
+
+.project-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.project-icon-placeholder {
+    width: 40px;
+    height: 40px;
+    background-color: #ebecf0;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--tf-muted);
+    font-size: 18px;
+}
+
+.role-badge {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background-color: #dfe1e6;
+    color: var(--tf-text);
+}
+.role-badge.leader { background-color: #e6fcff; color: #008da6; }
+.role-badge.member { background-color: #e3fcef; color: #006644; }
+
+/* Action Butonları */
+.btn-primary {
+    background-color: var(--tf-primary);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.btn-primary:hover { background-color: #026aa7; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .profile-content-grid { grid-template-columns: 1fr; }
+    .profile-user-info-bar { padding-left: 20px; padding-top: 70px; text-align: center; }
+    .profile-avatar-wrapper { left: 50%; transform: translateX(-50%); }
+    .user-main-details { justify-content: center; text-align: center; }
+    .form-grid { grid-template-columns: 1fr; }
+}

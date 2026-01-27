@@ -1,0 +1,203 @@
+﻿@model Application.DTOs.UserDto
+
+@{
+    Layout = "TaskFlowLayout";
+    ViewData["Title"] = "Profile";
+}
+<link rel="stylesheet" href="~/css/ProfileSheet.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<div class="profile-container">
+    
+    @if (TempData["Success"] != null)
+    {
+        <div style="background-color: #d4edda; color: #155724; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #c3e6cb;">
+            <i class="fa-solid fa-check-circle"></i> @TempData["Success"]
+        </div>
+    }
+    
+    @if (TempData["Error"] != null)
+    {
+        <div style="background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #f5c6cb;">
+            <i class="fa-solid fa-triangle-exclamation"></i> @TempData["Error"]
+        </div>
+    }
+
+    <div class="profile-header-card">
+        <div class="profile-cover"></div>
+
+        <div class="profile-user-info-bar">
+            <div class="profile-avatar-wrapper">
+                <div class="profile-avatar-content" id="headerAvatar" style="background-color: @(Model.ProfileColor ?? "#0079bf")">
+                    @Model.ProfileLetters
+                </div>
+            </div>
+
+            <div class="user-main-details">
+                <div class="user-texts">
+                    <h1 id="headerName">@Model.Name</h1>
+                    <p>@Model.Email</p>
+                </div>
+
+                <div class="user-stats">
+                    <div class="stat-item">
+                        <span class="stat-value">@(Model.ProjectUsers?.Count ?? 0)</span>
+                        <span class="stat-label">Projeler</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">Aktif</span>
+                        <span class="stat-label">Durum</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-content-grid">
+
+        <div class="menu-sidebar">
+            <button class="menu-btn active" onclick="switchTab('settings')">
+                <i class="fa-solid fa-user-gear"></i> Hesap Ayarları
+            </button>
+            <button class="menu-btn" onclick="switchTab('projects')">
+                <i class="fa-solid fa-briefcase"></i> Projelerim
+            </button>
+            <button class="menu-btn" onclick="switchTab('security')">
+                <i class="fa-solid fa-shield-halved"></i> Güvenlik
+            </button>
+        </div>
+
+        <div id="tab-settings" class="content-panel active">
+            <div class="panel-header">
+                <h2>Profil Bilgilerini Düzenle</h2>
+            </div>
+    
+            <div class="form-grid">
+                <input type="hidden" id="profileId" value="@Model.Id" />
+                <input type="hidden" id="profileColor" value="@(Model.ProfileColor ?? "#0079bf")" />
+
+                <div class="form-group full-width">
+                    <label class="form-label">Görünür İsim</label>
+                    <input type="text" id="profileName" value="@Model.Name" class="form-input" placeholder="Adınız Soyadınız" />
+                </div>
+
+                <div class="form-group full-width">
+                    <label class="form-label">E-Posta Adresi</label>
+                    <input type="email" value="@Model.Email" class="form-input" readonly />
+                    <div style="font-size: 11px; color: #5e6c84; margin-top: 4px;">
+                        <i class="fa-solid fa-lock"></i> E-posta adresi güvenlik nedeniyle değiştirilemez.
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label class="form-label">Profil Rengi Teması</label>
+                    <div class="color-picker" id="colorPickerContainer">
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; text-align: right;">
+                <button type="button" class="btn-primary" onclick="updateUserProfile()">Değişiklikleri Kaydet</button>
+            </div>
+        </div>
+
+        <div id="tab-projects" class="content-panel">
+            <div class="panel-header">
+                <h2>Dahil Olduğum Projeler</h2>
+            </div>
+
+            <div class="project-list">
+                @if (Model.ProjectUsers != null && Model.ProjectUsers.Any())
+                {
+                    @foreach (var pUser in Model.ProjectUsers)
+                    {
+                        <div class="project-card-row">
+                            <div class="project-info">
+                                <div class="project-icon-placeholder">
+                                    <i class="fa-solid fa-diagram-project"></i>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 600; color: #172b4d;">Proje #@pUser.ProjectId</div>
+                                    <div style="font-size: 12px; color: #5e6c84;">Katılım: @pUser.JoinedDate.ToString("dd MMM yyyy")</div>
+                                </div>
+                            </div>
+                            <div>
+                                @{
+                                    var roleClass = pUser.Role.ToString().ToLower() == "leader" ? "leader" : "member";
+                                }
+                                <span class="role-badge @roleClass">@pUser.Role</span>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div style="text-align: center; padding: 40px; color: #5e6c84;">
+                        <i class="fa-regular fa-folder-open" style="font-size: 32px; margin-bottom: 10px;"></i>
+                        <p>Henüz herhangi bir projeye dahil değilsiniz.</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div id="tab-security" class="content-panel">
+            <div class="panel-header">
+                <h2>Şifre ve Güvenlik</h2>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Mevcut Şifre</label>
+                <input type="password" class="form-input" placeholder="••••••••"/>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Yeni Şifre</label>
+                    <input type="password" class="form-input" placeholder="Yeni şifreniz"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Yeni Şifre (Tekrar)</label>
+                    <input type="password" class="form-input" placeholder="Yeni şifreniz tekrar"/>
+                </div>
+            </div>
+
+            <div style="text-align: right;">
+                <button type="button" class="btn-primary" onclick="alert('Demo: Şifre değiştirme servisi henüz aktif değil.')">Şifreyi Güncelle</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="~/js/ProfileScript.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const colors = ['#0079bf', '#d29034', '#519839', '#b04632', '#89609e', '#cd5a91', '#4bbf6b', '#00aecc', '#172b4d'];
+        const container = document.getElementById('colorPickerContainer');
+        const inputColor = document.getElementById('profileColor');
+        const headerAvatar = document.getElementById('headerAvatar');
+
+        const currentColor = '@(Model.ProfileColor ?? "#0079bf")';
+
+        colors.forEach(color => {
+            const dot = document.createElement('div');
+            dot.className = 'color-dot';
+            dot.style.backgroundColor = color;
+            dot.innerHTML = '<i class="fa-solid fa-check"></i>';
+
+            if (color.toLowerCase() === currentColor.toLowerCase()) {
+                dot.classList.add('selected');
+            }
+
+            dot.onclick = function () {
+                document.querySelectorAll('.color-dot').forEach(el => el.classList.remove('selected'));
+                dot.classList.add('selected');
+
+                inputColor.value = color;
+                headerAvatar.style.backgroundColor = color;
+            };
+
+            container.appendChild(dot);
+        });
+    });
+</script>
+

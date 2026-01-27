@@ -2,35 +2,36 @@
 @model TaskManagementSystem.Views.EmailCodeVerification
 
 @{
-    Layout = Layout;
+    Layout = "Layout";
     var name = ViewData["Name"] as string;
     var email = ViewData["Email"] as string;
 }
 
 <link rel="stylesheet" href="~/css/EmailVerificationStyleSheet.css"/>
 
-<div class="arrow-and-email-container">
-    <div class="back-arrow-container">
-        <p class= "back-arrow" style="color:blue" onclick="BackArrowClick(@name, @email)">
-            ←
-        </p>
+<div style="margin-bottom: 10px;">
+    <span onclick="BackArrowClick('@name', '@email')" style="cursor: pointer; color: #5e6c84;">
+        <i class="fa-solid fa-arrow-left"></i> Geri
+    </span>
+</div>
+
+<div class="verification-header">
+    <div class="verification-icon">
+        <i class="fa-solid fa-envelope-open-text"></i>
     </div>
-    <div class="email-container">
-        <p class="email">@email</p>
-    </div>
+    <h3 class="verification-title">Kodu Girin</h3>
+    <p class="verification-subtitle">
+        Doğrulama kodunu <span class="email-highlight">@email</span> adresine gönderdik.
+    </p>
+</div>
+
+<div class="input-group">
+    <input type="text" id="code-Input" class="txt-input code-input" placeholder="000000" maxlength="6">
 </div>
     
-<p id="sign-in-text">Enter Email Code</p>
-<div class="Input-Area">
-    <div class="Input-Row">
-        <label for="code-Input" class="input-label">Code:</label>
-        <input type="text" id="code-Input" class="txt-input">
-    </div>
-</div>
-    
-<div class="button-container">
-    <button class="send-again-button" onclick="SendEmailCodeAgain(@email)">Send Again</button>
-    <button class="next-button" onclick="VerifyEmailCode(@email)">Next</button>
+<div class="action-buttons">
+    <button class="btn-verify" onclick="VerifyEmailCode('@email')">Doğrula ve Devam Et</button>
+    <button class="btn-resend" onclick="SendEmailCodeAgain('@email')">Kodu Tekrar Gönder</button>
 </div>
 
 <script src="~/js/EmailVerificationScript.js"></script>

@@ -1,24 +1,41 @@
-﻿function CreateAccount(){
-    window.location.href = 'Home/CreateAccount';
+﻿function CreateAccount() {
+    window.location.href = '/Home/CreateAccount';
 }
 
-async function SignIn(){
-    const email = document.getElementById("email-Input").value;
-    const password = document.getElementById("password-Input").value;
-    
-    if(email.length < 3 || !email.includes("@")){
-        alert("Please enter your email");
+function ForgotPassword() {
+    window.location.href = '/Home/PasswordCreation';
+}
+
+function PrivacyPolicy() {
+    window.location.href = '/Home/Privacy';
+}
+
+async function SignIn() {
+    const emailEl = document.getElementById("email-Input");
+    const passwordEl = document.getElementById("password-Input");
+
+    const email = emailEl.value.trim();
+    const password = passwordEl.value;
+
+    if (email.length < 3 || !email.includes("@")) {
+        alert("Please enter a valid email address.");
+        emailEl.focus();
         return;
     }
-    
-    if(password.length < 3){
-        alert("Please enter your password");
+
+    if (password.length < 3) {
+        alert("Please enter a valid password. Password must be at least 3 characters long.");
+        passwordEl.focus();
         return;
     }
-    
-    try
-    {
-        await fetch('Authenticate/RegisterSignIn/', {
+
+    const btn = document.querySelector('.btn-primary');
+    const originalText = btn.innerText;
+    btn.disabled = true;
+    btn.innerText = "Loading...";
+
+    try {
+        const response = await fetch('/Authenticate/RegisterSignIn', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -27,37 +44,35 @@ async function SignIn(){
                 Email: email,
                 Password: password,
             })
-        }.then((response) => response.json()).then((data) => {
-            if (data.success) {
-                const params = data.Data;
-                window.location.href = 'Home/Home';
-            } else {
-                alert(data.message);
-                if(data.message === "Wrong password"){
-                    return;
-                }
-                const params = new URLSearchParams({
-                    Message: data.error,
-                    Type: 'RegisterError',
-                    StatusCode: data.errorCode,
-                    TimeStamp: new Date().toISOString()
-                });
-                window.location.href = `/Home/Error?${params.toString()}`;
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            window.location.href = '/Home/Home';
+        } else {
+            btn.disabled = false;
+            btn.innerText = originalText;
+
+            if (data.message === "Wrong password" || data.message === "User not found") {
+                alert("Email or password is incorrect..");
+                return;
             }
-        }))          
-    } 
-    catch (e)
-    {
-        alert(e.message);
-        return false;
+
+            alert("Error: " + data.message);
+        }
     }
-    return true;
+    catch (e) {
+        console.error("Login Error:", e);
+        alert("There was an error logging in.");
+
+        btn.disabled = false;
+        btn.innerText = originalText;
+    }
 }
 
-function PrivacyPolicy(){
-    
-}
-
-function ForgotPassword(){
-    window.location.href = 'Home/PasswordCreation';
-}
+document.addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        SignIn();
+    }
+});

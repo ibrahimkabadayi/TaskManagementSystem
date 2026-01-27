@@ -1,6 +1,4 @@
 ﻿@model TaskManagementSystem.Views.Layout
-@Layout
-
 @{
     Layout = null;
 }
@@ -9,27 +7,30 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap - TaskFlow</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="~/css/LayoutStyleSheet.css"/>
 </head>
 <body>
-    <div class="container">
-        <h2>Welcome to TaskFlow</h2>
-        <main>
-            @RenderBody()
-        </main>
-    </div>
+
+<div class="container">
+    <h2><i class="fa-solid fa-list-check"></i> TaskFlow</h2>
+    <p class="sub-header">Proje yönetiminizi kolaylaştırın</p>
+        
+    <main>
+        @RenderBody()
+    </main>
+</div>
     
-    <footer>
-        <div class="row-align-items-start">
-            <ul class="list-inline" id="footernav">
-                <li class="list-inline-item"><a href="">Trust Center</a></li>
-                <li class="list-inline-item"><a href="">Protocols</a></li>
-                <li class="list-inline-item"><a href="">About Us</a></li>
-                <li class="list-inline-item"><a href="">Privacy Policy</a></li>
-            </ul>
-        </div>
-        <p class="copyright">&copy; 2025 TaskFlow. All rights reserved.</p>
-    </footer>
+<footer>
+    <ul class="footer-links">
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Privacy</a></li>
+    </ul>
+    <p>&copy; @DateTime.Now.Year TaskFlow. All rights reserved.</p>
+</footer>
+
 </body>
 </html>

@@ -4,40 +4,48 @@
 }
 
 <!DOCTYPE html>
-
-<html lang="eng">
+<html lang="tr">
 <head>
-    <title>title</title>
+    <meta charset="UTF-8">
+    <title>Error - TaskFlow</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="~/css/ErrorStyleSheet.css"/>
 </head>
 <body>
-<div class="container">
-    <h1>An Error Occurred</h1>
 
-    <div class="error-info">
-        <div class="error-row">
-            <span class="label">Message</span>
-            <div class="value">@ViewBag.ErrorMessage</div>
+<div class="error-card">
+    <i class="fa-solid fa-triangle-exclamation error-icon"></i>
+    
+    <h1 class="error-title">Bir Hata Oluştu</h1>
+    <p class="error-message">
+        Beklenmedik bir sorunla karşılaştık. Lütfen tekrar deneyin veya sistem yöneticisi ile iletişime geçin.
+    </p>
+
+    <div class="error-details">
+        <div class="detail-row">
+            <span class="detail-label">Hata Mesajı:</span>
+            <span class="detail-value">@ViewBag.ErrorMessage</span>
         </div>
-        <div class="error-row">
-            <span class="label">Type</span>
-            <div class="value">@ViewBag.ErrorType</div>
+        <div class="detail-row">
+            <span class="detail-label">Tür:</span>
+            <span class="detail-value">@ViewBag.ErrorType</span>
         </div>
-        <div class="error-row">
-            <span class="label">Status Code</span>
-            <div class="value">@ViewBag.ErrorStatusCode</div>
+        <div class="detail-row">
+            <span class="detail-label">Kod:</span>
+            <span class="detail-value">@ViewBag.ErrorStatusCode</span>
         </div>
-        <div class="error-row">
-            <span class="label">Time</span>
-            <div class="value">@ViewBag.ErrorTimeStamp</div>
+        <div class="detail-row">
+            <span class="detail-label">Zaman:</span>
+            <span class="detail-value">@ViewBag.ErrorTimeStamp</span>
         </div>
     </div>
 
-    <div class="buttons">
-        <button class="go-back-button" onclick="GoBack(@backPage)">Go Back</button>
-        <button class="return-to-menu-button" onclick="ReturnToMenu()">Return to Menu</button>
+    <div class="btn-group">
+        <button class="btn btn-secondary" onclick="GoBack('@backPage')">Geri Dön</button>
+        <button class="btn btn-primary" onclick="ReturnToMenu()">Ana Sayfaya Dön</button>
     </div>
 </div>
+
 <script src="~/js/ErrorScript.js"></script>
 </body>
 </html>
