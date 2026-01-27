@@ -1,82 +1,103 @@
-﻿#sign-in-text{
-    margin-left: 10px;
-    font-weight: bold;
+﻿/* --- SignInStyleSheet.css --- */
+
+/* Giriş Başlığı */
+.signin-title {
     font-size: 20px;
-    font-family: 'Roboto Light', sans-serif;
-}
-strong{
-    color: #0ba1e1;
-    cursor: pointer;
-}
-.input-label{
-    color: black;
-}
-.Input-Row{
-    padding: 10px 5px;
-    margin: 5px;
-}
-.txt-input{
-    border: 1px solid #ccc;
-    margin-top: 10px;
-    width: 100%;
-    border-radius: 5px;
-    font-size: 16px;
-    padding: 5px 10px;
+    font-weight: 600;
+    color: #172b4d;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
-.information-container{
-    width: 5%;
-    height: 10%;
+/* Form Grupları */
+.input-group {
+    margin-bottom: 20px;
+    position: relative;
 }
-.information {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+.input-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #42526e;
+    margin-bottom: 6px;
+}
+
+/* Input Alanı */
+.txt-input {
+    width: 100%;
+    padding: 12px 15px;
+    padding-left: 40px; /* İkon için boşluk */
+    border: 2px solid #dfe1e6;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    background-color: #fafbfc;
+}
+
+.txt-input:focus {
+    background-color: #fff;
+    border-color: #0079bf;
+    box-shadow: 0 0 0 3px rgba(0, 121, 191, 0.2);
+}
+
+/* Input İkonları */
+.input-icon {
+    position: absolute;
+    top: 38px; /* Label yüksekliğine göre ayar */
+    left: 12px;
+    color: #5e6c84;
+    font-size: 14px;
+}
+
+/* Linkler ve Yardımcı Metinler */
+.form-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
     font-size: 13px;
-    font-weight: 500;
-    font-style: normal;
+}
+
+.forgot-password {
+    color: #0079bf;
+    text-decoration: none;
+    cursor: pointer;
+}
+.forgot-password:hover { text-decoration: underline; }
+
+/* Butonlar */
+.btn-primary {
+    width: 100%;
+    background-color: #0079bf; /* TaskFlow Mavisi */
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: #026aa7;
+}
+
+.create-account-box {
+    margin-top: 20px;
     text-align: center;
-    color: white;
-    background: #0288d1;
-    width: 100%;
-    height: 4%;
+    font-size: 14px;
+    color: #172b4d;
+    padding-top: 20px;
+    border-top: 1px solid #dfe1e6;
 }
-#information-text{
-    margin-left: 10px;
-}
-.privacy-text{
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    padding: 10px;
-    font-size: 13px;
-}
-.forgot-password{
-    width: 40%;
-    text-align: right;
-}
-.button-container{
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    margin-top: 10px;
-}
-.left-button{
-    text-align: left;
-    border: none;
-    background: white;
-    padding: 10px;
-    flex: 20%;
-    color: #0ba1e1;
+
+.create-account-link {
+    color: #0079bf;
+    font-weight: 600;
     cursor: pointer;
-    font-size: 16px;
+    text-decoration: none;
 }
-.right-button{
-    border: none;
-    border-radius: 5px;
-    background: #0ba1e1;
-    color: white;
-    padding: 10px;
-    width: 20%;
-    margin-right: 10px;
-    cursor: pointer;
-    font-size: 16px;
-}
+.create-account-link:hover { text-decoration: underline; }

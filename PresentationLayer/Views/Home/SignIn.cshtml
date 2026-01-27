@@ -6,31 +6,35 @@
 }
    
 <link rel="stylesheet" href="~/css/SignInStyleSheet.css"/>
-<p id="sign-in-text">Sign In</p>
-<div class="Input-Area">
-    <div class="Input-Row">
-        <label for="password-Input" class="input-label">Password:</label><br>
-        <input type="text" id="password-Input" class="txt-input">
-    </div>
-    <div class="Input-Row">
-        
-        <label for="Email-Input" class="input-label">Email:</label><br>
-        <input type="text" id="Email-Input" class="txt-input">
-    </div>
+
+<h3 class="signin-title">Hesabınıza Giriş Yapın</h3>
+
+<div class="input-group">
+    <label for="email-Input" class="input-label">Email</label>
+    <i class="fa-solid fa-envelope input-icon"></i>
+    <input type="email" id="email-Input" class="txt-input" placeholder="ornek@email.com">
+</div>
+
+<div class="input-group">
+    <label for="password-Input" class="input-label">Password</label>
+    <i class="fa-solid fa-lock input-icon"></i>
+    <input type="password" id="password-Input" class="txt-input" placeholder="••••••••">
 </div>
         
-<div class="privacy-text">
-    <div class="information-container">
-        <div class="information">
-            i
-        </div>
-    </div>
-    <p id="information-text">By signing in you agree to our <strong onclick="PrivacyPolicy()">privacy policy</strong></p>
-    <strong class="forgot-password" onclick="ForgotPassword()">Forgot Password?</strong>
+<div class="form-footer">
+    <span onclick="PrivacyPolicy()" style="cursor:pointer; color:#5e6c84;">
+        <i class="fa-solid fa-shield-halved"></i> Privacy Policy
+    </span>
+    <span class="forgot-password" onclick="ForgotPassword()">Forgot Password?</span>
 </div>
         
-<div class="button-container">
-    <button class="left-button" onclick="CreateAccount()">Create Account</button>
-    <button class="right-button" onclick="SignIn()">Sign In</button>
+<button class="btn-primary" onclick="SignIn()">
+    Enter
+</button>
+
+<div class="create-account-box">
+    Don't have an account?
+    <span class="create-account-link" onclick="CreateAccount()">Create Account</span>
 </div>
-<script src="~/js/IndexScript.js"></script>   
+
+<script src="~/js/SignInScript.js"></script>

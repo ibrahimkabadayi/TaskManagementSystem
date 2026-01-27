@@ -1,73 +1,71 @@
-async function nextButtonClick(){
-    const name = document.getElementById("name-Input").value;
-    const email = document.getElementById("email-input").value;
-    
-    if(name === ""){
-        alert("Please enter a name");
+async function nextButtonClick() {
+    const nameInput = document.getElementById("name-Input");
+    const emailInput = document.getElementById("email-input"); // HTML'de küçük 'i' ile yazmıştık
+
+    const name = nameInput.value.trim();
+    const email = emailInput.value.trim();
+
+    if (name.length < 3) {
+        alert("Lütfen geçerli bir ad soyad giriniz (En az 3 karakter).");
+        nameInput.focus();
         return;
     }
-    
-    if(name.size < 3){
-        alert("Please enter a valid name");
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        alert("Lütfen geçerli bir e-posta adresi giriniz.");
+        emailInput.focus();
         return;
     }
-    
-    if(email === ""){
-        alert("Please enter a email");
-        return;
-    }
-    
-    if(!email.contains("@") || email.charAt(0) === "@" || email.size() < 3) {
-        alert("Please enter a valid email");
-        return;
-    }
-    
-    try{
-        await fetch("/User/CreateAccountCheck/",{
+
+    const btn = document.querySelector('.btn-primary');
+    const originalText = btn.innerText;
+    btn.disabled = true;
+    btn.innerText = "Loading...";
+
+    try {
+        const checkResponse = await fetch("/User/CreateAccountCheck/", {
             method: "POST",
-            headers: {"Content-Type": "application/json"},
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 Username: name,
                 Email: email
             })
-        }).then(response => response.json()).then(async data => {
-            if (data.success) {
-                await fetch('/Email/SendEmailVerificationCode', {
-                    method: "POST",
-                    headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({
-                        Email: email
-                    })
-                }).then(response => response.json()).then(async data => {
-                    if (!data.success) {
-                        alert(data.message);
-                        return false;
-                    }
-                })
-                
+        });
+
+        const checkData = await checkResponse.json();
+
+        if (checkData.success) {
+            const emailResponse = await fetch('/Email/SendEmailVerificationCode', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ Email: email })
+            });
+
+            const emailData = await emailResponse.json();
+
+            if (emailData.success) {
                 const params = new URLSearchParams({
                     Email: email,
                     Name: name
                 });
                 window.location.href = `/User/EmailCodeVerification?${params.toString()}`;
             } else {
-                alert(data.message);
-                const params = new URLSearchParams({
-                    Message: data.error,
-                    Type: 'UserExists',
-                    StatusCode: data.errorCode,
-                    TimeStamp: new Date().toISOString()
-                });
-                window.location.href = `/Home/Error?${params.toString()}`;
+                alert("Kod gönderilemedi: " + emailData.message);
+                btn.disabled = false;
+                btn.innerText = originalText;
             }
-        })
+
+        } else {
+            alert(checkData.message);
+            btn.disabled = false;
+            btn.innerText = originalText;
+        }
+
     } catch (error) {
-        const params = new URLSearchParams({
-            Message: error.message,
-            Type: error.type,
-            StatusCode: error.errorCode,
-            TimeStamp: new Date().toISOString()
-        });
-        window.location.href = `/Home/Error?${params.toString()}`;
+        console.error("Hata:", error);
+        alert("Bir hata oluştu. Lütfen tekrar deneyin.");
+        btn.disabled = false;
+        btn.innerText = originalText;
     }
 }
