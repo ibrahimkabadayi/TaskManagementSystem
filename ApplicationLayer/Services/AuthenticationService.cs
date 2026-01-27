@@ -11,10 +11,12 @@ namespace Application.Services;
 public class AuthenticationService : IAuthenticationService
 {
     private readonly IUserService _userService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public AuthenticationService(IUserService userService)
+    public AuthenticationService(IUserService userService, IHttpContextAccessor httpContextAccessor)
     {
         _userService = userService;
+        _httpContextAccessor = httpContextAccessor;
     }
     
     public async Task<AuthResult> RegisterAndLoginAsync(string name, string email, string password, HttpContext context)
@@ -134,6 +136,38 @@ public class AuthenticationService : IAuthenticationService
                 Success = false,
                 Message = "There was an error logging in"
             };
+        }
+    }
+
+    public async Task RefreshUserSessionAsync(string userId, string email, string newName, string role, string newColor)
+    {
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, userId),
+            new Claim(ClaimTypes.Email, email),
+            new Claim(ClaimTypes.Name, newName), 
+            new Claim(ClaimTypes.Role, role),
+            
+            new Claim("ProfileColor", newColor) 
+        };
+
+        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        
+        var authProperties = new AuthenticationProperties
+        {
+            IsPersistent = true,
+            ExpiresUtc = DateTime.UtcNow.AddDays(7)
+        };
+
+        var httpContext = _httpContextAccessor.HttpContext;
+        if (httpContext != null)
+        {
+            await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            await httpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity),
+                authProperties);
         }
     }
 }
