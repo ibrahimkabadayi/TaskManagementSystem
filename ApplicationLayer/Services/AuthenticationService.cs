@@ -30,11 +30,35 @@ public class AuthenticationService : IAuthenticationService
         
         var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
 
+        var profileLetters = "U";
+
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            var parts = name.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            switch (parts.Length)
+            {
+                case >= 2:
+                    profileLetters = $"{parts[0][0]}{parts[^1][0]}";
+                    break;
+                case 1:
+                {
+                    var singleName = parts[0];
+                    profileLetters = singleName.Length > 1 ? singleName[..2] : singleName;
+                    break;
+                }
+            }
+        }
+
+        profileLetters = profileLetters.ToUpper();
+        
         var user = new UserDto
         {
             Name = name,
             Email = email,
             Password = hashedPassword,
+            ProfileColor = "#0079bf",
+            ProfileLetters = profileLetters
         };
 
         var savedUser = await _userService.RegisterUserAsync(user);
