@@ -1,9 +1,66 @@
+function NewWorkspaceClick() {
+    const formHtml = `
+        <div class="form-group">
+            <label>Çalışma Alanı Adı <span style="color:red">*</span></label>
+            <input type="text" id="wsName" class="form-input" placeholder="Örn: TaskFlow Web Projesi, Pazarlama Ekibi...">
+            <div id="wsNameError" style="color:red; font-size:12px; display:none; margin-top:4px;">⚠️ Bu alan zorunludur</div>
+        </div>
 
-function SectionClick(element){
+        <div class="form-group">
+            <label>Açıklama (İsteğe Bağlı)</label>
+            <textarea id="wsDesc" class="form-textarea" placeholder="Ekibiniz burayı ne için kullanacak?"></textarea>
+        </div>
+    `;
 
+    showModal("Yeni Çalışma Alanı Oluştur", formHtml, async () => {
+        const nameInput = document.getElementById('wsName');
+        const descInput = document.getElementById('wsDesc');
+
+        if (!nameInput.value.trim()) {
+            nameInput.style.borderColor = "red";
+            document.getElementById('wsNameError').style.display = "block";
+            return;
+        }
+
+        const payload = {
+            Name: nameInput.value,
+            Description: descInput.value
+        };
+
+        console.log("Creating Workspace:", payload);
+
+        try {
+            const response = await fetch('/Section/CreateProject/', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+            
+            
+            if (response.ok) {
+                window.location.reload();
+            }else{
+                console.log("Error:", response.statusText);   
+            }
+
+        } catch (error) {
+
+        }
+
+        closeModal();
+    });
 }
 
-function ShowAllBackgrounds(event){
+function openModal() {
+    document.getElementById('dynamicModal').style.display = 'flex'; // Block yerine Flex ile ortalama
+}
+
+function closeModal() {
+    document.getElementById('dynamicModal').style.display = 'none';
+    const sideModal = document.getElementById('sideModal');
+    if(sideModal) sideModal.style.display = 'none';
+}
+function ShowAllBackgrounds(event) {
     event.stopPropagation();
     event.preventDefault();
 
@@ -44,17 +101,33 @@ function ShowAllBackgrounds(event){
     sideModal.style.display = 'block';
 }
 
-function closeSideModal() {
-    document.getElementById('sideModal').style.display = 'none';
+const originalCloseModal = window.closeModal;
+window.closeModal = function() {
+    document.getElementById('dynamicModal').style.display = 'none';
+    closeSideModal();
 }
 
-function selectFromSidePanel(val, type) {
-    if (type === 'image') {
-        selectedBackground = `url('${val}')`;
-    } else {
-        selectedBackground = val;
-    }
+function selectBackground(val, type, element) {
+    selectedBackground = val;
 
+    updatePreview(val, type);
+
+    document.querySelectorAll('.bg-option-top, .bg-option-bot').forEach(b => b.classList.remove('selected'));
+    if(element) element.classList.add('selected');
+
+    closeSideModal();
+}
+
+function selectFromSidePanel(val, type, element) {
+    selectedBackground = val;
+
+    updatePreview(val, type);
+
+    document.querySelectorAll('.side-photo-item').forEach(b => b.classList.remove('selected'));
+    element.classList.add('selected');
+}
+
+function updatePreview(val, type) {
     const previewBox = document.getElementById('boardPreview');
     if (previewBox) {
         if (type === 'image') {
@@ -65,75 +138,45 @@ function selectFromSidePanel(val, type) {
             previewBox.style.backgroundColor = val;
         }
     }
-
-    document.querySelectorAll('.bg-option-top, .bg-option-bot').forEach(b => b.classList.remove('selected'));
 }
 
-const originalCloseModal = window.closeModal;
+function closeSideModal() {
+    document.getElementById('sideModal').style.display = 'none';
+}
+
+const originalClose = window.closeModal;
 window.closeModal = function() {
     document.getElementById('dynamicModal').style.display = 'none';
     closeSideModal();
 }
 
+function generateImageCookies() {
+    let images = [];
+    for (let i = 20; i <= 50; i++) {
+        images.push({
+            id: i,
+            thumbUrl: `https://picsum.photos/seed/${i * 100}/200/120`,
+            fullUrl: `https://picsum.photos/seed/${i * 100}/1920/1080`
+        });
+    }
+    return images;
+}
+
+let generatedImages = generateImageCookies();
 let selectedBackground = "#0079bf";
+
 function NewSectionClick() {
-    const formHtml = `
-        <div class="create-board-container">
-            <div id="boardPreview" class="board-preview-box">
-                <div class="preview-illustration">
-                    <div class="preview-col"></div>
-                    <div class="preview-col"></div>
-                    <div class="preview-col"></div>
-                </div>
-            </div>
+    const template = document.getElementById('createSectionTemplate');
+    if (!template) {
+        console.error("Template bulunamadı!");
+        return;
+    }
 
-            <div>
-                <div class="bg-picker-title">Arkaplan</div>
-                <div class="bg-grid-top">
-                    <button class="bg-option-top" data-type="image" data-val="url('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=100&q=80')" style="background-image: url('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=100&q=80')"></button>
-                    <button class="bg-option-top" data-type="image" data-val="url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=100&q=80')" style="background-image: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=100&q=80')"></button>
-                    <button class="bg-option-top" data-type="image" data-val="url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=100&q=80')" style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=100&q=80')"></button>
-                    <button class="bg-option-top" data-type="image" data-val="url('https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=100&q=80')" style="background-image: url('https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=100&q=80')"></button>
-                </div>
-                <div class="bg-grid-bot">
-                <button class="bg-option selected" data-type="color" data-val="#0079bf" style="background-color: #0079bf;"></button>
-                    <button class="bg-option-bot" data-type="color" data-val="#d29034" style="background-color: #d29034;"></button>
-                    <button class="bg-option-bot" data-type="color" data-val="#519839" style="background-color: #519839;"></button>
-                    <button class="bg-option-bot" data-type="color" data-val="#b04632" style="background-color: #b04632;"></button>
-                    <button class="bg-option-bot" data-type="color" data-val="#98167b" style="background-color: #519839;"></button>
-                    <button class="bg-option-bot" data-type="color" data-val="#519839" style="background-color: #e4d5d5;"></button>
-                    <button class="bg-option-bot" data-type="color" data-val="#519839" style="background-color: #eab815;"></button>
-                    <button class="bg-option-bot" onclick="ShowAllBackgrounds(event)">...</button>
-                </div>       
-            </div>
+    const formHtml = template.innerHTML;
 
-            <div class="form-group">
-                <label>Pano Başlığı <span style="color:red">*</span></label>
-                <input type="text" id="newBoardName" class="form-input" placeholder="Örn: Yaz Stajı Planı">
-                <div id="inputError" style="color:red; font-size:12px; display:none; margin-top:5px;">⚠️ Pano başlığı gerekli</div>
-            </div>
-
-            <div class="form-group">
-                <label>Çalışma Alanı</label>
-                <select id="workspaceSelect" class="form-select">
-                    <option value="1">Term Project</option>
-                    <option value="2">Kişisel İşler</option>
-                </select>
-            </div>
-
-             <div class="form-group">
-                <label>Görünürlük</label>
-                <select class="form-select">
-                    <option>🔒 Özel</option>
-                    <option>💼 Çalışma Alanı</option>
-                    <option>🌎 Herkese Açık</option>
-                </select>
-            </div>
-        </div>
-    `;
-
-    showModal("Pano Oluştur", formHtml, () => {
+    showModal("Pano Oluştur", formHtml, async () => {
         const nameInput = document.getElementById('newBoardName');
+        const workspaceSelect = document.getElementById('workspaceSelect');
 
         if (!nameInput.value.trim()) {
             nameInput.style.borderColor = "red";
@@ -141,43 +184,48 @@ function NewSectionClick() {
             return;
         }
 
-        const payload = {
-            name: nameInput.value,
-            background: selectedBackground,
-            workspaceId: document.getElementById('workspaceSelect').value
-        };
+        try {
+            const payload = {
+                Name: nameInput.value,
+                ImageUrl: selectedBackground,
+                ProjectId: workspaceSelect.value
+            };
 
-        console.log("Creating Board with:", payload);
-        // Burada AJAX isteği atılacak... createBoard(payload);
+             console.log("Gönderilen Veri:", payload);
+
+            const response = await fetch('/Section/CreateSection/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if(response.ok) {
+                window.location.reload();
+            } else {
+                console.error("Hata oluştu");
+            }
+
+        } catch (error) {
+            console.error("Error:", error);
+        }
         closeModal();
     });
 
-    const bgButtons = document.querySelectorAll('.bg-option-top, .bg-option-bot');
-    const previewBox = document.getElementById('boardPreview');
+    const imageContainer = document.getElementById('modalTopImages');
+    if (imageContainer && typeof generatedImages !== 'undefined') {
+        const topImages = generatedImages.slice(0, 4);
 
-    bgButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
+        const imagesHtml = topImages.map(img => `
+            <button class="bg-option-top" 
+                    onclick="selectBackground('${img.fullUrl}', 'image', this)"
+                    style="background-image: url('${img.thumbUrl}')">
+            </button>
+        `).join('');
 
-            bgButtons.forEach(b => b.classList.remove('selected'));
-            this.classList.add('selected');
+        imageContainer.innerHTML = imagesHtml;
+    }
 
-            const val = this.getAttribute('data-val');
-            selectedBackground = val;
-
-
-            if (this.getAttribute('data-type') === 'image') {
-                previewBox.style.backgroundImage = val;
-                previewBox.style.backgroundColor = 'transparent';
-            } else {
-                previewBox.style.backgroundImage = 'none';
-                previewBox.style.backgroundColor = val;
-            }
-        });
-    });
-}
-
-function BoardsButtonClick(){
-
+    selectedBackground = "#0079bf";
 }
 
 function MembersButtonClick(){
@@ -188,9 +236,12 @@ function SettingsButtonClick(){
 
 }
 
+document.addEventListener('keydown', (e) => {
+    if (e.key === "Escape") closeModal();
+});
+
 function showModal(title, htmlContent, onConfirm) {
     const modal = document.getElementById('dynamicModal');
-
     document.getElementById('modalTitle').innerText = title;
     document.getElementById('modalBody').innerHTML = htmlContent;
 
@@ -201,14 +252,9 @@ function showModal(title, htmlContent, onConfirm) {
 
     newBtn.addEventListener('click', () => {
         onConfirm();
-        closeModal();
     });
 
     modal.style.display = 'flex';
-}
-
-function closeModal() {
-    document.getElementById('dynamicModal').style.display = 'none';
 }
 
 document.addEventListener('keydown', (e) => {

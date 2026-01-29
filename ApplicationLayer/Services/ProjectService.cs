@@ -1,6 +1,8 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
 using AutoMapper;
+using DomainLayer.Entities;
+using DomainLayer.Enums;
 using DomainLayer.Interfaces;
 
 namespace Application.Services;
@@ -8,12 +10,14 @@ namespace Application.Services;
 public class ProjectService : IProjectService
 {
     private readonly IUserRepository _userRepository;
+    private readonly IProjectUserRepository _projectUserRepository;
     private readonly IProjectRepository _projectRepository;
     private readonly IMapper _mapper;
-    public ProjectService(IProjectRepository projectRepository, IMapper mapper, IUserRepository userRepository)
+    public ProjectService(IProjectRepository projectRepository, IMapper mapper, IUserRepository userRepository, IProjectUserRepository projectUserRepository)
     {
         _userRepository = userRepository;
         _projectRepository = projectRepository;
+        _projectUserRepository = projectUserRepository;
         _mapper = mapper;
     }
 
@@ -39,5 +43,30 @@ public class ProjectService : IProjectService
     {
         var projects = await _projectRepository.GetAllProjectsOfOneUserAsync(userId);
         return _mapper.Map<List<ProjectDto>>(projects);
+    }
+
+    public async Task<ProjectDto> CreateProjectAsync(string projectName, string description, int userId)
+    {
+        var newProject = new Project
+        {
+            Name = projectName,
+            Description = description,
+            StartDate = DateTime.Now
+        };
+        
+        await _projectRepository.AddAsync(newProject);
+
+        var newProjectUser = new ProjectUser
+        {
+            IsActive = true,
+            JoinedDate = DateTime.Now,
+            Role = ProjectRole.Leader,
+            ProjectId = newProject.Id,
+            UserId = userId,
+        };
+
+        await _projectUserRepository.AddAsync(newProjectUser);
+        
+        return _mapper.Map<ProjectDto>(newProject);
     }
 }

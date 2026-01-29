@@ -102,6 +102,37 @@ public class SectionController : Controller
         Response.Cookies.Append(cookieName, jsonString, cookieOptions);
     }
 
+    [HttpPost]
+    public async Task<IActionResult> CreateSection([FromBody] CreateSectionRequest request)
+    {
+        var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        
+        if (string.IsNullOrEmpty(userId)) return RedirectToAction("SignIn", "Home");
+        
+        var createdSection = await _sectionService.CreateSectionAsync(request.ProjectId, request.Name, request.ImageUrl);
+
+        return (createdSection.Name == request.Name)
+            ? Ok(createdSection)
+            : BadRequest(new { message = "Section could not be created." });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DeleteSection(int sectionId)
+    {
+        var result = await _sectionService.DeleteSectionAsync(sectionId);
+        return (result) ? Ok() : BadRequest();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateProject([FromBody] CreateProjectRequest request)
+    {
+        var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId)) return RedirectToAction("SignIn", "Home");
+        
+        var result = await _projectService.CreateProjectAsync(request.Name, request.Description, int.Parse(userId));
+        return (result.Name == request.Name) ? Ok(result) : BadRequest(new { message = "Project could not be created." });
+    }
+
 
     [HttpGet]
     public async Task<IActionResult> SectionTasks(int sectionId)

@@ -1,112 +1,147 @@
 ﻿@{
     Layout = "TaskFlowLayout";
 }
-
 @using Application.DTOs
 @model List<Application.DTOs.ProjectDto>
 
-<style>
-    body {
-        background-color: #f8fafc; /* Çok açık gri/mavi zemin */
-        background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px);
-        background-size: 24px 24px; /* Noktaların sıklığı */
-        min-height: 100vh;
-    }
-
-    /* İçeriklerin daha net durması için container'a hafif gölge verelim */
-    .main-container {
-        position: relative;
-        z-index: 1;
-    }
-</style>
-
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="~/css/TaskFlowStyleSheet.css"/>
 
 <div class="main-container">
-    <div class="recently-viewed-section">
-        <div class="section-header">
-            🕒 <span>Recently Viewed</span>
-        </div>
 
+    <div class="recently-viewed-section">
+        @if (ViewBag.LastVisitedSections is List<RecentSectionCookieDto> && ViewBag.LastVisitedSections.Count > 0)
+        {
+            <div class="section-header">
+                <i class="fa-regular fa-clock"></i> <span>SON GÖRÜNTÜLENENLER</span>
+            </div>
+        }
+        
         <div class="boards-grid">
-            @{
-                if (ViewBag.LastVisitedSections is List<RecentSectionCookieDto> visitedSections)
+            @if (ViewBag.LastVisitedSections is List<RecentSectionCookieDto> visitedSections)
+            {
+                foreach (var visitedSection in visitedSections)
                 {
-                    foreach (var visitedSection in visitedSections)
-                    {
-                        <div class="board-card has-bg" 
-                             onclick="window.location.href='/Section/SectionTasks?id=@visitedSection.Id'" 
-                             style="background-image: url('@visitedSection.ImageUrl');">
-                    
-                            <span class="board-title-text">@visitedSection.Name</span>
-                        </div>
-                    }
+                    <div class="board-card has-bg"
+                         onclick="window.location.href='/Section/SectionTasks?sectionId=@visitedSection.Id'"
+                         style="background-image: url('@visitedSection.ImageUrl'); background-size: cover; background-position: center;">
+                        <span class="board-title-text">@visitedSection.Name</span>
+                    </div>
                 }
             }
         </div>
     </div>
 
-
-    <div class="workspaces-section">
+    <div class="section-header-container">
         <div class="section-header">
-            💼 <span>YOUR WORKSPACES</span>
+            <i class="fa-solid fa-briefcase"></i> <span>ÇALIŞMA ALANLARI</span>
         </div>
-        @{
-            foreach (var project in Model)
-            {
-                <div class="workspace-item" style="margin-bottom: 50px;">
-                    <div class="workspace-title-bar">
-                        <div class="ws-left">
-                            <div class="ws-icon">@project.Name.First()</div>
-                            <div class="ws-name">@project.Name</div>
-                        </div>
-                        <div class="ws-actions">
-                            <button onclick="BoardsButtonClick()">Boards</button>
-                            <button onclick="MembersButtonClick()">Members</button>
-                            <button onclick="SettingsButtonClick()">Settings</button>
-                        </div>
-                    </div>
+        <button class="btn-create-new-project" onclick="NewWorkspaceClick()">
+            <i class="fa-solid fa-plus"></i> Yeni Çalışma Alanı
+        </button>
+    </div>
 
-                    <div class="boards-grid">
-                        @foreach (var projectSection in project.Sections)
-                        {
-                            <div class="board-card" onclick="window.location.href='/Section/SectionTasks?id=@projectSection.Id'" style="background-image: url('@projectSection.ImageUrl'); background-size: cover; background-position: center;">
-                                @projectSection.Name
-                            </div>
-                        }
-                        <div class="board-card new-board" onclick="NewSectionClick()">
-                            Create New Section
-                        </div>
+    <div class="workspaces-list">
+        @foreach (var project in Model)
+        {
+            <div class="workspace-item">
+                <div class="workspace-title-bar">
+                    <div class="ws-left">
+                        <div class="ws-icon">@project.Name[..1].ToUpper()</div>
+                        <div class="ws-name">@project.Name</div>
+                    </div>
+                    <div class="ws-actions">
+                        <button onclick="MembersButtonClick()">Üyeler</button>
+                        <button onclick="SettingsButtonClick()">Ayarlar</button>
                     </div>
                 </div>
-            }
+
+                <div class="boards-grid">
+                    @foreach (var projectSection in project.Sections)
+                    {
+                        <div class="board-card has-bg" 
+                             onclick="window.location.href='/Section/SectionTasks?sectionId=@projectSection.Id'" 
+                             style="background-image: url('@projectSection.ImageUrl'); background-size: cover; background-position: center;">
+                            <span class="board-title-text">@projectSection.Name</span>
+                        </div>
+                    }
+                    <div class="board-card new-board" onclick="NewSectionClick()">
+                        <span>+ Yeni Pano Oluştur</span>
+                    </div>
+                </div>
+            </div>
         }
     </div>
-    <div id="dynamicModal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modalTitle">Başlık</h3>
-                <button class="close-btn" onclick="closeModal()">×</button>
-            </div>
 
-            <div id="modalBody" class="modal-body">
-            </div>
+</div>
 
-            <div class="modal-footer">
-                <button class="btn-cancel" onclick="closeModal()">İptal</button>
-                <button id="modalConfirmBtn" class="btn-confirm">Kaydet</button>
+<div id="dynamicModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalTitle">Modal Başlığı</h3>
+            <button class="close-btn" onclick="closeModal()">×</button>
+        </div>
+        <div id="modalBody" class="modal-body">
             </div>
-        </div>
-    </div>
-    <div id="sideModal" class="side-modal" style="display: none;">
-        <div class="side-modal-header">
-            <span class="back-btn" onclick="closeSideModal()">⬅️</span>
-            <span class="side-modal-title">Arkaplanlar</span>
-            <button class="close-btn" onclick="closeSideModal()">×</button>
-        </div>
-        <div id="sideModalBody" class="side-modal-body">
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal()">İptal</button>
+            <button id="modalConfirmBtn" class="btn-confirm">Kaydet</button>
         </div>
     </div>
 </div>
+
+<div id="sideModal" class="side-modal" style="display: none;"></div>
+
+<template id="createSectionTemplate">
+    <div class="create-board-container">
+        <div id="boardPreview" class="board-preview-box" style="background-color: #0079bf;">
+            <div class="preview-illustration">
+                <div class="preview-col"></div>
+                <div class="preview-col"></div>
+                <div class="preview-col"></div>
+            </div>
+        </div>
+
+        <div>
+            <div class="bg-picker-title">Arkaplan</div>
+            
+            <div class="bg-grid-top" id="modalTopImages"></div>
+
+            <div class="bg-grid-bot">
+                <button class="bg-option-bot selected" onclick="selectBackground('#0079bf', 'color', this)" style="background-color: #0079bf;"></button>
+                <button class="bg-option-bot" onclick="selectBackground('#d29034', 'color', this)" style="background-color: #d29034;"></button>
+                <button class="bg-option-bot" onclick="selectBackground('#519839', 'color', this)" style="background-color: #519839;"></button>
+                <button class="bg-option-bot" onclick="selectBackground('#b04632', 'color', this)" style="background-color: #b04632;"></button>
+                <button class="bg-option-bot" onclick="selectBackground('#89609e', 'color', this)" style="background-color: #89609e;"></button>
+                <button class="bg-option-bot" onclick="ShowAllBackgrounds(event)">...</button>
+            </div>       
+        </div>
+
+        <div class="form-group">
+            <label>Pano Başlığı <span style="color:red">*</span></label>
+            <input type="text" id="newBoardName" class="form-input" placeholder="Örn: Yaz Stajı Planı">
+            <div id="inputError" style="color:red; font-size:12px; display:none; margin-top:5px;">⚠️ Pano başlığı gerekli</div>
+        </div>
+
+        <div class="form-group">
+            <label>Çalışma Alanı (Proje)</label>
+            <select id="workspaceSelect" class="form-select">
+                @foreach (var project in Model)
+                {
+                    <option value="@project.Id">@project.Name</option>
+                }
+            </select>
+        </div>
+
+         <div class="form-group">
+            <label>Görünürlük</label>
+            <select class="form-select">
+                <option>🔒 Özel</option>
+                <option>💼 Çalışma Alanı</option>
+            </select>
+        </div>
+    </div>
+</template>
 
 <script src="~/js/TaskFlowScript.js"></script>

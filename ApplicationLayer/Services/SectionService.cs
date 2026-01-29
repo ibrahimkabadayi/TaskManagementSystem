@@ -1,6 +1,7 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
 using AutoMapper;
+using DomainLayer.Entities;
 using DomainLayer.Interfaces;
 
 namespace Application.Services;
@@ -47,5 +48,24 @@ public class SectionService : ISectionService
     {
         var section = await _sectionRepository.GetSectionsWithTaskGroupsAsync(projectId);
         return _mapper.Map<List<SectionDto>>(section);
+    }
+    
+    public async Task<SectionDto> CreateSectionAsync(int projectId, string sectionName, string backgroundUrl)
+    {
+        var newSection = new Section
+        {
+            ImageUrl = backgroundUrl,
+            Name = sectionName,
+            ProjectId = projectId
+        };
+
+        await _sectionRepository.AddAsync(newSection);
+        
+        return _mapper.Map<SectionDto>(newSection);
+    }
+
+    public async Task<bool> DeleteSectionAsync(int sectionId)
+    {
+        throw new NotImplementedException();
     }
 }
