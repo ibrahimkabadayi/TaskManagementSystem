@@ -20,6 +20,15 @@ public class ProjectRepository : Repository<Project>, IProjectRepository
             .ToListAsync();
     }
 
+    public async Task<List<Project>> GetAllProjectsOfOneUserAsync(int userId)
+    {
+        return await _context.Projects
+            .Where(p => p.ProjectUsers.Any(pu => pu.UserId == userId))
+            .Include(p => p.Sections)
+            .Include(p => p.ProjectUsers)
+            .ToListAsync();
+    }
+
     public async Task<IEnumerable<Project>> GetActiveProjectsAsync()
     {
         return await _context.Projects
@@ -62,7 +71,7 @@ public class ProjectRepository : Repository<Project>, IProjectRepository
                     User = t.User,
                     UserId = t.UserId
                 }).ToList(),
-                Sections = x.Sections!.Select(s => new Section
+                Sections = x.Sections.Select(s => new Section
                 {
                     Id = s.Id,
                     ImageUrl = s.ImageUrl,

@@ -18,7 +18,7 @@ public class EmailController : ControllerBase
         _userService = userService;
     }
 
-    [HttpPost("send-verification-code")]
+    [HttpPost("~/Email/SendCode")]
     public async Task<IActionResult> SendEmailVerificationCode([FromBody] SendCodeRequest request)
     {
         if (!ModelState.IsValid)
@@ -28,7 +28,7 @@ public class EmailController : ControllerBase
         
         var isExists = await _userService.CheckUserExistsAsync(request.Email);
 
-        if (!isExists)
+        if (isExists)
         {
             return BadRequest(new 
             { 
@@ -46,7 +46,7 @@ public class EmailController : ControllerBase
         return Ok(new { success = true });
     }
     
-    [HttpPost("VerifyCode")]
+    [HttpPost("~/Email/VerifyCode")]
     public IActionResult VerifyCode([FromBody] VerifyCodeRequest request)
     {
         try
@@ -72,7 +72,8 @@ public class EmailController : ControllerBase
                 success = true,
                 message = "Email confirmed",
                 email = request.Email, 
-                name = request.UserName});
+                name = request.UserName
+            });
         }
         catch (Exception ex)
         {

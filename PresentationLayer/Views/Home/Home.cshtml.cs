@@ -6,16 +6,8 @@ namespace TaskManagementSystem.Views;
 
 public class Home : PageModel
 {
-    public UserDto UserData { get; set; } = new UserDto 
-    { 
-        Name = "default", 
-        Email = "default",
-        Password = "default"
-    };
     public void OnGet()
     {
-        if (User.Identity?.IsAuthenticated != true) return;
-        UserData.Name = User.FindFirst(ClaimTypes.Name)?.Value ?? "default";
-        UserData.Email = User.FindFirst(ClaimTypes.Email)?.Value ?? "default";
+        
     }
 }

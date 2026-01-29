@@ -35,7 +35,7 @@ async function SignIn() {
     btn.innerText = "Loading...";
 
     try {
-        const response = await fetch('/Authenticate/RegisterSignIn', {
+        const response = await fetch('/Authenticate/Login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

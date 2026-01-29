@@ -1,4 +1,4 @@
-async function VerifyEmailCode(email) {
+async function VerifyEmailCode(email, name) {
     const codeInput = document.getElementById("code-Input");
     const userEnteredCode = codeInput.value.trim();
 
@@ -18,7 +18,8 @@ async function VerifyEmailCode(email) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 Email: email,
-                EnteredCode: userEnteredCode
+                EnteredCode: userEnteredCode,
+                UserName: name
             })
         });
 
@@ -26,10 +27,10 @@ async function VerifyEmailCode(email) {
 
         if (data.success) {
             const params = new URLSearchParams({
-                UserName: data.name,
-                Email: data.email,
+                userName: data.name,
+                email: data.email,
             });
-            window.location.href = `/User/PasswordCreation?${params.toString()}`;
+            window.location.href = `/Home/PasswordCreation?${params.toString()}`;
         } else {
             alert('Invalid code! Please try again.');
             btn.disabled = false;
@@ -73,8 +74,8 @@ async function SendEmailCodeAgain(email) {
 
 function BackArrowClick(name, email) {
     const params = new URLSearchParams({
-        UserName: name,
-        Email: email
+        userName: name,
+        email: email
     });
-    window.location.href = `/User/CreateAccount?${params.toString()}`;
+    window.location.href = `/Home/CreateAccount?${params.toString()}`;
 }

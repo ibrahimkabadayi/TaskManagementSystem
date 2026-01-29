@@ -1,11 +1,26 @@
-﻿@page
-
-@{
+﻿@{
     Layout = "TaskFlowLayout";
-    var lastVisitedSections = ViewBag.LastVisitedSections;
 }
 
+@using Application.DTOs
 @model List<Application.DTOs.ProjectDto>
+
+<style>
+    body {
+        background-color: #f8fafc; /* Çok açık gri/mavi zemin */
+        background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px);
+        background-size: 24px 24px; /* Noktaların sıklığı */
+        min-height: 100vh;
+    }
+
+    /* İçeriklerin daha net durması için container'a hafif gölge verelim */
+    .main-container {
+        position: relative;
+        z-index: 1;
+    }
+</style>
+
+<link rel="stylesheet" href="~/css/TaskFlowStyleSheet.css"/>
 
 <div class="main-container">
     <div class="recently-viewed-section">
@@ -15,11 +30,17 @@
 
         <div class="boards-grid">
             @{
-                foreach (var visitedSection in lastVisitedSections)
+                if (ViewBag.LastVisitedSections is List<RecentSectionCookieDto> visitedSections)
                 {
-                    <div class="board-card has-bg" onclick="SectionClick(this)" style="background-image: url('@lastVisitedSections.ImageUrl');">
-                        @visitedSection.Name
-                    </div>
+                    foreach (var visitedSection in visitedSections)
+                    {
+                        <div class="board-card has-bg" 
+                             onclick="window.location.href='/Section/SectionTasks?id=@visitedSection.Id'" 
+                             style="background-image: url('@visitedSection.ImageUrl');">
+                    
+                            <span class="board-title-text">@visitedSection.Name</span>
+                        </div>
+                    }
                 }
             }
         </div>
@@ -49,12 +70,12 @@
                     <div class="boards-grid">
                         @foreach (var projectSection in project.Sections)
                         {
-                            <div class="board-card" onclick="SectionClick()" style="@projectSection.ImageUrl">
+                            <div class="board-card" onclick="window.location.href='/Section/SectionTasks?id=@projectSection.Id'" style="background-image: url('@projectSection.ImageUrl'); background-size: cover; background-position: center;">
                                 @projectSection.Name
                             </div>
                         }
                         <div class="board-card new-board" onclick="NewSectionClick()">
-                            Create New Board
+                            Create New Section
                         </div>
                     </div>
                 </div>
@@ -87,4 +108,5 @@
         </div>
     </div>
 </div>
-<script src="js/TaskFlowScript.js"></script>
+
+<script src="~/js/TaskFlowScript.js"></script>

@@ -7,19 +7,22 @@ using DomainLayer.Entities;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using Xunit.Abstractions;
 using Task = System.Threading.Tasks.Task;
 
 namespace TaskManegementSystem.Tests.ServicesTests;
 
 public class UserServiceTests : IDisposable
 {
+    private readonly ITestOutputHelper _testOutputHelper;
     private readonly SqliteConnection _connection;
     private readonly ApplicationDbContext _context;
     private readonly UserService _userService;
     private readonly Mock<IMapper> _mockMapper;
     
-    public UserServiceTests()
+    public UserServiceTests(ITestOutputHelper testOutputHelper)
     {
+        _testOutputHelper = testOutputHelper;
         _connection = new SqliteConnection("Filename=:memory:");
         _connection.Open();
         
@@ -118,7 +121,6 @@ public class UserServiceTests : IDisposable
         Assert.Equal(result3.First(), result);
         Assert.Equal(result3.Last(), result2);
     }
-    
     
     public void Dispose()
     {

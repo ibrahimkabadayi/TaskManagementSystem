@@ -1,7 +1,4 @@
-﻿@page
-@model TaskManagementSystem.Views.EmailCodeVerification
-
-@{
+﻿@{
     Layout = "Layout";
     var name = ViewData["Name"] as string;
     var email = ViewData["Email"] as string;
@@ -30,7 +27,7 @@
 </div>
     
 <div class="action-buttons">
-    <button class="btn-verify" onclick="VerifyEmailCode('@email')">Doğrula ve Devam Et</button>
+    <button class="btn-verify" onclick="VerifyEmailCode('@email', '@name')">Doğrula ve Devam Et</button>
     <button class="btn-resend" onclick="SendEmailCodeAgain('@email')">Kodu Tekrar Gönder</button>
 </div>
 

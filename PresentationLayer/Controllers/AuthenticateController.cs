@@ -1,6 +1,6 @@
-﻿using Application.DTOs;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using TaskManagementSystem.Models;
 using TaskManagementSystem.Models.AuthenticateRequests;
 using IAuthenticationService = Application.Interfaces.IAuthenticationService;
 
@@ -17,7 +17,7 @@ public class AuthenticateController : ControllerBase
         _authenticationService = authenticationService;
     }
 
-    [HttpPost("register")]
+    [HttpPost("~/Authenticate/Register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
         if (!ModelState.IsValid)
@@ -50,14 +50,14 @@ public class AuthenticateController : ControllerBase
         });
     }
 
-    [HttpPost("login")]
+    [HttpPost("~/Authenticate/Login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
-
+        
         var result = await _authenticationService.LoginAsync(request.Email, request.Password, HttpContext);
         
         if (!result.Success)
@@ -76,5 +76,13 @@ public class AuthenticateController : ControllerBase
             redirectUrl = result.RedirectUrl,
             user = result.User
         });
+    }
+    
+    [HttpGet("~/Authenticate/Logout")]
+    public async Task<IActionResult> Logout()
+    {
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        
+        return RedirectToAction("Home", "Home");
     }
 }

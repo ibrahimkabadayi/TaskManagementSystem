@@ -8,4 +8,5 @@ public interface IProjectRepository : IRepository<Project>
     Task<IEnumerable<Project>> GetActiveProjectsAsync();
     Task<User> GetProjectLeaderAsync(int projectId);
     Task<Project?> GetProjectWithSectionAsync(int projectId);
+    Task<List<Project>> GetAllProjectsOfOneUserAsync(int userId);
 }
