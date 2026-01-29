@@ -8,4 +8,5 @@ public interface IProjectService
     Task<List<ProjectDto?>> GetAllProjectsAsync();
     Task<ProjectDto?> GetProjectWithSectionAsync(int id);
     Task<List<ProjectDto>> GetAllProjectsOfUserAsync(int userId);
+    Task<ProjectDto> CreateProjectAsync(string projectName, string description, int userId);
 }

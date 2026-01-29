@@ -194,4 +194,13 @@ public class AuthenticationService : IAuthenticationService
                 authProperties);
         }
     }
+
+    public async Task LogoutAsync()
+    {
+        var context = _httpContextAccessor.HttpContext;
+        if (context != null)
+        {
+            await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        }
+    }
 }

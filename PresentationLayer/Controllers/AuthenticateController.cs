@@ -81,7 +81,7 @@ public class AuthenticateController : ControllerBase
     [HttpGet("~/Authenticate/Logout")]
     public async Task<IActionResult> Logout()
     {
-        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        await _authenticationService.LogoutAsync();
         
         return RedirectToAction("Home", "Home");
     }
