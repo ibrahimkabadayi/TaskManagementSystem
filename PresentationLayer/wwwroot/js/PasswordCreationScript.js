@@ -19,7 +19,6 @@ async function ConfirmPassword(name, email) {
     const password = passwordInput.value;
     const passwordAgain = passwordAgainInput.value;
 
-    // Validasyonlar
     if (!password) {
         alert("Lütfen bir şifre belirleyin.");
         passwordInput.focus();

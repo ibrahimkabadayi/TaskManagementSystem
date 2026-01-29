@@ -1,6 +1,6 @@
 async function nextButtonClick() {
     const nameInput = document.getElementById("name-Input");
-    const emailInput = document.getElementById("email-input"); // HTML'de küçük 'i' ile yazmıştık
+    const emailInput = document.getElementById("email-input");
 
     const name = nameInput.value.trim();
     const email = emailInput.value.trim();
@@ -24,7 +24,7 @@ async function nextButtonClick() {
     btn.innerText = "Loading...";
 
     try {
-        const checkResponse = await fetch("/User/CreateAccountCheck/", {
+        const checkResponse = await fetch("/User/CreateAccountCheck", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -36,7 +36,7 @@ async function nextButtonClick() {
         const checkData = await checkResponse.json();
 
         if (checkData.success) {
-            const emailResponse = await fetch('/Email/SendEmailVerificationCode', {
+            const emailResponse = await fetch('/Email/SendCode', {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ Email: email })
@@ -46,10 +46,10 @@ async function nextButtonClick() {
 
             if (emailData.success) {
                 const params = new URLSearchParams({
-                    Email: email,
-                    Name: name
+                    email: email,
+                    name: name
                 });
-                window.location.href = `/User/EmailCodeVerification?${params.toString()}`;
+                window.location.href = `/Home/EmailCodeVerification?${params.toString()}`;
             } else {
                 alert("Kod gönderilemedi: " + emailData.message);
                 btn.disabled = false;

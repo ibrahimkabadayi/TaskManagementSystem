@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using System.Text.Json;
 using Application.DTOs;
 using Application.Interfaces;
 using DomainLayer.Enums;
@@ -35,161 +36,99 @@ public class SectionController : Controller
         var result = await _projectUserService.GetAllProjectUserDetailsOfOneProjectAsync(projectId);
         return Ok(result);
     }
-
-    public IActionResult TestPage()
+    
+    public async Task<IActionResult> TaskFlow(int userId = 1)
     {
+        var allProjects = await _projectService.GetAllProjectsOfUserAsync(userId);
         
-        var claims = new List<Claim>
+        var lastVisitedSections = new List<RecentSectionCookieDto>();
+        var cookie = Request.Cookies["TaskFlow_RecentSections"];
+
+        if (!string.IsNullOrEmpty(cookie))
         {
-            new Claim(ClaimTypes.Name, "İbrahim Kabadayı"), 
+            try 
+            {
+                lastVisitedSections = JsonSerializer.Deserialize<List<RecentSectionCookieDto>>(cookie);
+            }
+            catch
+            {
+                lastVisitedSections = [];
+            }
+        }
+
+        ViewBag.LastVisitedSections = lastVisitedSections;
         
-            new Claim(ClaimTypes.NameIdentifier, "1"),
+        return View(allProjects);
+    }
+    
+    private void AddToRecentlyViewed(int sectionId, string name, string imageUrl)
+    {
+        const string cookieName = "TaskFlow_RecentSections";
+
+        var existingCookie = Request.Cookies[cookieName];
+    
+        var recentList = !string.IsNullOrEmpty(existingCookie) ? JsonSerializer.Deserialize<List<RecentSectionCookieDto>>(existingCookie) :
+        [
+        ];
         
-            new Claim(ClaimTypes.Role, "Admin") 
+        if (recentList == null) return;
+
+        var existingItem = recentList.FirstOrDefault(x => x.Id == sectionId);
+        if (existingItem != null)
+        {
+            recentList.Remove(existingItem);
+        }
+
+        recentList.Insert(0, new RecentSectionCookieDto 
+        { 
+            Id = sectionId, 
+            Name = name, 
+            ImageUrl = imageUrl 
+        });
+
+        if (recentList.Count > 3)
+        {
+            recentList = recentList.Take(3).ToList();
+        }
+
+        var cookieOptions = new CookieOptions
+        {
+            Expires = DateTime.Now.AddDays(30),
+            HttpOnly = true,
+            Secure = true
         };
 
-        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-        var principal = new ClaimsPrincipal(identity);
-
-        HttpContext.User = principal;
-
-        TaskGroupDto taskGroupDto1;
-        TaskGroupDto taskGroupDto2;
-        TaskGroupDto taskGroupDto3;
-        
-        var mockProject = new ProjectDto
-        {
-            Id = 1,
-            Name = "TaskFlow Web UI",
-            StartDate = DateTime.Now,
-            ProjectUsers =
-            [
-                new ProjectUserDto
-                {
-                    Id = 101, Title = "Frontend Dev", Role = ProjectRole.Leader,
-                    User = new UserDto
-                    {
-                        Id = 1, Name = "İbrahim Kabadayı", Email = "ibrahim@test.com", Password = "123", ProfileLetters = "İK",
-                        ProfileColor = "#0079bf"
-                    },
-                    ProjectId = 1,
-                    IsActive = true,
-                    JoinedDate = DateTime.Today
-                },
-
-                new ProjectUserDto
-                {
-                    Id = 102, Title = "Backend Lead", Role = ProjectRole.Developer,
-                    User = new UserDto
-                    {
-                        Id = 2, Name = "Can Yılmaz", Email = "can@test.com", Password = "1234", ProfileLetters = "CY",
-                        ProfileColor = "#4bbf6b"
-                    },
-                    ProjectId = 1,
-                    IsActive = true,
-                    JoinedDate = DateTime.Today
-                },
-
-                new ProjectUserDto
-                {
-                    Id = 103, Title = "Designer", Role = ProjectRole.Viewer,
-                    User = new UserDto
-                    {
-                        Id = 3, Name = "Ayşe Demir", Email = "ayse@test.com", Password = "12345", ProfileLetters = "AD",
-                        ProfileColor = "#ff9f1a"
-                    },
-                    ProjectId = 1,
-                    IsActive = true,
-                    JoinedDate = DateTime.Today
-                }
-            ]
-        };
-
-        var mockSection = new SectionDto
-        {
-            Id = 50,
-            Name = "Sprint 1",
-            ImageUrl = "https://www.freepik.com/free-photo/panoramic-shot-tranquil-lake-reflecting-blue-sky_10583765.htm#fromView=image_search_similar&page=1&position=0&uuid=d3f3501d-6215-4c9e-affe-4a038a30ff2d&query=lake+background",
-            ProjectId = 1,
-            TasksGroupDtos =
-            [
-                taskGroupDto3 = new TaskGroupDto
-                {
-                    Id = 1, Name = "Yapılacaklar (To Do)",
-                    CreatedById = 1,
-                    TaskDtos = new List<TaskDto>
-                    {
-                        new TaskDto
-                        {
-                            Id = 10, Title = "Login Ekranı Tasarımı",
-                            Description = "Figma çizimleri incelenecek.",
-                            AssignedTo = mockProject.ProjectUsers[0].User,
-                            Priority = TaskPriority.High, State = TaskState.Todo,
-                            StartDate = DateTime.Now, DueDate = DateTime.Now.AddDays(-2),
-                            Position = 1
-                        },
-                        new TaskDto
-                        {
-                            Id = 11, Title = "Veritabanı Oluşturma",
-                            Description = "MSSQL kurulumu ve migrationlar.",
-                            AssignedTo = mockProject.ProjectUsers[1].User,
-                            Priority = TaskPriority.Medium, State = TaskState.InProgress,
-                            StartDate = DateTime.Now, DueDate = DateTime.Now.AddDays(-5),
-                            Position = 2
-                        }
-                    }
-                },
-
-                taskGroupDto2 = new TaskGroupDto
-                {
-                    Id = 2, Name = "Devam Edenler (In Progress)",
-                    CreatedById = 1,
-                    TaskDtos = new List<TaskDto>
-                    {
-                        new TaskDto
-                        {
-                            Id = 12, Title = "API Gateway Entegrasyonu",
-                            Description = "Ocelot konfigürasyonları yapılıyor...",
-                            AssignedTo = mockProject.ProjectUsers[1].User, // CY
-                            Priority = TaskPriority.High, State = TaskState.Done,
-                            StartDate = DateTime.Now.AddDays(-2), DueDate = DateTime.Now.AddDays(1),
-                            Position = 1
-                        }
-                    }
-                },
-
-                taskGroupDto1 = new TaskGroupDto
-                {
-                    Id = 3, Name = "Tamamlananlar (Done)",
-                    CreatedById = 1,
-                    TaskDtos = new List<TaskDto>
-                    {
-                        new TaskDto
-                        {
-                            Id = 13, Title = "Proje Kurulumu",
-                            Description = "",
-                            AssignedTo = mockProject.ProjectUsers[0].User, // İK
-                            Priority = TaskPriority.Low, State = TaskState.Done,
-                            StartDate = DateTime.Now.AddDays(-10), DueDate = DateTime.Now.AddDays(-5),
-                            Position = 2
-                        }
-                    }
-                }
-
-            ]
-        };
-        taskGroupDto1.Section = mockSection;
-        taskGroupDto2.Section = mockSection;
-        taskGroupDto3.Section = mockSection;
-        
-        ViewBag.Project = mockProject;
-        return View("SectionTasks", mockSection);
+        var jsonString = JsonSerializer.Serialize(recentList);
+        Response.Cookies.Append(cookieName, jsonString, cookieOptions);
     }
 
+
+    [HttpGet]
+    public async Task<IActionResult> SectionTasks(int sectionId)
+    {
+        var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        
+        if (string.IsNullOrEmpty(userId)) return RedirectToAction("SignIn", "Home");
+        
+        var section = await _sectionService.GetSectionWithTasksAsync(sectionId);
+        
+        if (section == null) return RedirectToAction("Home", "Home");
+        
+        var project = await _projectService.GetProjectWithSectionAsync(section.ProjectId);
+        
+        AddToRecentlyViewed(sectionId, section.Name, section.ImageUrl);
+        
+        ViewBag.Project = project;
+        return View(section);
+    }
+    
     public async Task<IActionResult> TestWithRealData()
     {
         var section = await _sectionService.GetSectionWithTasksAsync(50);
-        var project = await _projectService.GetProjectWithSectionAsync(1);
+        
+        if (section == null) return RedirectToAction("Home", "Home");
+        
+        var project = await _projectService.GetProjectWithSectionAsync(section.ProjectId);
         
         var claims = new List<Claim>
         {

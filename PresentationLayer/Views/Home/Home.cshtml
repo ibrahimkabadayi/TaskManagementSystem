@@ -2,9 +2,9 @@
 
 @{
     Layout = null;
-    var userId = ViewBag.UserId as int?;
-    var userName = ViewBag.UserName as string;
-    var userEmail = ViewBag.UserEmail as string;
+    var profileLetters = ViewBag.ProfileLetters;
+    var profileColor = ViewBag.ProfileColor;
+    var userId = ViewBag.UserId;
 }
 
 <!DOCTYPE html>
@@ -37,8 +37,61 @@
                 <li><a href="#">Pricing</a></li>
             </ul>
             <div class="nav-actions">
-                <button class="btn btn-signin" onclick="SignIn()" style="background:none; border:none; color:var(--text-muted); font-weight:600; cursor:pointer;">Sign In</button>
-                <button class="btn btn-primary" onclick="CreateAccount()">Get Started</button>
+                @if (User.Identity!.IsAuthenticated)
+                {
+                    <a href="/Section/TaskFlow?${@userId}" class="btn btn-primary" style="text-decoration: none; margin-right: 15px;">
+                        <i class="ri-kanban-view-2"></i> My Board
+                    </a>
+
+                    <div class="account-section" style="position: relative; display: inline-block;">
+                        @{
+                            var userName = User.Identity.Name ?? "User";
+                        }
+
+                        <div class="profile-trigger" onclick="toggleDropdown()" style="cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                            <div class="profile-avatar" style="width: 40px; height: 40px; 
+                            background-color: @profileColor; 
+                            color: white; 
+                            border-radius: 50%; 
+                            display: flex; 
+                            align-items: center; 
+                            justify-content: center; 
+                            font-weight: 600; 
+                            font-size: 1.1rem;
+                            box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                @profileLetters
+                            </div>
+                            <span style="font-weight: 500; color: var(--text-main); font-size: 0.95rem;">@userName</span>
+                            <i class="ri-arrow-down-s-line" style="color: var(--text-muted);"></i>
+                        </div>
+
+                        <div id="userDropdown" class="account-dropdown" style="
+                        display: none; 
+                        position: absolute; 
+                        top: 120%; 
+                        right: 0; 
+                        background: white; 
+                        border-radius: 12px; 
+                        box-shadow: 0 10px 30px -5px rgba(0,0,0,0.15); 
+                        width: 200px; 
+                        padding: 10px; 
+                        border: 1px solid #e2e8f0; 
+                        z-index: 1000;">
+                            
+                            <a href="../Account/Profile" style="display: block; padding: 10px; color: #475569; text-decoration: none; border-radius: 6px;">
+                                <i class="ri-user-line"></i> Profile
+                            </a>
+                            <a href="../Authenticate/Logout" style="display: block; padding: 10px; color: #ef4444; text-decoration: none; border-radius: 6px;">
+                                <i class="ri-logout-box-r-line"></i> Log out
+                            </a>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <button class="btn btn-signin" onclick="SignIn()" style="background:none; border:none; color:var(--text-muted); font-weight:600; cursor:pointer;">Sign In</button>
+                    <button class="btn btn-primary" onclick="CreateAccount()">Get Started</button>
+                }
             </div>
         </div>
     </div>
@@ -193,7 +246,7 @@
         <div class="footer-grid">
             <div class="footer-brand">
                 <div class="logo">
-                    <i class="ri-layout-grid-fill"></i> Planner
+                    <i class="ri-layout-grid-fill"></i> TaskFlow
                 </div>
                 <p>Making collaboration seamless for teams of all sizes. Built for speed, designed for clarity.</p>
             </div>
