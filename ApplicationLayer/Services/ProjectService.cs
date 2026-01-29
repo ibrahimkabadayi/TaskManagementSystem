@@ -7,10 +7,12 @@ namespace Application.Services;
 
 public class ProjectService : IProjectService
 {
+    private readonly IUserRepository _userRepository;
     private readonly IProjectRepository _projectRepository;
     private readonly IMapper _mapper;
-    public ProjectService(IProjectRepository projectRepository, IMapper mapper)
+    public ProjectService(IProjectRepository projectRepository, IMapper mapper, IUserRepository userRepository)
     {
+        _userRepository = userRepository;
         _projectRepository = projectRepository;
         _mapper = mapper;
     }
@@ -31,5 +33,11 @@ public class ProjectService : IProjectService
     {
         var project = await _projectRepository.GetProjectWithSectionAsync(id);
         return project == null ? null : _mapper.Map<ProjectDto>(project);
+    }
+
+    public async Task<List<ProjectDto>> GetAllProjectsOfUserAsync(int userId)
+    {
+        var projects = await _projectRepository.GetAllProjectsOfOneUserAsync(userId);
+        return _mapper.Map<List<ProjectDto>>(projects);
     }
 }
