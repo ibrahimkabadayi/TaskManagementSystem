@@ -21,7 +21,7 @@ public class MappingProfile : Profile
 
         CreateMap<Task, TaskDto>()
             .ForMember(dest => dest.CreatedBy, 
-                opt => opt.MapFrom(src => src.CreatedBy != null ? src.CreatedBy.User : null))
+                opt => opt.MapFrom(src => src.CreatedBy.User))
             .ForMember(dest => dest.AssignedTo, 
                 opt => opt.MapFrom(src => src.AssignedTo != null ? src.AssignedTo.User : null));
         
@@ -52,5 +52,10 @@ public class MappingProfile : Profile
         
         CreateMap<TaskGroupDto, TaskGroup>()
             .ForMember(src => src.Tasks, opt => opt.Ignore());
+        
+        CreateMap<Notification, NotificationDto>()
+            .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User));
+
+        CreateMap<NotificationDto, Notification>();
     }
 }
