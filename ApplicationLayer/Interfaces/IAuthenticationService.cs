@@ -9,4 +9,5 @@ public interface IAuthenticationService
     Task<AuthResult> LoginAsync(string email, string password, HttpContext context);
     Task RefreshUserSessionAsync(string userId, string email, string newName, string role, string newColor);
     Task LogoutAsync();
+    
 }

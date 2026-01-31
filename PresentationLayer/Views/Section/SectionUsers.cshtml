@@ -1,8 +1,11 @@
-﻿@model List<Application.DTOs.ProjectUserDto>
+﻿@using System.Security.Claims
+@model List<Application.DTOs.ProjectUserDto>
 @{
     Layout = "TaskFlowLayout";
     ViewData["Title"] = "Section Users";
+    var projectId = ViewBag.ProjectId;
     var projectName = ViewBag.ProjectName ?? "Project";
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 }
 
 <link rel="stylesheet" href="~/css/SectionUsersStyleSheet.css"/>
@@ -62,14 +65,13 @@
                     </div>
 
                     <div class="member-actions">
-                        
-                        <select class="role-select" onchange="updateMemberRole(this, @member.Id)">
+                        <select class="role-select" onchange="updateMemberRole(this, @member.Id, @userId, @projectId)">
                             <option value="Viewer" selected="@(member.Role.ToString() == "Viewer")">Viewer</option>
-                            <option value="Member" selected="@(member.Role.ToString() == "Developer")">Developer</option>
+                            <option value="Developer" selected="@(member.Role.ToString() == "Developer")">Developer</option>
                             <option value="Leader" selected="@(member.Role.ToString() == "Leader")">Leader</option>
                         </select>
 
-                        <button class="btn-remove" onclick="removeMember(@member.Id, '@member.User.Name')" title="Remove member">
+                        <button class="btn-remove" onclick="removeMember(@member.Id, '@member.User.Name', @userId, @projectId)" title="Remove member">
                             <i class="fa-regular fa-trash-can"></i>
                         </button>
                     </div>

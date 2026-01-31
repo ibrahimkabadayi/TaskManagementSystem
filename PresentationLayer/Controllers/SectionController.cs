@@ -37,16 +37,20 @@ public class SectionController : Controller
         return Ok(result);
     }
     
-    public async Task<IActionResult> TaskFlow(int userId = 1)
+    [HttpGet]
+    public async Task<IActionResult> TaskFlow(int userId)
     {
         var allProjects = await _projectService.GetAllProjectsOfUserAsync(userId);
-        
+
         var lastVisitedSections = new List<RecentSectionCookieDto>();
-        var cookie = Request.Cookies["TaskFlow_RecentSections"];
+    
+        var cookieName = $"TaskFlow_RecentSections_{userId}";
+    
+        var cookie = Request.Cookies[cookieName];
 
         if (!string.IsNullOrEmpty(cookie))
         {
-            try 
+            try
             {
                 lastVisitedSections = JsonSerializer.Deserialize<List<RecentSectionCookieDto>>(cookie);
             }
@@ -57,21 +61,19 @@ public class SectionController : Controller
         }
 
         ViewBag.LastVisitedSections = lastVisitedSections;
-        
+
         return View(allProjects);
     }
     
-    private void AddToRecentlyViewed(int sectionId, string name, string imageUrl)
+    private void AddToRecentlyViewed(int userId, int sectionId, string name, string imageUrl)
     {
-        const string cookieName = "TaskFlow_RecentSections";
+        var cookieName = $"TaskFlow_RecentSections_{userId}";
 
         var existingCookie = Request.Cookies[cookieName];
-    
-        var recentList = !string.IsNullOrEmpty(existingCookie) ? JsonSerializer.Deserialize<List<RecentSectionCookieDto>>(existingCookie) :
-        [
-        ];
-        
-        if (recentList == null) return;
+
+        var recentList = (!string.IsNullOrEmpty(existingCookie) 
+            ? JsonSerializer.Deserialize<List<RecentSectionCookieDto>>(existingCookie) 
+            : []) ?? [];
 
         var existingItem = recentList.FirstOrDefault(x => x.Id == sectionId);
         if (existingItem != null)
@@ -95,10 +97,12 @@ public class SectionController : Controller
         {
             Expires = DateTime.Now.AddDays(30),
             HttpOnly = true,
-            Secure = true
+            Secure = true,
+            IsEssential = true
         };
 
         var jsonString = JsonSerializer.Serialize(recentList);
+    
         Response.Cookies.Append(cookieName, jsonString, cookieOptions);
     }
 
@@ -133,6 +137,19 @@ public class SectionController : Controller
         return (result.Name == request.Name) ? Ok(result) : BadRequest(new { message = "Project could not be created." });
     }
 
+    [HttpPost]
+    public async Task<IActionResult> UpdateProject([FromBody] UpdateProjectRequest request)
+    {
+        var result = await _projectService.UpdateProjectAsync(request.ProjectId, request.Name, request.Description, request.StartDate, request.EndDate);
+        return (result == request.ProjectId) ? Ok() : BadRequest(new { message = "Project could not be updated." });
+    }
+    
+    [HttpDelete("~/Section/DeleteProject/{wsId:int}")]
+    public async Task<IActionResult> DeleteProject(int wsId) 
+    {
+        var result = await _projectService.DeleteProjectAsync(wsId);
+        return (result) ? Ok() : BadRequest();
+    }
 
     [HttpGet]
     public async Task<IActionResult> SectionTasks(int sectionId)
@@ -147,7 +164,7 @@ public class SectionController : Controller
         
         var project = await _projectService.GetProjectWithSectionAsync(section.ProjectId);
         
-        AddToRecentlyViewed(sectionId, section.Name, section.ImageUrl);
+        AddToRecentlyViewed(int.Parse(userId), sectionId, section.Name, section.ImageUrl);
         
         ViewBag.Project = project;
         return View(section);
@@ -185,92 +202,22 @@ public class SectionController : Controller
 
         return View("SectionTasks",sections.FirstOrDefault());
     }
-    
+
     [HttpGet]
-    public IActionResult Members(int projectId = 1)
+    public async Task<IActionResult> SectionUsers(int projectId)
     {
+        var project = await _projectService.GetProjectWithSectionAsync(projectId);
         
-        ViewBag.ProjectName = "TaskFlow Web UI | Sprint 1";
+        ViewBag.ProjectName = project?.Name;
+        ViewBag.ProjectId = projectId;
         
-        var dummyMembers = new List<ProjectUserDto>
-        {
-               
-            new ProjectUserDto
-            {
-                Id = 101,
-                ProjectId = projectId,
-                Role = ProjectRole.Leader, 
-                Title = "Team Lead",
-                IsActive = true,
-                JoinedDate = DateTime.Now.AddMonths(-6),
-                User = new UserDto
-                {
-                     
-                    Id = 1,
-                    Name = "İbrahim Kabadayı",
-                    Email = "ibrahim@test.com",
-                    ProfileLetters = "İK",
-                    ProfileColor = "#0079bf",
-                    Password = "123456"
-                }
-            },
-            new ProjectUserDto
-            {
-                Id = 102,
-                ProjectId = projectId,
-                Role = ProjectRole.Developer,
-                Title = "Backend Developer",
-                IsActive = true,
-                JoinedDate = DateTime.Now.AddMonths(-2),
-                User = new UserDto
-                {
-                    Id = 2,
-                    Name = "Can Yılmaz",
-                    Email = "can.yilmaz@test.com",
-                    ProfileLetters = "CY",
-                    ProfileColor = "#4bbf6b",
-                    Password = "123456"
-                }
-            },
-            new ProjectUserDto
-            {
-                Id = 103,
-                ProjectId = projectId,
-                Role = ProjectRole.Viewer,
-                Title = "UI/UX Designer",
-                IsActive = false,
-                JoinedDate = DateTime.Now.AddDays(-15),
-                User = new UserDto
-                { 
-                    Id = 3,
-                    Name = "Ayşe Demir",
-                    Email = "ayse.d@test.com",
-                    ProfileLetters = "AD",
-                    ProfileColor = "#ff9f1a",
-                    Password = "123456"
-                }
-            },
-            new ProjectUserDto
-            {
-                Id = 104,
-                ProjectId = projectId,
-                Role = ProjectRole.Developer,
-                Title = "QA Tester",
-                IsActive = false,
-                JoinedDate = DateTime.Now.AddDays(-5),
-                User = new UserDto
-                { 
-                    Id = 4, 
-                    Name = "Mehmet Öz",
-                    Email = "mehmet.oz@test.com",
-                    ProfileLetters = "MÖ",
-                    ProfileColor = "#eb5a46",
-                    Password = "123456"
-                    
-                }
-            }
-        };
-        return View("SectionUsers", dummyMembers);
+        var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        
+        if (project == null) return RedirectToAction("TaskFlow", "Section", new { userId });
+
+        var projectUsers = project.ProjectUsers;
+        
+        return View(projectUsers);
     }
 }
 

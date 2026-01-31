@@ -49,11 +49,50 @@
                 <div class="workspace-title-bar">
                     <div class="ws-left">
                         <div class="ws-icon">@project.Name[..1].ToUpper()</div>
-                        <div class="ws-name">@project.Name</div>
+        
+                        <div class="ws-details">
+                            <div class="ws-name">@project.Name</div>
+    
+                            @if (!string.IsNullOrEmpty(project.Description))
+                            {
+                                <div class="ws-description" title="@project.Description">
+                                    @project.Description
+                                </div>
+                            }
+
+                            <div class="ws-meta">
+                                @if (project.StartDate != DateTime.MinValue)
+                                {
+                                    <div class="date-badge" title="Başlangıç Tarihi">
+                                        <i class="fa-regular fa-calendar"></i>
+                                        <span>@project.StartDate.ToString("dd MMM yyyy")</span>
+                                    </div>
+                                }
+
+                                @if (project.EndDate.HasValue)
+                                {
+                                    var isOverdue = DateTime.Now > project.EndDate.Value;
+                                    var badgeClass = isOverdue ? "date-badge overdue" : "date-badge";
+
+                                    <div class="@badgeClass" title="Bitiş Tarihi">
+                                        <i class="fa-solid fa-flag-checkered"></i>
+                                        <span>@project.EndDate.Value.ToString("dd MMM yyyy")</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
                     </div>
+
                     <div class="ws-actions">
-                        <button onclick="MembersButtonClick()">Üyeler</button>
-                        <button onclick="SettingsButtonClick()">Ayarlar</button>
+                        <button onclick="MembersButtonClick('@project.Id')">Members</button>
+                        <button onclick="SettingsButtonClick(
+                            '@project.Id', 
+                            '@project.Name', 
+                            '@project.Description',
+                            '@project.StartDate.ToString("yyyy-MM-dd")',
+                            '@(project.EndDate.HasValue ? project.EndDate.Value.ToString("yyyy-MM-dd") : "")')">
+                            Settings
+                        </button>
                     </div>
                 </div>
 
@@ -134,7 +173,7 @@
             </select>
         </div>
 
-         <div class="form-group">
+        <div class="form-group">
             <label>Görünürlük</label>
             <select class="form-select">
                 <option>🔒 Özel</option>
@@ -143,5 +182,45 @@
         </div>
     </div>
 </template>
+<template id="settingsTemplate">
+    <div class="settings-container">
+        
+        <input type="hidden" id="editWsId">
+
+        <div class="form-group">
+            <label>Çalışma Alanı Adı</label>
+            <input type="text" id="editWsName" class="form-input">
+        </div>
+
+        <div class="form-group">
+            <label>Açıklama</label>
+            <textarea id="editWsDesc" class="form-textarea" placeholder="Açıklama..."></textarea>
+        </div>
+
+        <div class="form-row" style="display: flex; gap: 15px;">
+            <div class="form-group" style="flex: 1;">
+                <label>Başlangıç Tarihi</label>
+                <input type="date" id="editWsStart" class="form-input">
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label>Bitiş Tarihi (Deadline)</label>
+                <input type="date" id="editWsEnd" class="form-input">
+                <small style="color: #64748b; font-size: 11px;">Opsiyonel</small>
+            </div>
+        </div>
+        <div class="danger-zone">
+            <div class="danger-title">
+                <i class="fa-solid fa-triangle-exclamation"></i> Tehlikeli Bölge
+            </div>
+            <div class="danger-desc">
+                Bu çalışma alanını sildiğinizde, içindeki tüm panolar ve görevler kalıcı olarak silinecektir. Geri alınamaz.
+            </div>
+            <button class="btn-danger" onclick="DeleteWorkspace()">
+                <i class="fa-solid fa-trash"></i> Bu Çalışma Alanını Sil
+            </button>
+        </div>
+    </div>
+</template>
+
 
 <script src="~/js/TaskFlowScript.js"></script>

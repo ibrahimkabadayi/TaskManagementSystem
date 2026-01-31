@@ -322,3 +322,111 @@ body {
 /* Scrollbar'ı güzelleştirelim */
 .side-modal-body::-webkit-scrollbar { width: 6px; }
 .side-modal-body::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 3px; }
+.recently-viewed-section {
+    /* Bölümün kendisini üstten ve alttan ayıralım */
+    margin-top: 20px;
+    margin-bottom: 40px;
+}
+
+.recently-viewed-section .section-header {
+    /* Başlık (Yazı) ile aşağıdaki Kartlar arasına boşluk koyalım */
+    margin-bottom: 24px;
+}
+/* --- AYARLAR MODALI & DANGER ZONE --- */
+
+/* Ayarlar içindeki silme alanı */
+.danger-zone {
+    margin-top: 30px;
+    padding: 20px;
+    border: 1px solid #fee2e2;
+    background-color: #fef2f2;
+    border-radius: 8px;
+}
+
+.danger-title {
+    color: #991b1b;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 8px;
+}
+
+.danger-desc {
+    color: #7f1d1d;
+    font-size: 0.85rem;
+    margin-bottom: 15px;
+}
+
+/* Kırmızı Silme Butonu */
+.btn-danger {
+    background-color: white;
+    color: #dc2626;
+    border: 1px solid #dc2626;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.2s;
+}
+
+.btn-danger:hover {
+    background-color: #dc2626;
+    color: white;
+}
+/* --- PROJE AÇIKLAMASI (Workspace Description) --- */
+
+/* İsim ve Açıklamayı kapsayan kutu */
+.ws-details {
+    display: flex;
+    flex-direction: column; /* Alt alta sırala */
+    justify-content: center;
+}
+
+/* Açıklama Metni */
+.ws-description {
+    font-size: 0.85rem;      /* Başlıktan daha küçük */
+    color: var(--text-muted); /* Gri ton */
+    font-weight: 400;
+    margin-top: 2px;         /* Başlık ile arasına minik boşluk */
+    max-width: 600px;        /* Çok uzarsa taşmasın */
+
+    /* Uzun metinleri ... ile kısaltmak istersen (Opsiyonel) */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+/* --- TARİH ETİKETLERİ (Date Badges) --- */
+
+.ws-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px; /* Açıklama ile arasına boşluk */
+}
+
+.date-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px; /* Hap şeklinde yuvarlak */
+    background-color: #f1f5f9; /* Açık gri zemin */
+    color: #64748b; /* Gri yazı */
+    border: 1px solid #e2e8f0;
+}
+
+/* Tarih ikonu rengi */
+.date-badge i {
+    color: #94a3b8;
+}
+
+/* GECİKMİŞ PROJE STİLİ (Opsiyonel) */
+.date-badge.overdue {
+    background-color: #fef2f2;
+    color: #dc2626;
+    border-color: #fecaca;
+}
+.date-badge.overdue i { color: #dc2626; }

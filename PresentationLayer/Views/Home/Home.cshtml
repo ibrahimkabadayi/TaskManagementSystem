@@ -39,7 +39,7 @@
             <div class="nav-actions">
                 @if (User.Identity!.IsAuthenticated)
                 {
-                    <a href="/Section/TaskFlow?${@userId}" class="btn btn-primary" style="text-decoration: none; margin-right: 15px;">
+                    <a href="@Url.Action("TaskFlow", "Section", new { userId = 1 })" class="btn btn-primary" style="text-decoration: none; margin-right: 15px;">
                         <i class="ri-kanban-view-2"></i> My Board
                     </a>
 
@@ -78,10 +78,10 @@
                         border: 1px solid #e2e8f0; 
                         z-index: 1000;">
                             
-                            <a href="../Account/Profile" style="display: block; padding: 10px; color: #475569; text-decoration: none; border-radius: 6px;">
+                            <a href="@Url.Action("Profile", "Account")" style="display: block; padding: 10px; color: #475569; text-decoration: none; border-radius: 6px;">
                                 <i class="ri-user-line"></i> Profile
                             </a>
-                            <a href="../Authenticate/Logout" style="display: block; padding: 10px; color: #ef4444; text-decoration: none; border-radius: 6px;">
+                            <a href="@Url.Action("Logout", "Authenticate")" style="display: block; padding: 10px; color: #ef4444; text-decoration: none; border-radius: 6px;">
                                 <i class="ri-logout-box-r-line"></i> Log out
                             </a>
                         </div>
@@ -104,7 +104,7 @@
                 <h1>Organize work,<br><span>amplify results.</span></h1>
                 <p>The all-in-one workspace that helps teams plan, organize, and collaborate. From simple tasks to complex roadmaps.</p>
                 <div class="hero-btns" style="display:flex; gap:15px;">
-                    <button class="btn btn-primary">Start for free <i class="ri-arrow-right-line"></i></button>
+                    <button class="btn btn-primary"> Start for free <i class="ri-arrow-right-line"></i></button>
                     <button class="btn btn-outline"><i class="ri-play-circle-line"></i> Watch Demo</button>
                 </div>
             </div>
