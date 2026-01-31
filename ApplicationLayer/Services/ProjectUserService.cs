@@ -55,10 +55,14 @@ public class ProjectUserService : IProjectUserService
 
         if (projectUser!.Role != ProjectRole.Leader) return -1;
         
-        projectUser.Role = Enum.Parse<ProjectRole>(newRole);
-        await _projectUserRepository.UpdateAsync(projectUser);
+        var changeRoleUser = await _projectUserRepository.GetByAsyncId(projectUserId);
         
-        return projectUser.Id;
+        if (changeRoleUser == null) return -1;
+        
+        changeRoleUser.Role = Enum.Parse<ProjectRole>(newRole);
+        await _projectUserRepository.UpdateAsync(changeRoleUser);
+        
+        return changeRoleUser.Id;
     }
 
     public async Task<int> RemoveProjectUser(int projectUserId, int userId, int projectId)

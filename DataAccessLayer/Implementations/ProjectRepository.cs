@@ -59,7 +59,7 @@ public class ProjectRepository : Repository<Project>, IProjectRepository
                 Description = x.Description,
                 StartDate = x.StartDate,
                 EndDate = x.EndDate,
-                ProjectUsers = x.ProjectUsers!.Select(t => new ProjectUser
+                ProjectUsers = x.ProjectUsers.Select(t => new ProjectUser
                 {
                     Id = t.Id,
                     JoinedDate = t.JoinedDate,

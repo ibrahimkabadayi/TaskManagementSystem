@@ -69,4 +69,41 @@ public class ProjectService : IProjectService
         
         return _mapper.Map<ProjectDto>(newProject);
     }
+
+    public async Task<int> UpdateProjectAsync(int projectId, string projectName, string description, string startDate, string endDate)
+    {
+        var project = await _projectRepository.GetByAsyncId(projectId);
+        if (project == null) return -1;
+        
+        project.Name = projectName;
+        project.Description = description;
+        
+        if (!string.IsNullOrWhiteSpace(startDate)) project.StartDate = DateTime.Parse(startDate);
+        if (!string.IsNullOrWhiteSpace(endDate)) project.EndDate = DateTime.Parse(endDate);
+        
+        await _projectRepository.UpdateAsync(project);
+        
+        return project.Id;
+    }
+
+    public async Task<bool> DeleteProjectAsync(int projectId)
+    {
+        var project = await _projectRepository.GetByAsyncId(projectId);
+        if (project is null) return false;
+
+        try
+        {
+            var projectUsers = await _projectUserRepository.GetProjectUsersWithDetailsAsync(projectId);
+            foreach (var projectUser in projectUsers)
+                await _projectUserRepository.DeleteAsync(projectUser.Id);
+            await _projectRepository.DeleteAsync(projectId);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            return false;
+        }
+        
+        return true;
+    }
 }
