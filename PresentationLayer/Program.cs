@@ -1,6 +1,9 @@
 using Application;
+using Application.Interfaces;
 using DataAccessLayer;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using TaskManagementSystem.Hubs;
+using TaskManagementSystem.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +17,8 @@ builder.Services.AddControllersWithViews();
 // Session (Email kod doğrulama için)
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSignalR();
+builder.Services.AddScoped<INotifier, SignalRNotifier>();
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -74,6 +79,7 @@ app.UseAuthentication();  // ← Önce bu
 app.UseAuthorization();   // ← Sonra bu
 
 app.MapStaticAssets();
+app.MapHub<NotificationHub>("/notificationHub");
 
 app.MapControllerRoute(
     name: "default",

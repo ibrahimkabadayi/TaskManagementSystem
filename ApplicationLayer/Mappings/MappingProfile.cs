@@ -57,5 +57,11 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User));
 
         CreateMap<NotificationDto, Notification>();
+        
+        CreateMap<ProjectInvitation, ProjectInvitationDto>()
+            .ForMember(dest => dest.InvitedUser, opt => opt.MapFrom(src => src.InvitedUser))
+            .ForMember(dest => dest.Sender, opt => opt.MapFrom(src => src.Sender));
+        
+        CreateMap<ProjectInvitationDto, ProjectInvitation>();
     }
 }
