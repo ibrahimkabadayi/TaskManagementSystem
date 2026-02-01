@@ -14,6 +14,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Section> Sections { get; set; }
     public DbSet<TaskGroup> TaskGroups { get; set; }
     public DbSet<Notification> Notifications { get; set; }
+    public DbSet<ProjectInvitation> ProjectInvitations { get; set; }
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
@@ -28,5 +29,6 @@ public class ApplicationDbContext : DbContext
         modelBuilder.ApplyConfiguration(new SectionConfiguration());
         modelBuilder.ApplyConfiguration(new TaskGroupConfiguration());
         modelBuilder.ApplyConfiguration(new NotificationConfiguration());
+        modelBuilder.ApplyConfiguration(new ProjectInvitationConfiguration());
     }
 }
