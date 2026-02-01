@@ -16,6 +16,58 @@
     ]
 };
 
+const connection = new signalR.HubConnectionBuilder()
+    .withUrl("/notificationHub")
+    .withAutomaticReconnect()
+    .build();
+
+connection.on("ReceiveNotification", function (title, message) {
+    console.log("🔔 Canlı Bildirim:", title, "-", message);
+
+    showToastNotification(title, message);
+
+    refreshNotificationBadge();
+});
+
+async function startSignalR() {
+    try {
+        await connection.start();
+        console.log("✅ SignalR Bağlandı");
+    } catch (err) {
+        console.error("❌ SignalR Hatası:", err);
+        setTimeout(startSignalR, 5000);
+    }
+}
+
+startSignalR();
+
+function refreshNotificationBadge() {
+    loadNotifications();
+}
+
+function showToastNotification(title, message) {
+    const toastHTML = `
+        <div class="toast-notification">
+            <div class="toast-icon"><i class="fa-solid fa-bell"></i></div>
+            <div class="toast-content">
+                <div class="toast-title">${title}</div>
+                <div class="toast-message">${message}</div>
+            </div>
+            <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', toastHTML);
+
+    const toastElement = document.body.lastElementChild;
+    setTimeout(() => {
+        if(toastElement) {
+            toastElement.style.opacity = '0';
+            setTimeout(() => toastElement.remove(), 500); // Fade out efekti
+        }
+    }, 5000);
+}
+
 function AccountClick(event) {
     event.stopPropagation();
 
@@ -80,7 +132,7 @@ async function loadNotifications() {
     }
 }
 
-// HTML Olarak Listele
+// HTML Olarak Listele (GÜNCELLENMİŞ VERSİYON)
 function renderNotifications(data) {
     const listElement = document.getElementById('notification-list');
     const badgeElement = document.getElementById('notification-badge');
@@ -93,32 +145,40 @@ function renderNotifications(data) {
         badgeElement.style.display = 'inline-block';
     } else {
         badgeElement.style.display = 'none';
-        listElement.innerHTML = '<li style="padding:15px; text-align:center; color:#777;">Hiç yeni bildirim yok 🎉</li>';
+        // Şık bir "Boş" mesajı
+        listElement.innerHTML = `
+            <li class="notification-empty">
+                <i class="fa-regular fa-bell-slash"></i>
+                <div>Hiç yeni bildirim yok.</div>
+            </li>`;
         return;
     }
 
     // Her bir bildirimi listeye ekle
     data.forEach(item => {
-        // Tarihi formatla (Örn: 10 dk önce)
-        const date = new Date(item.createdDate).toLocaleString('tr-TR');
+        // Tarihi formatla
+        const dateObj = new Date(item.createdDate);
+        const timeStr = dateObj.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+        const dateStr = dateObj.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
+        const formattedDate = `${dateStr}, ${timeStr}`;
 
         const li = document.createElement('li');
-        li.style.borderBottom = '1px solid #eee';
-        li.style.padding = '10px';
-        li.style.cursor = 'pointer';
-        li.style.transition = 'background 0.2s';
-
-        // Hover efekti (JS ile basitçe)
-        li.onmouseover = () => li.style.background = '#f1f1f1';
-        li.onmouseout = () => li.style.background = 'white';
+        li.className = 'notification-item'; // Yeni CSS sınıfı
 
         // Tıklayınca okundu işaretle
         li.onclick = () => markAsRead(item.id, item.relatedTaskId);
 
+        // Yeni HTML Yapısı (Flexbox ve CSS sınıfları ile)
         li.innerHTML = `
-            <div style="font-weight: bold; font-size: 14px; color: #333;">${item.title}</div>
-            <div style="font-size: 13px; color: #666; margin-top: 2px;">${item.message}</div>
-            <div style="font-size: 11px; color: #aaa; margin-top: 5px; text-align: right;">${date}</div>
+            <div class="notification-unread-indicator"></div>
+            
+            <div class="notification-content">
+                <div class="notification-title">${item.title}</div>
+                <div class="notification-message">${item.message}</div>
+                <div class="notification-time">
+                    <i class="fa-regular fa-clock"></i> ${formattedDate}
+                </div>
+            </div>
         `;
 
         listElement.appendChild(li);

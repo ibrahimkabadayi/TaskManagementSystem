@@ -19,6 +19,7 @@
       <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.3.0" />
       <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.3.0" />
       <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
+      <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="10.0.2" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.9">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

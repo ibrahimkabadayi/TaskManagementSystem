@@ -11,11 +11,13 @@ namespace Application.Services;
 public class NotificationService : INotificationService
 {
     private readonly INotificationRepository _notificationRepository;
+    private readonly INotifier _notifier;
     private readonly IMapper _mapper;
 
-    public NotificationService(INotificationRepository notificationRepository, IMapper mapper)
+    public NotificationService(INotificationRepository notificationRepository, INotifier notifier, IMapper mapper)
     {
         _notificationRepository = notificationRepository;
+        _notifier = notifier;
         _mapper = mapper;
     }
     
@@ -31,6 +33,8 @@ public class NotificationService : INotificationService
             IsRead = false,
             CreatedDate = DateTime.Now
         };
+
+        await _notifier.SendNotificationAsync(userId.ToString(), title, message);
 
         await _notificationRepository.AddAsync(notification);
     }
