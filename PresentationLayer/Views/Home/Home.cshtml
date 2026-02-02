@@ -39,7 +39,7 @@
             <div class="nav-actions">
                 @if (User.Identity!.IsAuthenticated)
                 {
-                    <a href="@Url.Action("TaskFlow", "Section", new { userId = 1 })" class="btn btn-primary" style="text-decoration: none; margin-right: 15px;">
+                    <a href="@Url.Action("TaskFlow", "Section", new { userId })" class="btn btn-primary" style="text-decoration: none; margin-right: 15px;">
                         <i class="ri-kanban-view-2"></i> My Board
                     </a>
 

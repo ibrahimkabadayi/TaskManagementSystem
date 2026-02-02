@@ -10,6 +10,7 @@ public class NotificationDto
     public DateTime CreatedDate { get; set; }
     public bool IsRead { get; set; }
     public int? RelatedTaskId { get; set; }
+    public int? RelatedEntityId { get; set; }
     public NotificationType Type { get; set; }
     public required UserDto User { get; set; }
 }

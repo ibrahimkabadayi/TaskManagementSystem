@@ -313,12 +313,12 @@
 
         <div class="share-invite-section">
             <div class="invite-input-group">
-                <input type="text" placeholder="Email address or username..." class="invite-input">
+                <input type="text" placeholder="Email address or username..." class="invite-input" id="share-email-input">
                 <select class="invite-role-select">
                     <option>Member</option>
                     <option>Visitor</option>
                 </select>
-                <button class="btn-share-invite">Share</button>
+                <button class="btn-share-invite" onclick="sendInvitation(@project.Id)">Share</button>
             </div>
         </div>
 

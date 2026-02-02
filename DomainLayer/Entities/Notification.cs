@@ -15,6 +15,7 @@ public class Notification
     public required DateTime CreatedDate { get; set; }
     
     public int? RelatedTaskId { get; set; }
+    public int? RelatedEntityId { get; set; }
     
     public bool IsRead { get; set; }
     

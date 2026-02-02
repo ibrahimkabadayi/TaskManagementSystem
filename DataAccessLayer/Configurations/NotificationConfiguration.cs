@@ -26,5 +26,8 @@ public class NotificationConfiguration : IEntityTypeConfiguration<Notification>
         
         builder.Property(x => x.RelatedTaskId)
             .IsRequired(false);
+        
+        builder.Property(x => x.RelatedEntityId)
+            .IsRequired(false);
     }
 }
