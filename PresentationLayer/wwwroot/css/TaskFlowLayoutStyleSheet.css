@@ -321,3 +321,144 @@ body {
     color: #999;
 }
 .toast-close:hover { color: #333; }
+/* Davet Butonları İçin Özel Stil */
+.btn-action {
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 6px 12px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px; /* İkon ile yazı arası boşluk */
+}
+
+/* Kabul Butonu: Hafif gölgeli ve canlı */
+.btn-accept {
+    background-color: #0d6efd; /* Veya senin tema rengin */
+    color: white;
+    border: none;
+    box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
+}
+.btn-accept:hover {
+    background-color: #0b5ed7;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(13, 110, 253, 0.3);
+}
+
+/* Red Butonu: Daha silik, çerçeveli (Ghost Button) */
+.btn-decline {
+    background-color: transparent;
+    border: 1px solid #dee2e6;
+    color: #6c757d;
+}
+.btn-decline:hover {
+    background-color: #f8d7da;
+    border-color: #dc3545;
+    color: #dc3545;
+}
+/* --- MODERN DAVET KARTI TASARIMI --- */
+
+/* Davet Bildiriminin Kendisi */
+.notification-item.invite-type {
+    background-color: #f8fbff; /* Çok hafif mavi tonu, diğerlerinden ayrışsın */
+    border-left: 4px solid #0079bf; /* Sol tarafa TaskFlow mavisi çizgi */
+    padding: 12px 16px;
+}
+
+/* Davet İçerik Kutusu */
+.invite-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+/* Üst Kısım: Avatar ve Başlık */
+.invite-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Proje Baş harfi için Yuvarlak İkon */
+.invite-project-avatar {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #0079bf, #0052cc);
+    color: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 4px rgba(0, 82, 204, 0.2);
+}
+
+/* Metin Alanı */
+.invite-text-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.invite-title {
+    font-weight: 700;
+    color: #172b4d;
+    font-size: 14px;
+    line-height: 1.2;
+}
+
+.invite-subtitle {
+    font-size: 12px;
+    color: #5e6c84;
+    margin-top: 2px;
+}
+
+/* Buton Grubu */
+.invite-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+/* Özel Butonlar */
+.btn-invite-action {
+    flex: 1; /* Butonlar eşit genişlikte yayılsın */
+    padding: 6px 0;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+/* Kabul Et Butonu (Yeşilimsi/Mavi) */
+.btn-invite-accept {
+    background-color: #0079bf;
+    color: white;
+    box-shadow: 0 2px 5px rgba(0, 121, 191, 0.2);
+}
+.btn-invite-accept:hover {
+    background-color: #026aa7;
+    transform: translateY(-1px);
+}
+
+/* Reddet Butonu (Sade Gri/Kırmızı Hover) */
+.btn-invite-decline {
+    background-color: white;
+    border: 1px solid #dfe1e6;
+    color: #5e6c84;
+}
+.btn-invite-decline:hover {
+    background-color: #ffebe6;
+    color: #de350b;
+    border-color: #ffbdad;
+}

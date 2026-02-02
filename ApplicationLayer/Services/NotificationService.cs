@@ -21,7 +21,7 @@ public class NotificationService : INotificationService
         _mapper = mapper;
     }
     
-    public async Task CreateNotificationAsync(int userId, string title, string message, int? relatedTaskId, NotificationType type)
+    public async Task CreateNotificationAsync(int userId, string title, string message, int? relatedTaskId, int? relatedEntityId, NotificationType type)
     {
         var notification = new Notification
         {
@@ -29,6 +29,7 @@ public class NotificationService : INotificationService
             Title = title,
             Message = message,
             RelatedTaskId = relatedTaskId,
+            RelatedEntityId = relatedEntityId,
             Type = type,
             IsRead = false,
             CreatedDate = DateTime.Now

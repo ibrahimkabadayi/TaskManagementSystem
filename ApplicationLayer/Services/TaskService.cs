@@ -154,7 +154,7 @@ public class TaskService : ITaskService
         if (currentTask.AssignedToId != null)
         {
             await _notificationService.CreateNotificationAsync(currentTask.AssignedTo!.UserId, "Task Group Change",
-                "Your assigned task's task group has been updated, new task group is: " + droppedTaskGroup.Name, taskId, NotificationType.Info);
+                "Your assigned task's task group has been updated, new task group is: " + droppedTaskGroup.Name, taskId, null, NotificationType.Info);
         }
         
         return droppedTaskGroup.Id;
@@ -189,7 +189,7 @@ public class TaskService : ITaskService
         
         var userId = task.AssignedTo!.UserId;
         await _notificationService.CreateNotificationAsync(userId, "Task Priority Update",
-            "Your assigned task's priority has been updated: " + task.Priority, taskId, NotificationType.Info);
+            "Your assigned task's priority has been updated: " + task.Priority, taskId, null, NotificationType.Info);
 
         return taskId;
     }
@@ -225,7 +225,7 @@ public class TaskService : ITaskService
         if (task.AssignedToId != null)
         {
             await _notificationService.CreateNotificationAsync(task.AssignedTo!.UserId, "Task State Update",
-                "Your assigned task's state has been updated: " + task.State, taskId, NotificationType.Info);
+                "Your assigned task's state has been updated: " + task.State, taskId, null, NotificationType.Info);
         }
         
         return taskId;
@@ -245,7 +245,7 @@ public class TaskService : ITaskService
         if (task.AssignedToId != null)
         {
             await _notificationService.CreateNotificationAsync(task.AssignedTo!.UserId, "Task Description Update",
-                "Your assigned task's description has been updated: " + task.Description, taskId, NotificationType.Info);
+                "Your assigned task's description has been updated: " + task.Description, taskId, null, NotificationType.Info);
         }
         
         return taskId;
@@ -271,7 +271,7 @@ public class TaskService : ITaskService
         if (task.AssignedToId != null)
         {
             await _notificationService.CreateNotificationAsync(task.AssignedTo!.UserId, "Task Due Date Update",
-                "Your assigned task's due date has been updated: " + task.DueDate, taskId, NotificationType.Info);
+                "Your assigned task's due date has been updated: " + task.DueDate, taskId, null, NotificationType.Info);
         }
         
         return taskId;
@@ -306,7 +306,7 @@ public class TaskService : ITaskService
         await _taskRepository.UpdateAsync(task);
 
         await _notificationService.CreateNotificationAsync(assignUser.UserId, "Task Assigment",
-            "You have been assigned to: " + task.Title, taskId, NotificationType.Info);
+            "You have been assigned to: " + task.Title, taskId, null, NotificationType.Info);
         
         return taskId;
     }
@@ -324,7 +324,7 @@ public class TaskService : ITaskService
         if (task.AssignedToId != null)
         {
             await _notificationService.CreateNotificationAsync(projectUser.UserId, "Task Title Update",
-                "Your assigned task's title has been updated: " + task.Title, taskId, NotificationType.Info);
+                "Your assigned task's title has been updated: " + task.Title, taskId, null, NotificationType.Info);
         }
         
         return taskId;

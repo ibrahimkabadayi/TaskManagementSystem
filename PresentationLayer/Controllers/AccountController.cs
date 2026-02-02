@@ -28,7 +28,7 @@ public class AccountController : Controller
             return RedirectToAction("SignIn", "Home"); 
         }
         
-        var userDto = await _userService.GetUserWithProjectUsersAsync(1);
+        var userDto = await _userService.GetUserWithProjectUsersAsync(int.Parse(userIdString));
 
         if (userDto == null) return NotFound();
 

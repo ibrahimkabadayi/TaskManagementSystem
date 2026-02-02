@@ -4,6 +4,7 @@ using AutoMapper;
 using DomainLayer.Entities;
 using DomainLayer.Enums;
 using DomainLayer.Interfaces;
+using Task = System.Threading.Tasks.Task;
 
 namespace Application.Services;
 
@@ -12,12 +13,18 @@ public class ProjectService : IProjectService
     private readonly IUserRepository _userRepository;
     private readonly IProjectUserRepository _projectUserRepository;
     private readonly IProjectRepository _projectRepository;
+    private readonly IProjectInvitationService _projectInvitationService;
+    private readonly INotificationService _notificationService;
+    private readonly IProjectInvitationRepository _projectInvitationRepository;
     private readonly IMapper _mapper;
-    public ProjectService(IProjectRepository projectRepository, IMapper mapper, IUserRepository userRepository, IProjectUserRepository projectUserRepository)
+    public ProjectService(IProjectRepository projectRepository, IMapper mapper, IUserRepository userRepository, IProjectUserRepository projectUserRepository, IProjectInvitationService projectInvitationService, INotificationService notificationService, IProjectInvitationRepository projectInvitationRepository)
     {
         _userRepository = userRepository;
         _projectRepository = projectRepository;
         _projectUserRepository = projectUserRepository;
+        _projectInvitationService = projectInvitationService;
+        _notificationService = notificationService;
+        _projectInvitationRepository = projectInvitationRepository;
         _mapper = mapper;
     }
 
@@ -105,5 +112,72 @@ public class ProjectService : IProjectService
         }
         
         return true;
+    }
+
+    public async Task InviteUserToProjectAsync(int projectId, int senderUserId, string emailOrUserName)
+    {
+        var project = await _projectRepository.GetByAsyncId(projectId);
+        if (project is null) return;
+        
+        var senderUser = await _userRepository.GetByAsyncId(senderUserId);
+        if (senderUser is null) return;
+
+        User? invitedUser;
+        
+        if (emailOrUserName.Contains("@gmail.com"))
+        {
+            invitedUser = await _userRepository.GetByEmailAsync(emailOrUserName);
+        }
+        else
+        {
+            invitedUser = await _userRepository.FindFirstAsync(x => x.Name == emailOrUserName);
+        }
+        
+        if (invitedUser is null) return;
+
+        var projectUsers = await _projectUserRepository.GetProjectUsersWithDetailsAsync(projectId);
+        
+        if (projectUsers.Any(projectUser => projectUser.UserId == invitedUser.Id))
+        {
+            return;
+        }
+        
+        var invitationId = await _projectInvitationService.CreateProjectInvitationAsync(projectId, invitedUser.Id, senderUserId);
+        
+        await _notificationService.CreateNotificationAsync(invitedUser.Id, "Project Invitation 📩",
+            $"You have been invited to project {project.Name} by user {senderUser.Name}", null, invitationId
+            ,NotificationType.Invitation);
+    }
+
+    public async Task RespondInvitationAsync(int invitationId, bool isAccepted)
+    {
+        var invitation = await _projectInvitationRepository.GetByAsyncId(invitationId);
+        if (invitation is null) throw new Exception("Could not find invitation.");
+
+        if (invitation.Status != InvitationStatus.Pending)
+        {
+            throw new Exception("Invitation is already answered or declined.");
+        }
+
+        if (isAccepted)
+        {
+            invitation.Status = InvitationStatus.Accepted;
+            var projectUser = new ProjectUser
+            {
+                IsActive = true,
+                JoinedDate = DateTime.Now,
+                Role = ProjectRole.Developer,
+                ProjectId = invitation.ProjectId,
+                UserId = invitation.InvitedUserId
+            };
+            
+            await _projectUserRepository.AddAsync(projectUser);
+        }
+        else
+        {
+            invitation.Status = InvitationStatus.Declined;
+        }
+        
+        await _projectInvitationRepository.UpdateAsync(invitation);
     }
 }
