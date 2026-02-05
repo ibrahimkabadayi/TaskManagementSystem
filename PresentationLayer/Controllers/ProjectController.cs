@@ -22,17 +22,17 @@ public class ProjectController : Controller
         
         var senderId = int.Parse(senderIdString);
 
-        await _projectService.InviteUserToProjectAsync(request.ProjectId, senderId, request.EmailOrUsername);
+        await _projectService.InviteUserToProjectAsync(request.ProjectId, senderId, request.EmailOrUsername, request.Role);
         
         return Ok(new { message = "Invitation sent successfully." });
     }
 
-    [HttpPost]
-    public async Task<IActionResult> RespondToInvitation([FromBody] ResponseRequest request)
+    [HttpPost("~/Project/RespondInvitation")]
+    public async Task<IActionResult> RespondToInvitation(int invitationId, bool isAccepted)
     {
         try
         {
-            await _projectService.RespondInvitationAsync(request.InvitationId, request.IsAccepted);
+            await _projectService.RespondInvitationAsync(invitationId, isAccepted);
         }
         catch (Exception e)
         {

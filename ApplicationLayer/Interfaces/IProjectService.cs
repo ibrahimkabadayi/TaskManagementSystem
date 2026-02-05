@@ -11,7 +11,7 @@ public interface IProjectService
     Task<ProjectDto> CreateProjectAsync(string projectName, string description, int userId);
     Task<int> UpdateProjectAsync(int projectId, string projectName, string description, string startDate, string endDate);
     Task<bool> DeleteProjectAsync(int projectId);
-    Task InviteUserToProjectAsync(int projectId, int senderUserId, string emailOrUserName);
+    Task InviteUserToProjectAsync(int projectId, int senderUserId, string emailOrUserName, string role);
     Task RespondInvitationAsync(int invitationId, bool isAccepted);
     Task<string> GenerateInviteLinkAsync(int projectId);
     Task RevokeInviteLinkAsync(int projectId);

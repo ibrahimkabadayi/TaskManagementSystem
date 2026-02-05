@@ -226,37 +226,30 @@ function renderNotifications(data) {
     });
 }
 
-// Butonlara basıldığında çalışacak fonksiyon
 async function respondInvite(invitationId, isAccepted, btnElement) {
-    // Görsel geri bildirim (Butonu pasife al)
     const parentDiv = btnElement.parentElement;
     parentDiv.style.opacity = "0.5";
     parentDiv.style.pointerEvents = "none";
 
     try {
-        // Backend Controller'a istek at
-        // Not: Controller metodunu oluşturduğunu varsayıyorum
         const response = await fetch(`/Project/RespondInvitation?invitationId=${invitationId}&isAccepted=${isAccepted}`, {
             method: 'POST'
         });
 
         if (response.ok) {
-            // Başarılı olursa bildirimi listeden kaldır veya "Kabul Edildi" yaz
             const listItem = btnElement.closest('li');
             listItem.remove();
 
-            // Bildirim sayısını güncelle
             loadNotifications();
 
-            // Kullanıcıya bilgi ver
             alert(isAccepted ? "Projeye katıldınız! 🎉" : "Davet reddedildi.");
 
             if(isAccepted) {
-                location.reload(); // Proje listesi güncellensin diye sayfayı yenile
+                location.reload();
             }
         } else {
             alert("Bir hata oluştu.");
-            parentDiv.style.opacity = "1"; // Hatada geri aç
+            parentDiv.style.opacity = "1";
             parentDiv.style.pointerEvents = "auto";
         }
     } catch (err) {
@@ -279,8 +272,16 @@ document.addEventListener('click', function(event) {
 });
 
 async function sendInvitation(projectId) {
-    const input = document.getElementById('share-email-input'); // Input'a id verdiğini varsayıyorum
+    const input = document.getElementById('share-email-input');
     const emailOrUsername = input.value;
+    
+    let role = "Developer";
+
+    const roleElement = document.querySelector('.invite-role-select');
+
+    if (roleElement) {
+        role = roleElement.value;
+    }
 
     if (!emailOrUsername) return alert("Lütfen bir e-posta veya kullanıcı adı girin.");
 
@@ -292,7 +293,7 @@ async function sendInvitation(projectId) {
         const response = await fetch('/Project/InviteUser', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ projectId, emailOrUsername })
+            body: JSON.stringify({ projectId, emailOrUsername, role })
         });
 
         const result = await response.json();

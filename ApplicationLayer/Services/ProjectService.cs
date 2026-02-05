@@ -16,8 +16,9 @@ public class ProjectService : IProjectService
     private readonly IProjectInvitationService _projectInvitationService;
     private readonly INotificationService _notificationService;
     private readonly IProjectInvitationRepository _projectInvitationRepository;
+    private readonly INotificationRepository _notificationRepository;
     private readonly IMapper _mapper;
-    public ProjectService(IProjectRepository projectRepository, IMapper mapper, IUserRepository userRepository, IProjectUserRepository projectUserRepository, IProjectInvitationService projectInvitationService, INotificationService notificationService, IProjectInvitationRepository projectInvitationRepository)
+    public ProjectService(IProjectRepository projectRepository, IMapper mapper, IUserRepository userRepository, IProjectUserRepository projectUserRepository, IProjectInvitationService projectInvitationService, INotificationService notificationService, IProjectInvitationRepository projectInvitationRepository, INotificationRepository notificationRepository)
     {
         _userRepository = userRepository;
         _projectRepository = projectRepository;
@@ -25,6 +26,7 @@ public class ProjectService : IProjectService
         _projectInvitationService = projectInvitationService;
         _notificationService = notificationService;
         _projectInvitationRepository = projectInvitationRepository;
+        _notificationRepository = notificationRepository;
         _mapper = mapper;
     }
 
@@ -114,7 +116,7 @@ public class ProjectService : IProjectService
         return true;
     }
 
-    public async Task InviteUserToProjectAsync(int projectId, int senderUserId, string emailOrUserName)
+    public async Task InviteUserToProjectAsync(int projectId, int senderUserId, string emailOrUserName, string role)
     {
         var project = await _projectRepository.GetByAsyncId(projectId);
         if (project is null) return;
@@ -142,10 +144,10 @@ public class ProjectService : IProjectService
             return;
         }
         
-        var invitationId = await _projectInvitationService.CreateProjectInvitationAsync(projectId, invitedUser.Id, senderUserId);
+        var invitationId = await _projectInvitationService.CreateProjectInvitationAsync(projectId, invitedUser.Id, senderUserId, role);
         
         await _notificationService.CreateNotificationAsync(invitedUser.Id, "Project Invitation 📩",
-            $"You have been invited to project {project.Name} by user {senderUser.Name}", null, invitationId
+            $"You have been invited to project {project.Name} by user {senderUser.Name} as a {role}", null, invitationId
             ,NotificationType.Invitation);
     }
 
@@ -162,16 +164,38 @@ public class ProjectService : IProjectService
         if (isAccepted)
         {
             invitation.Status = InvitationStatus.Accepted;
+            
             var projectUser = new ProjectUser
             {
                 IsActive = true,
                 JoinedDate = DateTime.Now,
-                Role = ProjectRole.Developer,
+                Role = invitation.InvitedRole,
                 ProjectId = invitation.ProjectId,
                 UserId = invitation.InvitedUserId
             };
             
             await _projectUserRepository.AddAsync(projectUser);
+            
+            var otherPendingInvitations = await _projectInvitationRepository.FindAsync(x => 
+                    x.ProjectId == invitation.ProjectId && 
+                    x.InvitedUserId == invitation.InvitedUserId &&
+                    x.Status == InvitationStatus.Pending &&
+                    x.Id != invitationId
+            );
+
+            if (otherPendingInvitations.Count != 0)
+            {
+                foreach (var oldInvite in otherPendingInvitations)
+                {
+                    oldInvite.Status = InvitationStatus.Cancelled;
+                    await _projectInvitationRepository.UpdateAsync(oldInvite);
+                    
+                    var notifications = await _notificationRepository.FindAsync(x => x.RelatedEntityId == oldInvite.Id && x.Type == NotificationType.Invitation);
+                    
+                    foreach (var notification in notifications)
+                        await _notificationService.MarkAsReadAsync(notification.Id);
+                }
+            }
         }
         else
         {
@@ -179,6 +203,11 @@ public class ProjectService : IProjectService
         }
         
         await _projectInvitationRepository.UpdateAsync(invitation);
+        
+        var invitationNotification = await _notificationRepository.FindFirstAsync(x => x.RelatedEntityId == invitationId && x.Type == NotificationType.Invitation);
+        if (invitationNotification is null) return;
+        await _notificationService.MarkAsReadAsync(invitationNotification.Id);
+    }
 
     public async Task<string> GenerateInviteLinkAsync(int projectId)
     {
