@@ -13,4 +13,7 @@ public interface IProjectService
     Task<bool> DeleteProjectAsync(int projectId);
     Task InviteUserToProjectAsync(int projectId, int senderUserId, string emailOrUserName);
     Task RespondInvitationAsync(int invitationId, bool isAccepted);
+    Task<string> GenerateInviteLinkAsync(int projectId);
+    Task RevokeInviteLinkAsync(int projectId);
+    Task<bool> JoinProjectByTokenAsync(string token, int userId);
 }

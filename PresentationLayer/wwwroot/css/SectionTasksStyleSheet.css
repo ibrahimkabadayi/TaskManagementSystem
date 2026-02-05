@@ -1349,4 +1349,23 @@ FİLTRE MENÜSÜ CSS
     font-size: 14px; text-decoration: underline;
 }
 .btn-clear-filters:hover { color: #172b4d; }
+/* --- DAVET LİNKİ INPUT STİLİ --- */
+.invite-link-input {
+    width: 100%;
+    border: 1px solid #dfe1e6;
+    background-color: #fafbfc;
+    border-radius: 4px;
+    padding: 6px 8px;
+    font-size: 13px;
+    color: #172b4d;
+    outline: none;
+    margin-bottom: 4px;
+    font-family: monospace; /* Link olduğu belli olsun */
+}
+
+.invite-link-input:focus {
+    border-color: #0079bf;
+    background-color: #fff;
+    box-shadow: 0 0 0 2px rgba(0, 121, 191, 0.2);
+}
     

@@ -179,5 +179,52 @@ public class ProjectService : IProjectService
         }
         
         await _projectInvitationRepository.UpdateAsync(invitation);
+
+    public async Task<string> GenerateInviteLinkAsync(int projectId)
+    {
+        var project = await _projectRepository.GetByAsyncId(projectId);
+        if (project == null) throw new Exception("Could not found project.");
+
+        if (!string.IsNullOrEmpty(project.InviteToken))
+        {
+            return project.InviteToken;
+        }
+
+        project.InviteToken = Guid.NewGuid().ToString("N");
+        await _projectRepository.UpdateAsync(project);
+
+        return project.InviteToken;
+    }
+
+    public async Task RevokeInviteLinkAsync(int projectId)
+    {
+        var project = await _projectRepository.GetByAsyncId(projectId);
+        if (project != null)
+        {
+            project.InviteToken = null;
+            await _projectRepository.UpdateAsync(project);
+        }
+    }
+
+    public async Task<bool> JoinProjectByTokenAsync(string token, int userId)
+    {
+        var project = await _projectRepository.FindFirstAsync(p => p.InviteToken == token);
+    
+        if (project == null) return false;
+
+        var isMember = await _projectUserRepository.ExistsAsync(x => x.UserId == userId && x.ProjectId == project.Id);
+        if (isMember) return true; 
+
+        var newMember = new ProjectUser
+        {
+            ProjectId = project.Id,
+            UserId = userId,
+            Role = ProjectRole.Developer,
+            IsActive = true,
+            JoinedDate = DateTime.Now
+        };
+
+        await _projectUserRepository.AddAsync(newMember);
+        return true;
     }
 }

@@ -326,16 +326,32 @@
             <div class="link-icon-box">
                 <i class="fa-solid fa-link"></i>
             </div>
+    
             <div class="link-details">
-                <div class="link-text">
-                    <strong>Anyone with link</strong> can join as a member
+                <div id="link-inactive-state" style="display: block;">
+                    <div class="link-text">
+                        <strong>Paylaşım bağlantısı oluştur</strong>
+                    </div>
+                    <div class="link-actions">
+                        <span class="link-action-btn" onclick="generateInviteLink(@project.Id)">Link oluştur</span>
+                    </div>
                 </div>
-                <div class="link-actions">
-                    <span class="link-action-btn">Copy link</span> •
-                    <span class="link-action-btn">Delete link</span>
+
+                <div id="link-active-state" style="display: none;">
+                    <div class="link-text" style="display: flex; gap: 10px; align-items: center;">
+                        <input type="text" id="generated-invite-link" class="invite-link-input" readonly value="">
+                    </div>
+                    <div class="link-actions">
+                        <span class="link-action-btn" onclick="copyInviteLink()">Kopyala</span> •
+                        <span class="link-action-btn item-danger" onclick="revokeInviteLink(@project.Id)">Linki Sil</span>
+                    </div>
+                    <div style="font-size: 11px; color: #6b778c; margin-top: 4px;">
+                        Linke sahip herkes üye olarak katılabilir.
+                    </div>
                 </div>
             </div>
-            <button class="btn-permissions">Change permissions <i class="fa-solid fa-chevron-down"></i></button>
+    
+            <button class="btn-permissions" style="display:none;">Change permissions <i class="fa-solid fa-chevron-down"></i></button>
         </div>
 
         <div class="share-members-section">

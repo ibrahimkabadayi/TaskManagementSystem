@@ -239,6 +239,10 @@ function openUserSelectionMenu(event) {
 
     Object.values(projectUsersData).forEach(user => {
 
+        if (user.role === 'Viewer') {
+            return;
+        }
+        
         const item = document.createElement('button');
         item.className = 'list-menu-item';
         item.style.display = 'flex';
@@ -1307,4 +1311,106 @@ function clearAllFilters() {
     checkboxes.forEach(cb => cb.checked = false);
 
     applyFilters();
+}
+
+function sectionNameClick(userId){
+    window.location.href = `/Section/TaskFlow?userId=${userId}`
+}
+
+/* =========================================
+   DAVET LİNKİ İŞLEMLERİ (GENERATE / REVOKE / COPY)
+   ========================================= */
+
+// 1. LİNK OLUŞTURMA
+async function generateInviteLink(projectId) {
+    const inactiveState = document.getElementById('link-inactive-state');
+    const activeState = document.getElementById('link-active-state');
+    const input = document.getElementById('generated-invite-link');
+
+    // Yükleniyor efekti verebiliriz (Opsiyonel)
+    inactiveState.style.opacity = '0.5';
+
+    try {
+        const response = await fetch('/Project/GenerateLink', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            // Controller [FromBody] int beklediği için direkt sayıyı gönderiyoruz
+            body: JSON.stringify(projectId)
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            // Backend'den { url: "..." } formatında döner
+            const joinUrl = data.url;
+
+            // UI Güncelleme
+            input.value = joinUrl;
+            inactiveState.style.display = 'none';
+            activeState.style.display = 'block';
+
+            // Kullanıcıya oluşturulduğunu hissettir
+            input.select();
+        } else {
+            alert("Link oluşturulurken bir hata meydana geldi.");
+        }
+    } catch (error) {
+        console.error("Hata:", error);
+        alert("Sunucuya ulaşılamadı.");
+    } finally {
+        inactiveState.style.opacity = '1';
+    }
+}
+
+// 2. LİNKİ SİLME (İPTAL ETME)
+async function revokeInviteLink(projectId) {
+    if (!confirm("Bu paylaşım linkini silmek istediğinize emin misiniz? Linke sahip kişiler artık projeye katılamayacak.")) {
+        return;
+    }
+
+    try {
+        const response = await fetch('/Project/RevokeLink', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(projectId)
+        });
+
+        if (response.ok) {
+            // UI Sıfırlama
+            document.getElementById('link-active-state').style.display = 'none';
+            document.getElementById('link-inactive-state').style.display = 'block';
+            document.getElementById('generated-invite-link').value = '';
+
+            alert("Link başarıyla iptal edildi.");
+        } else {
+            alert("Link silinemedi.");
+        }
+    } catch (error) {
+        console.error("Hata:", error);
+    }
+}
+
+// 3. LİNKİ KOPYALAMA
+function copyInviteLink() {
+    const copyText = document.getElementById("generated-invite-link");
+
+    // Mobil uyumluluk için seçim
+    copyText.select();
+    copyText.setSelectionRange(0, 99999);
+
+    // Panoya kopyala
+    navigator.clipboard.writeText(copyText.value).then(() => {
+        // Kullanıcıya küçük bir geri bildirim (Toast kullanıyorsan onu çağırabilirsin)
+        // Eğer showToastNotification fonksiyonun global ise:
+        if (typeof showToastNotification === 'function') {
+            showToastNotification("Başarılı", "Link panoya kopyalandı! 📋");
+        } else {
+            alert("Link kopyalandı! 📋");
+        }
+    }).catch(err => {
+        console.error('Kopyalama hatası: ', err);
+    });
 }

@@ -21,6 +21,9 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .Property(x => x.Description)
             .HasMaxLength(1000);
         
+        builder.Property(x => x.InviteToken)
+            .HasMaxLength(1000);
+        
         builder
             .Property(x => x.StartDate)
             .IsRequired()
