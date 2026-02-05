@@ -41,10 +41,10 @@
                 <div class="user-stats">
                     <div class="stat-item">
                         <span class="stat-value">@(Model.ProjectUsers?.Count ?? 0)</span>
-                        <span class="stat-label">Projeler</span>
+                        <span class="stat-label">Projects</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-value">Aktif</span>
+                        <span class="stat-value" style="color:green">Online</span>
                         <span class="stat-label">Durum</span>
                     </div>
                 </div>
@@ -56,19 +56,19 @@
 
         <div class="menu-sidebar">
             <button class="menu-btn active" onclick="switchTab('settings')">
-                <i class="fa-solid fa-user-gear"></i> Hesap Ayarları
+                <i class="fa-solid fa-user-gear"></i> Account Settings
             </button>
             <button class="menu-btn" onclick="switchTab('projects')">
-                <i class="fa-solid fa-briefcase"></i> Projelerim
+                <i class="fa-solid fa-briefcase"></i> Projects
             </button>
             <button class="menu-btn" onclick="switchTab('security')">
-                <i class="fa-solid fa-shield-halved"></i> Güvenlik
+                <i class="fa-solid fa-shield-halved"></i> Security
             </button>
         </div>
 
         <div id="tab-settings" class="content-panel active">
             <div class="panel-header">
-                <h2>Profil Bilgilerini Düzenle</h2>
+                <h2>Change Profile</h2>
             </div>
     
             <div class="form-grid">

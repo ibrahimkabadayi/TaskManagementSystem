@@ -32,18 +32,22 @@ body {
 }
 
 /* Logo Tasarımı */
-.logo {
-    display: flex;
+.logo-link {
+    text-decoration: none; /* Alt çizgiyi kaldır */
+    color: inherit;        /* Rengi kapsayıcıdan al */
+    display: flex;         /* Hizalamayı koru */
     align-items: center;
-    gap: 10px;
+    transition: opacity 0.2s;
+}
+
+.logo-link:hover {
+    opacity: 0.8;          /* Tıklanabilir hissi ver */
 }
 
 .logo span {
     font-weight: bold;
     font-size: 18px;
-    color: white; /* Mavi yerine Beyaz */
-    opacity: 0.9;
-    text-decoration: none;
+    color: white;          /* Rengi zorla beyaz yap */
 }
 
 /* Sağ Taraf (Bildirim ve Profil) */

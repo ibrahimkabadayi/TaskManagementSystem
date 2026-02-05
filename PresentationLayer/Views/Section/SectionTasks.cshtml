@@ -24,7 +24,7 @@
 
 <div class="section-header">
     <div class="section-header-left-side">
-        <div class="section-title" onclick="" project-id="@project.Id" current-user-id="@currentUserId">
+        <div class="section-title" onclick="sectionNameClick(@currentUserId)" project-id="@project.Id" current-user-id="@currentUserId">
             @project.Name | @Model.Name
         </div>
     </div>
@@ -370,14 +370,18 @@
                     var pName = projectUser.User?.Name ?? "";
                     var cName = currentUserName ?? "";
                     nameModifier = pName == cName ? "(you)" : string.Empty;
-                    
+
                     <div class="member-item-row">
                         <div class="member-avatar" style="background-color: @projectUser.User.ProfileColor;">@projectUser.User.ProfileLetters</div>
                         <div class="member-info">
                             <div class="member-name">@projectUser.User.Name @nameModifier</div>
                             <div class="member-username">@projectUser.User.Email • @projectUser.Title</div>
                         </div>
-                        <button class="btn-member-role">@projectUser.Role <i class="fa-solid fa-chevron-down"></i></button>
+
+                        <div style="font-size: 14px; color: #42526e; font-weight: 500; margin-left: auto;">
+                            @projectUser.Role
+                        </div>
+
                     </div>
                 }
             </div>
@@ -458,4 +462,5 @@
         <button class="btn-clear-filters" onclick="clearAllFilters()">Clear Filters</button>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script src="~/js/SectionTasksScript.js"></script>
