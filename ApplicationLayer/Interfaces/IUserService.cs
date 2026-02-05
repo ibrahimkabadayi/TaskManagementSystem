@@ -12,4 +12,5 @@ public interface IUserService
     Task<bool> CheckUserExistsAsync(string email);
     Task<UserDto?> GetUserWithProjectUsersAsync(int id);
     Task<bool> UpdateUserProfileAsync(int userId, string fullName, string profileColor);
+    Task<bool> ChangePasswordAsync(int userId, string currentPassword, string newPassword);
 }

@@ -121,6 +121,40 @@ public class UserServiceTests : IDisposable
         Assert.Equal(result3.First(), result);
         Assert.Equal(result3.Last(), result2);
     }
+
+    [Fact]
+    public async Task ChangePasswordAsync_ShouldReturnTrue_WhenCurrentPasswordIsCorrect()
+    {
+        // Arrange
+        var userEntity = new User { Id = 1, Name = "Test User", Email = "test@example.com", Password = "OldPassword" };
+        _context.Users.Add(userEntity);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _userService.ChangePasswordAsync(1, "OldPassword", "NewPassword");
+
+        // Assert
+        Assert.True(result);
+        var updatedUser = await _context.Users.FindAsync(1);
+        Assert.Equal("NewPassword", updatedUser!.Password);
+    }
+
+    [Fact]
+    public async Task ChangePasswordAsync_ShouldReturnFalse_WhenCurrentPasswordIsIncorrect()
+    {
+        // Arrange
+        var userEntity = new User { Id = 2, Name = "Test User 2", Email = "test2@example.com", Password = "OldPassword" };
+        _context.Users.Add(userEntity);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _userService.ChangePasswordAsync(2, "WrongPassword", "NewPassword");
+
+        // Assert
+        Assert.False(result);
+        var updatedUser = await _context.Users.FindAsync(2);
+        Assert.Equal("OldPassword", updatedUser!.Password);
+    }
     
     public void Dispose()
     {

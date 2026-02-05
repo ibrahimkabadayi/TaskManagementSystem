@@ -146,22 +146,22 @@
 
             <div class="form-group">
                 <label class="form-label">Mevcut Şifre</label>
-                <input type="password" class="form-input" placeholder="••••••••"/>
+                <input type="password" id="currentPassword" class="form-input" placeholder="••••••••"/>
             </div>
 
             <div class="form-grid">
                 <div class="form-group">
                     <label class="form-label">Yeni Şifre</label>
-                    <input type="password" class="form-input" placeholder="Yeni şifreniz"/>
+                    <input type="password" id="newPassword" class="form-input" placeholder="Yeni şifreniz"/>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Yeni Şifre (Tekrar)</label>
-                    <input type="password" class="form-input" placeholder="Yeni şifreniz tekrar"/>
+                    <input type="password" id="confirmPassword" class="form-input" placeholder="Yeni şifreniz tekrar"/>
                 </div>
             </div>
 
             <div style="text-align: right;">
-                <button type="button" class="btn-primary" onclick="alert('Demo: Şifre değiştirme servisi henüz aktif değil.')">Şifreyi Güncelle</button>
+                <button type="button" class="btn-primary" onclick="changePassword()">Şifreyi Güncelle</button>
             </div>
         </div>
 

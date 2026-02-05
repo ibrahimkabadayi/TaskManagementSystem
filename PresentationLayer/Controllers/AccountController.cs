@@ -23,7 +23,7 @@ public class AccountController : Controller
     {
         var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
         
-        if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out int userId))
+        if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
         {
             return RedirectToAction("SignIn", "Home"); 
         }
@@ -31,6 +31,10 @@ public class AccountController : Controller
         var userDto = await _userService.GetUserWithProjectUsersAsync(int.Parse(userIdString));
 
         if (userDto == null) return NotFound();
+        
+        ViewBag.ReturnController = "Section";
+        ViewBag.ReturnAction = "TaskFlow";
+        ViewBag.ReturnUserId = userDto.Id;
 
         return View(userDto);
     }
@@ -60,5 +64,18 @@ public class AccountController : Controller
         TempData["Success"] = "Your profile was updated successfully!";
         
         return Ok(new { success = true });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+    {
+        if (!int.TryParse(request.UserId, out var userId))
+        {
+            return BadRequest(new { message = "Invalid User ID." });
+        }
+
+        var result = await _userService.ChangePasswordAsync(userId, request.CurrentPassword, request.NewPassword);
+        if (result) return Ok();
+        return BadRequest();
     }
 }

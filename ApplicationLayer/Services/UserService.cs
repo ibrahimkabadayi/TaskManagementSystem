@@ -105,4 +105,21 @@ public class UserService : IUserService
         await _userRepository.UpdateAsync(user);
         return true;
     }
+
+    public async Task<bool> ChangePasswordAsync(int userId, string currentPassword, string newPassword)
+    {
+        var user = await _userRepository.GetByAsyncId(userId);
+        if (user == null) return false;
+        
+        var isPasswordCorrect = BCrypt.Net.BCrypt.Verify(currentPassword, user.Password);
+        
+        if (!isPasswordCorrect)
+        {
+            return false;
+        }
+
+        user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
+        await _userRepository.UpdateAsync(user);
+        return true;
+    }
 }
