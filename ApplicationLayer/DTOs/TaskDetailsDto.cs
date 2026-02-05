@@ -20,6 +20,7 @@ public class TaskDetailsDto
 
     public string CreatedDate { get; set; } = string.Empty;
     public string? DueDate { get; set; } = string.Empty;
+    public string? CompletedDate { get; set; } = string.Empty;
 
     public string Priority { get; set; } = string.Empty;
     public string State { get; set; } = string.Empty;

@@ -2,6 +2,7 @@
 using Application.Interfaces;
 using AutoMapper;
 using DomainLayer.Entities;
+using DomainLayer.Enums;
 using DomainLayer.Interfaces;
 
 namespace Application.Services;
@@ -17,14 +18,17 @@ public class ProjectInvitationService : IProjectInvitationService
         _mapper = mapper;
     }
     
-    public async Task<int> CreateProjectInvitationAsync(int projectId, int invitedUserId, int senderUserId)
+    public async Task<int> CreateProjectInvitationAsync(int projectId, int invitedUserId, int senderUserId, string role)
     {
+        var projectRole = role == "Viewer" ? ProjectRole.Viewer : ProjectRole.Developer;
+        
         var projectInvitation = new ProjectInvitation
         {
             CreatedDate = DateTime.Now,
             InvitedUserId = invitedUserId,
             SenderId = senderUserId,
-            ProjectId = projectId
+            ProjectId = projectId,
+            InvitedRole = projectRole
         };
         
         await _projectInvitationRepository.AddAsync(projectInvitation);

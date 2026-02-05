@@ -24,7 +24,7 @@
 
 <div class="section-header">
     <div class="section-header-left-side">
-        <div class="section-title" onclick="" project-id="@project.Id" current-user-id="@currentUserId">
+        <div class="section-title" onclick="sectionNameClick(@currentUserId)" project-id="@project.Id" current-user-id="@currentUserId">
             @project.Name | @Model.Name
         </div>
     </div>
@@ -73,8 +73,8 @@
                         
                             @if (task.AssignedTo != null)
                             {
-                                <div class="assigned-to-profile-icon" style="background-color: @task.AssignedTo.ProfileColor;">
-                                    @task.AssignedTo.ProfileLetters
+                                <div class="assigned-to-profile-icon" style="background-color: @task.AssignedTo.User.ProfileColor;">
+                                    @task.AssignedTo.User.ProfileLetters
                                 </div>
                             }
                         
@@ -202,15 +202,22 @@
 
                 <div class="people-section">
                     <span class="people-label">Timeline</span>
-                    <div class="date-row">
-                        <div class="date-item">
-                            <i class="fa-regular fa-calendar-plus"></i>
-                            <span id="modalCreatedDate">12 Dec 2025</span>
+    
+                    <div style="display: flex; align-items: center; gap: 15px;">
+        
+                        <div class="date-row">
+                            <div class="date-item">
+                                <i class="fa-regular fa-calendar-plus"></i>
+                                <span id="modalCreatedDate">12 Dec 2025</span>
+                            </div>
+                            <div class="date-item">
+                                <i class="fa-regular fa-clock"></i>
+                                <input type="date" id="modalDueDateInput" class="date-picker-style" onchange="changeTaskDueDate(@currentUserId, @project.Id)">
+                            </div>
                         </div>
-                        <div class="date-item">
-                            <i class="fa-regular fa-clock"></i>
-                            <input type="date" id="modalDueDateInput" class="date-picker-style" onchange="changeTaskDueDate(@currentUserId, @project.Id)">
-                        </div>
+
+                        <div id="modalCompletedBadgeContainer"></div>
+        
                     </div>
                 </div>
 
@@ -315,7 +322,7 @@
             <div class="invite-input-group">
                 <input type="text" placeholder="Email address or username..." class="invite-input" id="share-email-input">
                 <select class="invite-role-select">
-                    <option>Member</option>
+                    <option>Developer</option>
                     <option>Visitor</option>
                 </select>
                 <button class="btn-share-invite" onclick="sendInvitation(@project.Id)">Share</button>
@@ -326,16 +333,32 @@
             <div class="link-icon-box">
                 <i class="fa-solid fa-link"></i>
             </div>
+    
             <div class="link-details">
-                <div class="link-text">
-                    <strong>Anyone with link</strong> can join as a member
+                <div id="link-inactive-state" style="display: block;">
+                    <div class="link-text">
+                        <strong>Paylaşım bağlantısı oluştur</strong>
+                    </div>
+                    <div class="link-actions">
+                        <span class="link-action-btn" onclick="generateInviteLink(@project.Id)">Link oluştur</span>
+                    </div>
                 </div>
-                <div class="link-actions">
-                    <span class="link-action-btn">Copy link</span> •
-                    <span class="link-action-btn">Delete link</span>
+
+                <div id="link-active-state" style="display: none;">
+                    <div class="link-text" style="display: flex; gap: 10px; align-items: center;">
+                        <input type="text" id="generated-invite-link" class="invite-link-input" readonly value="">
+                    </div>
+                    <div class="link-actions">
+                        <span class="link-action-btn" onclick="copyInviteLink()">Kopyala</span> •
+                        <span class="link-action-btn item-danger" onclick="revokeInviteLink(@project.Id)">Linki Sil</span>
+                    </div>
+                    <div style="font-size: 11px; color: #6b778c; margin-top: 4px;">
+                        Linke sahip herkes üye olarak katılabilir.
+                    </div>
                 </div>
             </div>
-            <button class="btn-permissions">Change permissions <i class="fa-solid fa-chevron-down"></i></button>
+    
+            <button class="btn-permissions" style="display:none;">Change permissions <i class="fa-solid fa-chevron-down"></i></button>
         </div>
 
         <div class="share-members-section">
@@ -347,14 +370,18 @@
                     var pName = projectUser.User?.Name ?? "";
                     var cName = currentUserName ?? "";
                     nameModifier = pName == cName ? "(you)" : string.Empty;
-                    
+
                     <div class="member-item-row">
                         <div class="member-avatar" style="background-color: @projectUser.User.ProfileColor;">@projectUser.User.ProfileLetters</div>
                         <div class="member-info">
                             <div class="member-name">@projectUser.User.Name @nameModifier</div>
                             <div class="member-username">@projectUser.User.Email • @projectUser.Title</div>
                         </div>
-                        <button class="btn-member-role">@projectUser.Role <i class="fa-solid fa-chevron-down"></i></button>
+
+                        <div style="font-size: 14px; color: #42526e; font-weight: 500; margin-left: auto;">
+                            @projectUser.Role
+                        </div>
+
                     </div>
                 }
             </div>
@@ -435,4 +462,5 @@
         <button class="btn-clear-filters" onclick="clearAllFilters()">Clear Filters</button>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script src="~/js/SectionTasksScript.js"></script>

@@ -15,4 +15,5 @@ public class ProjectInvitationDto
     public required UserDto InvitedUser { get; set; }
     
     public InvitationStatus Status { get; set; } = InvitationStatus.Pending;
+    public ProjectRole InvitedRole { get; set; } = ProjectRole.Developer;
 }

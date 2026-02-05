@@ -16,6 +16,6 @@ public class TaskDto
     public int TaskGroupId { get; set; }
     
     public UserDto? CreatedBy { get; set; }
-    public UserDto? AssignedTo { get; set; }
-    public UserDto? FinishedBy { get; set; }
+    public ProjectUserDto? AssignedTo { get; set; }
+    public ProjectUserDto? FinishedBy { get; set; }
 }

@@ -23,7 +23,7 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.CreatedBy, 
                 opt => opt.MapFrom(src => src.CreatedBy.User))
             .ForMember(dest => dest.AssignedTo, 
-                opt => opt.MapFrom(src => src.AssignedTo != null ? src.AssignedTo.User : null));
+                opt => opt.MapFrom(src => src.AssignedTo));
         
         CreateMap<TaskDto, Task>();
         

@@ -31,6 +31,7 @@ async function openTaskModal(taskId) {
             finishedByInitial: result.finishedByInitial,
             finishedByColor: result.finishedByColor,
             createdDate: result.createdDate,
+            completedDate: result.completedDate,
             dueDate: result.dueDate,
             priorityValue: result.priority,
             state: result.state
@@ -150,6 +151,53 @@ async function openTaskModal(taskId) {
             stateSelect.value = stateValue;
         }
 
+        const isDone = stateSelect && (stateSelect.value === 'done' || stateSelect.value === '2');
+
+        let completedBadge = document.getElementById('completedDateBadge');
+
+        // YENİ: Hedef container'ı seç
+        const badgeContainer = document.getElementById('modalCompletedBadgeContainer');
+
+        if (isDone) {
+            let dateText = "";
+
+            if (taskData.completedDate) {
+                const dateObj = new Date(taskData.completedDate);
+                const dateStr = dateObj.toLocaleDateString('tr-TR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                });
+                dateText = ` on ${dateStr}`;
+            }
+
+            if (!completedBadge) {
+                completedBadge = document.createElement('div');
+                completedBadge.id = 'completedDateBadge';
+                completedBadge.className = 'completed-badge';
+
+                // Style güncellemesi: margin-top'ı kaldırdık çünkü artık yan yana duracaklar
+                completedBadge.style.cssText = "color: #4bbf6b; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 6px;";
+
+                // YENİ: Container varsa oraya ekle, yoksa eskisini kullan (fallback)
+                if (badgeContainer) {
+                    badgeContainer.appendChild(completedBadge);
+                } else {
+                    stateSelect.parentElement.appendChild(completedBadge);
+                }
+            } else {
+                // Eğer badge zaten varsa ama doğru yerde değilse oraya taşı
+                if (badgeContainer && completedBadge.parentElement !== badgeContainer) {
+                    badgeContainer.appendChild(completedBadge);
+                }
+            }
+
+            completedBadge.innerHTML = `<i class="fa-solid fa-circle-check"></i> Completed${dateText}`;
+
+        } else {
+            if (completedBadge) completedBadge.remove();
+        }
+
         modal.style.display = 'flex';
 
     } catch (error) {
@@ -239,6 +287,10 @@ function openUserSelectionMenu(event) {
 
     Object.values(projectUsersData).forEach(user => {
 
+        if (user.role === 'Viewer') {
+            return;
+        }
+        
         const item = document.createElement('button');
         item.className = 'list-menu-item';
         item.style.display = 'flex';
@@ -1307,4 +1359,106 @@ function clearAllFilters() {
     checkboxes.forEach(cb => cb.checked = false);
 
     applyFilters();
+}
+
+function sectionNameClick(userId){
+    window.location.href = `/Section/TaskFlow?userId=${userId}`
+}
+
+/* =========================================
+   DAVET LİNKİ İŞLEMLERİ (GENERATE / REVOKE / COPY)
+   ========================================= */
+
+// 1. LİNK OLUŞTURMA
+async function generateInviteLink(projectId) {
+    const inactiveState = document.getElementById('link-inactive-state');
+    const activeState = document.getElementById('link-active-state');
+    const input = document.getElementById('generated-invite-link');
+
+    // Yükleniyor efekti verebiliriz (Opsiyonel)
+    inactiveState.style.opacity = '0.5';
+
+    try {
+        const response = await fetch('/Project/GenerateLink', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            // Controller [FromBody] int beklediği için direkt sayıyı gönderiyoruz
+            body: JSON.stringify(projectId)
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            // Backend'den { url: "..." } formatında döner
+            const joinUrl = data.url;
+
+            // UI Güncelleme
+            input.value = joinUrl;
+            inactiveState.style.display = 'none';
+            activeState.style.display = 'block';
+
+            // Kullanıcıya oluşturulduğunu hissettir
+            input.select();
+        } else {
+            alert("Link oluşturulurken bir hata meydana geldi.");
+        }
+    } catch (error) {
+        console.error("Hata:", error);
+        alert("Sunucuya ulaşılamadı.");
+    } finally {
+        inactiveState.style.opacity = '1';
+    }
+}
+
+// 2. LİNKİ SİLME (İPTAL ETME)
+async function revokeInviteLink(projectId) {
+    if (!confirm("Bu paylaşım linkini silmek istediğinize emin misiniz? Linke sahip kişiler artık projeye katılamayacak.")) {
+        return;
+    }
+
+    try {
+        const response = await fetch('/Project/RevokeLink', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(projectId)
+        });
+
+        if (response.ok) {
+            // UI Sıfırlama
+            document.getElementById('link-active-state').style.display = 'none';
+            document.getElementById('link-inactive-state').style.display = 'block';
+            document.getElementById('generated-invite-link').value = '';
+
+            alert("Link başarıyla iptal edildi.");
+        } else {
+            alert("Link silinemedi.");
+        }
+    } catch (error) {
+        console.error("Hata:", error);
+    }
+}
+
+// 3. LİNKİ KOPYALAMA
+function copyInviteLink() {
+    const copyText = document.getElementById("generated-invite-link");
+
+    // Mobil uyumluluk için seçim
+    copyText.select();
+    copyText.setSelectionRange(0, 99999);
+
+    // Panoya kopyala
+    navigator.clipboard.writeText(copyText.value).then(() => {
+        // Kullanıcıya küçük bir geri bildirim (Toast kullanıyorsan onu çağırabilirsin)
+        // Eğer showToastNotification fonksiyonun global ise:
+        if (typeof showToastNotification === 'function') {
+            showToastNotification("Başarılı", "Link panoya kopyalandı! 📋");
+        } else {
+            alert("Link kopyalandı! 📋");
+        }
+    }).catch(err => {
+        console.error('Kopyalama hatası: ', err);
+    });
 }

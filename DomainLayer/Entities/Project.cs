@@ -5,6 +5,7 @@ public class Project
     public int Id { get; set; }
     public required string Name { get; set; }
     public string? Description { get; set; }
+    public string? InviteToken { get; set; }
     public required DateTime StartDate { get; set; }
     public DateTime? EndDate { get; set; }
     

@@ -2,10 +2,8 @@
 using System.Text.Json;
 using Application.DTOs;
 using Application.Interfaces;
-using DomainLayer.Enums;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using TaskManagementSystem.Models;
 using TaskManagementSystem.Models.SectionRequests;
 
 namespace TaskManagementSystem.Controllers;
@@ -14,13 +12,15 @@ public class SectionController : Controller
 {
     private readonly ISectionService _sectionService;
     private readonly IProjectUserService _projectUserService;
+    private readonly IUserService _userService;
     private readonly IProjectService _projectService;
 
-    public SectionController(ISectionService sectionService, IProjectUserService projectUserService,  IProjectService projectService)
+    public SectionController(ISectionService sectionService, IProjectUserService projectUserService,  IProjectService projectService, IUserService userService)
     {
         _sectionService = sectionService;
         _projectUserService = projectUserService;
         _projectService = projectService;
+        _userService = userService;
     }
 
     [HttpPatch]
@@ -61,6 +61,16 @@ public class SectionController : Controller
         }
 
         ViewBag.LastVisitedSections = lastVisitedSections;
+        
+        var user = await _userService.GetUserByIdAsync(userId);
+        if(user is null) return RedirectToAction("SignIn", "Home");
+        
+        ViewBag.ProfileLetters = user.ProfileLetters;
+        ViewBag.ProfileColor = user.ProfileColor;
+        
+        ViewBag.ReturnController = "Home";
+        ViewBag.ReturnAction = "Home";
+        ViewBag.ReturnUserId = user.Id;
 
         return View(allProjects);
     }
@@ -165,6 +175,16 @@ public class SectionController : Controller
         var project = await _projectService.GetProjectWithSectionAsync(section.ProjectId);
         
         AddToRecentlyViewed(int.Parse(userId), sectionId, section.Name, section.ImageUrl);
+        
+        var user = await _userService.GetUserByIdAsync(int.Parse(userId));
+        if(user is null) return RedirectToAction("SignIn", "Home");
+        
+        ViewBag.ProfileLetters = user.ProfileLetters;
+        ViewBag.ProfileColor = user.ProfileColor;
+        
+        ViewBag.ReturnController = "Section";
+        ViewBag.ReturnAction = "TaskFlow";
+        ViewBag.ReturnUserId = user.Id;
         
         ViewBag.Project = project;
         return View(section);

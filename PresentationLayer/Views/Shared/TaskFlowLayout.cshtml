@@ -2,6 +2,15 @@
 
 @{
     Layout = null;
+    var profileLetters = ViewBag.ProfileLetters;
+    var profileColor = ViewBag.ProfileColor;
+    
+    string destController = ViewBag.ReturnController != null ? ViewBag.ReturnController.ToString() : "Section";
+    string destAction = ViewBag.ReturnAction != null ? ViewBag.ReturnAction.ToString() : "TaskFlow";
+    
+    var returnIdVal = ViewBag.ReturnId ?? ViewBag.ReturnUserId;
+    
+    object routeValues = returnIdVal != null ? new { userId = returnIdVal } : null;;
 }
 
 <!DOCTYPE html>
@@ -15,9 +24,11 @@
 </head>
 <body>
 <nav class="top-bar">
-    <div class="logo">
-        <span>📊 TaskFlow</span>
-    </div>
+    <a href="@Url.Action(destAction, destController, routeValues)" class="logo-link">
+        <div class="logo">
+            <span>📊 TaskFlow</span>
+        </div>
+    </a>
     
     <div class="bar-account-section">
         <div class="notification-container">
@@ -41,8 +52,8 @@
             </div>
         </div>
         
-        <div class="account" onclick="window.location.href='/Account/Profile'">
-            @(User.Identity?.Name?.Substring(0, 1).ToUpper() ?? "U")
+        <div class="account" style="background-color: @profileColor" onclick="window.location.href='/Account/Profile'">
+            @profileLetters
         </div>
     </div>
 </nav>
