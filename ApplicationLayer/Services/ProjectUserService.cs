@@ -9,14 +9,20 @@ namespace Application.Services;
 public class ProjectUserService : IProjectUserService
 {
     private readonly IProjectUserRepository _projectUserRepository;
+    private readonly IProjectRepository _projectRepository;
     private readonly IUserRepository _userRepository;
+    private readonly ITaskRepository _taskRepository;
+    private readonly INotificationService _notificationService;
     private readonly IMapper _mapper;
 
-    public ProjectUserService(IProjectUserRepository projectUserRepository, IUserRepository userRepository, IMapper mapper)
+    public ProjectUserService(IProjectUserRepository projectUserRepository, IUserRepository userRepository, IMapper mapper, INotificationService notificationService, IProjectRepository projectRepository, ITaskRepository taskRepository)
     {
         _projectUserRepository = projectUserRepository;
         _userRepository = userRepository;
         _mapper = mapper;
+        _notificationService = notificationService;
+        _projectRepository = projectRepository;
+        _taskRepository = taskRepository;
     }
     
     public async Task<ProjectUserDto?> GetProjectUserByIdAsync(int id)
@@ -68,8 +74,22 @@ public class ProjectUserService : IProjectUserService
     public async Task<int> RemoveProjectUser(int projectUserId, int userId, int projectId)
     {
         var projectUser = await _projectUserRepository.FindFirstAsync(x => x.UserId == userId && x.ProjectId == projectId);
+        
+        var project = await _projectRepository.GetByAsyncId(projectId);
+        if (project == null) return -1;
 
         if (projectUser!.Role != ProjectRole.Leader && projectUser.Id != projectUserId) return -1;
+        
+        var user = await _userRepository.GetByAsyncId(projectUser.UserId);
+        if (user == null) return -1;
+        
+        await _notificationService.CreateNotificationAsync(user.Id, "Removed from project", $"You have been removed from project {project.Name}", null, null, NotificationType.Info);
+        
+        var assignedTasks = await _taskRepository.FindAsync(x => x.AssignedToId == projectUserId);
+
+        foreach (var task in assignedTasks)
+            task.AssignedToId = null;
+        
 
         await _projectUserRepository.DeleteAsync(projectUserId);
 

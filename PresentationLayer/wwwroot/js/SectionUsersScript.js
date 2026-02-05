@@ -37,7 +37,7 @@ async function removeMember(projectUserId, userName, currentUserId, projectId) {
     }
 
     try {
-        const response = await fetch(`/ProjectUser/RemoveMember/${projectUserId + " " + currentUserId + " " + projectId}`, {
+        const response = await fetch(`/ProjectUser/RemoveMember?projectUserId=${projectUserId}&userId=${currentUserId}&projectId=${projectId}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'

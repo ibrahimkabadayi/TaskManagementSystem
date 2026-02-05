@@ -20,13 +20,9 @@ public class ProjectUserController : Controller
         return (result == request.ProjectUserId) ? Ok() : BadRequest("Error Id: " + result);
     }
 
-    [HttpDelete("/RemoveMember/{idString}")]
-    public async Task<IActionResult> RemoveMember([FromRoute] string idString)
+    [HttpDelete]
+    public async Task<IActionResult> RemoveMember(int projectUserId, int userId, int projectId)
     {
-        var ids = idString.Split(' ');
-        var projectUserId = int.Parse(ids[0]);
-        var userId = int.Parse(ids[1]);
-        var projectId = int.Parse(ids[2]);
         
         var result = await _projectUserService.RemoveProjectUser(projectUserId, userId, projectId);
         return (result == projectUserId) ? Ok() : BadRequest("Error Id: " + result);
