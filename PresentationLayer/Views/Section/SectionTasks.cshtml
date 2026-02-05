@@ -73,8 +73,8 @@
                         
                             @if (task.AssignedTo != null)
                             {
-                                <div class="assigned-to-profile-icon" style="background-color: @task.AssignedTo.ProfileColor;">
-                                    @task.AssignedTo.ProfileLetters
+                                <div class="assigned-to-profile-icon" style="background-color: @task.AssignedTo.User.ProfileColor;">
+                                    @task.AssignedTo.User.ProfileLetters
                                 </div>
                             }
                         
@@ -202,15 +202,22 @@
 
                 <div class="people-section">
                     <span class="people-label">Timeline</span>
-                    <div class="date-row">
-                        <div class="date-item">
-                            <i class="fa-regular fa-calendar-plus"></i>
-                            <span id="modalCreatedDate">12 Dec 2025</span>
+    
+                    <div style="display: flex; align-items: center; gap: 15px;">
+        
+                        <div class="date-row">
+                            <div class="date-item">
+                                <i class="fa-regular fa-calendar-plus"></i>
+                                <span id="modalCreatedDate">12 Dec 2025</span>
+                            </div>
+                            <div class="date-item">
+                                <i class="fa-regular fa-clock"></i>
+                                <input type="date" id="modalDueDateInput" class="date-picker-style" onchange="changeTaskDueDate(@currentUserId, @project.Id)">
+                            </div>
                         </div>
-                        <div class="date-item">
-                            <i class="fa-regular fa-clock"></i>
-                            <input type="date" id="modalDueDateInput" class="date-picker-style" onchange="changeTaskDueDate(@currentUserId, @project.Id)">
-                        </div>
+
+                        <div id="modalCompletedBadgeContainer"></div>
+        
                     </div>
                 </div>
 

@@ -31,6 +31,7 @@ async function openTaskModal(taskId) {
             finishedByInitial: result.finishedByInitial,
             finishedByColor: result.finishedByColor,
             createdDate: result.createdDate,
+            completedDate: result.completedDate,
             dueDate: result.dueDate,
             priorityValue: result.priority,
             state: result.state
@@ -148,6 +149,53 @@ async function openTaskModal(taskId) {
             }
 
             stateSelect.value = stateValue;
+        }
+
+        const isDone = stateSelect && (stateSelect.value === 'done' || stateSelect.value === '2');
+
+        let completedBadge = document.getElementById('completedDateBadge');
+
+        // YENİ: Hedef container'ı seç
+        const badgeContainer = document.getElementById('modalCompletedBadgeContainer');
+
+        if (isDone) {
+            let dateText = "";
+
+            if (taskData.completedDate) {
+                const dateObj = new Date(taskData.completedDate);
+                const dateStr = dateObj.toLocaleDateString('tr-TR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                });
+                dateText = ` on ${dateStr}`;
+            }
+
+            if (!completedBadge) {
+                completedBadge = document.createElement('div');
+                completedBadge.id = 'completedDateBadge';
+                completedBadge.className = 'completed-badge';
+
+                // Style güncellemesi: margin-top'ı kaldırdık çünkü artık yan yana duracaklar
+                completedBadge.style.cssText = "color: #4bbf6b; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 6px;";
+
+                // YENİ: Container varsa oraya ekle, yoksa eskisini kullan (fallback)
+                if (badgeContainer) {
+                    badgeContainer.appendChild(completedBadge);
+                } else {
+                    stateSelect.parentElement.appendChild(completedBadge);
+                }
+            } else {
+                // Eğer badge zaten varsa ama doğru yerde değilse oraya taşı
+                if (badgeContainer && completedBadge.parentElement !== badgeContainer) {
+                    badgeContainer.appendChild(completedBadge);
+                }
+            }
+
+            completedBadge.innerHTML = `<i class="fa-solid fa-circle-check"></i> Completed${dateText}`;
+
+        } else {
+            if (completedBadge) completedBadge.remove();
         }
 
         modal.style.display = 'flex';

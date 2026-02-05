@@ -47,7 +47,7 @@ public class TaskService : ITaskService
     {
         var task = await _taskRepository.GetTaskWithDetailsAsync(id);
 
-        var createdByName = task!.CreatedBy.User.Name;
+        var createdByName = task.CreatedBy.User.Name;
         var createdByInitial = task.CreatedBy.User.ProfileLetters;
         var createdByColor = task.CreatedBy.User.ProfileColor;
 
@@ -94,6 +94,8 @@ public class TaskService : ITaskService
             
             CreatedDate = task.StartDate.ToShortDateString(),
             DueDate = task.DueDate.HasValue ? task.DueDate.Value.ToShortDateString() : "",
+            CompletedDate = task.CompletedDate.HasValue ? task.CompletedDate.Value.ToShortDateString() : "",
+            
             Priority = task.Priority.ToString(),
             State = task.State.ToString()
         };

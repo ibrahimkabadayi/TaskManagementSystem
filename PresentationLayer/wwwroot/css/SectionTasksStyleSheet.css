@@ -1368,4 +1368,43 @@ FİLTRE MENÜSÜ CSS
     background-color: #fff;
     box-shadow: 0 0 0 2px rgba(0, 121, 191, 0.2);
 }
+
+.link-action-btn.item-danger {
+    color: #de350b;
+}
+.link-action-btn.item-danger:hover {
+    color: #bf2600;
+    text-decoration: underline;
+}
+/* State'i 'Done' (veya enum değeri 2) olan görevler için özel stil */
+.Task[data-state="Done"],
+.Task[data-state="done"],
+.Task[data-state="2"] {
+    opacity: 0.6; /* Görevi biraz silikleştir (odak kalabalığını önler) */
+    background-color: #f0fdf4 !important; /* Çok açık yeşil bir arka plan */
+    border-left: 5px solid #4bbf6b !important; /* Sol tarafa kalın yeşil çizgi */
+    transition: all 0.3s ease;
+}
+
+/* Başlığın üzerini çiz */
+.Task[data-state="Done"] .Task-Title,
+.Task[data-state="done"] .Task-Title,
+.Task[data-state="2"] .Task-Title {
+    text-decoration: line-through;
+    color: #6b778c; /* Yazı rengini grileştir */
+}
+
+/* Üzerine gelince tekrar netleşsin (Detayına bakmak isterse) */
+.Task[data-state="Done"]:hover,
+.Task[data-state="done"]:hover,
+.Task[data-state="2"]:hover {
+    opacity: 1;
+    transform: scale(1.02); /* Hafif büyüme efekti */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+/* State 'Done' seçilince dropdown yeşil olsun */
+select#modalStateSelect option[value="done"] {
+    background-color: #e6fffa;
+    color: #00b894;
+}
     

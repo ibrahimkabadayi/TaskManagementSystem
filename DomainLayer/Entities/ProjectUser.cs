@@ -12,5 +12,8 @@ public class ProjectUser
     public required ProjectRole Role { get; set; }
     public string Title  { get; set; } = string.Empty;
     public bool IsActive { get; set; }
+    public int AssignedTaskCount { get; set; }
+    public int CompletedTaskCount { get; set; }
+    public int PendingTaskCount { get; set; }
     public required DateTime JoinedDate { get; set; }
 }
