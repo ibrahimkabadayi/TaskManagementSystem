@@ -326,8 +326,14 @@ public class TaskService : ITaskService
 
     public async Task<int> ChangeTaskDescription(int userId, int taskId, int projectId, string description)
     {
-        var projectUser = await _projectUserRepository.FindFirstAsync(x => x.UserId == userId && x.ProjectId == projectId);
         var task = await _taskRepository.GetTaskWithDetailsAsync(taskId);
+
+        if (task.Description == description)
+        {
+            return taskId;
+        }
+        
+        var projectUser = await _projectUserRepository.FindFirstAsync(x => x.UserId == userId && x.ProjectId == projectId);
 
         if (projectUser!.Role != ProjectRole.Leader && projectUser.Id != task.AssignedToId) return -1;
 
@@ -335,7 +341,7 @@ public class TaskService : ITaskService
 
         await _taskRepository.UpdateAsync(task);
         
-        if (task.AssignedToId != null && userId != task.AssignedToId)
+        if (task.AssignedToId != null && userId != task.AssignedTo!.UserId)
         {
             await _notificationService.CreateNotificationAsync(task.AssignedTo!.UserId, "Task Description Update",
                 "Your assigned task's description has been updated: " + task.Description, taskId, null, NotificationType.Info);
@@ -444,6 +450,8 @@ public class TaskService : ITaskService
     {
         var projectUser = await _projectUserRepository.FindFirstAsync(x => x.UserId == userId && x.ProjectId == projectId);
         var task = await _taskRepository.GetTaskWithDetailsAsync(taskId);
+        
+        if (task.Title == title) return taskId;
 
         if (projectUser!.Role != ProjectRole.Leader && projectUser.Id != task.AssignedToId) return -1;
 
