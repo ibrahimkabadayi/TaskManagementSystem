@@ -1,0 +1,100 @@
+﻿@using System.Security.Claims
+@{
+    ViewData["Title"] = "About Us";
+    Layout = "TaskFlowLayout";
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+}
+
+<link rel="stylesheet" href="~/css/AboutUsSheet.css" />
+
+<div class="about-page">
+    
+    <header class="about-hero">
+        <div class="about-container">
+            <h1>Streamline Your Workflow</h1>
+            <p class="lead">TaskFlow is a modern project management platform designed to help teams collaborate, track progress, and achieve their goals effortlessly.</p>
+        </div>
+    </header>
+
+    <div class="about-container">
+
+        <section class="about-section">
+            <div class="story-content">
+                <div class="story-text">
+                    <h3>Our Mission</h3>
+                    <p>
+                        In a world of complex workflows and tight deadlines, simplicity is power. 
+                        We built <strong>TaskFlow</strong> with a singular mission: to provide a clean, intuitive, and powerful space where ideas turn into actions.
+                    </p>
+                    <p>
+                        Inspired by the best Kanban methodologies, TaskFlow eliminates the noise and focuses on what matters most—getting things done efficiently and collaboratively.
+                    </p>
+                </div>
+                <div class="story-icon" style="font-size: 8rem; color: #dfe1e6;">
+                    <i class="fa-solid fa-rocket"></i>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-section">
+            <h2 class="section-title">Why TaskFlow?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-bolt"></i></div>
+                    <h3>Real-Time Collaboration</h3>
+                    <p>Powered by <strong>SignalR</strong>, updates happen instantly. See changes, comments, and moves as they happen, without refreshing the page.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-layer-group"></i></div>
+                    <h3>Clean Architecture</h3>
+                    <p>Built on a robust .NET Core foundation using <strong>Clean Architecture</strong>, ensuring scalability, maintainability, and high performance.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                    <h3>Secure & Reliable</h3>
+                    <p>Your data is safe with us. We prioritize security with industry-standard encryption and secure authentication practices.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-section tech-stack-section">
+            <h2 class="section-title">The Technology Behind</h2>
+            <p>TaskFlow is engineered with the latest technologies to deliver a seamless user experience.</p>
+            
+            <div class="tech-badges">
+                <span class="tech-badge"><i class="fa-brands fa-microsoft"></i> .NET 9 / Core</span>
+                <span class="tech-badge"><i class="fa-solid fa-database"></i> SQL Server</span>
+                
+                <span class="tech-badge" title="Core Domain Logic Focus">
+                    <i class="fa-solid fa-gears"></i> Onion Architecture
+                </span>
+                
+                <span class="tech-badge"><i class="fa-solid fa-wifi"></i> SignalR</span>
+                
+                <span class="tech-badge"><i class="fa-brands fa-js"></i> Vanilla JS (ES6+)</span>
+                
+                <span class="tech-badge">
+                    <i class="fa-brands fa-html5"></i> 
+                    <i class="fa-brands fa-css3-alt" style="margin-left: 8px;"></i> 
+                    HTML5 & CSS3
+                </span>
+            </div>
+        </section>
+
+        <div style="text-align: center; margin-bottom: 60px;">
+            <p style="font-size: 1.1rem; color: #5e6c84; margin-bottom: 20px;">Ready to organize your life?</p>
+            @if (userId is not null)
+            {
+                <a href="@Url.Action("TaskFlow", "Section", new { userId })" class="btn btn-primary" style="padding: 12px 30px; font-size: 1.1rem; text-decoration:none; color:white; background-color:#0079bf; border-radius:6px;">
+                    Go to Dashboard
+                </a>
+            }
+            else
+            {
+                <a href="@Url.Action("CreateAccount", "Home")" class="btn btn-primary" style="padding: 12px 30px; font-size: 1.1rem; text-decoration:none; color:white; background-color:#0079bf; border-radius:6px;">
+                    Get Started
+                </a>
+            }
+        </div>
+    </div>
+</div>
