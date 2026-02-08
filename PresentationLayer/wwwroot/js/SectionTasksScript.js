@@ -155,7 +155,6 @@ async function openTaskModal(taskId) {
 
         let completedBadge = document.getElementById('completedDateBadge');
 
-        // YENİ: Hedef container'ı seç
         const badgeContainer = document.getElementById('modalCompletedBadgeContainer');
 
         if (isDone) {
@@ -176,17 +175,14 @@ async function openTaskModal(taskId) {
                 completedBadge.id = 'completedDateBadge';
                 completedBadge.className = 'completed-badge';
 
-                // Style güncellemesi: margin-top'ı kaldırdık çünkü artık yan yana duracaklar
                 completedBadge.style.cssText = "color: #4bbf6b; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 6px;";
 
-                // YENİ: Container varsa oraya ekle, yoksa eskisini kullan (fallback)
                 if (badgeContainer) {
                     badgeContainer.appendChild(completedBadge);
                 } else {
                     stateSelect.parentElement.appendChild(completedBadge);
                 }
             } else {
-                // Eğer badge zaten varsa ama doğru yerde değilse oraya taşı
                 if (badgeContainer && completedBadge.parentElement !== badgeContainer) {
                     badgeContainer.appendChild(completedBadge);
                 }
@@ -285,12 +281,27 @@ function openUserSelectionMenu(event) {
     const content = document.createElement('div');
     content.className = 'list-menu-content';
 
-    Object.values(projectUsersData).forEach(user => {
+    const unassignItem = document.createElement('button');
+    unassignItem.className = 'list-menu-item';
+    unassignItem.style.display = 'flex';
+    unassignItem.style.alignItems = 'center';
+    unassignItem.style.gap = '10px';
+    unassignItem.style.borderBottom = '1px solid #dfe1e6';
+    unassignItem.innerHTML = `
+        <div class="user-avatar-sm" style="background-color:transparent; color:#5e6c84; width:24px; height:24px; font-size:14px;">
+            <i class="fa-solid fa-user-xmark"></i>
+        </div>
+        <span style="color: #5e6c84; font-style: italic;">Unassign</span>
+    `;
+    unassignItem.onclick = async function() {
+        await assignUserToTask("Unassigned");
+        menu.remove();
+    };
+    content.appendChild(unassignItem);
 
-        if (user.role === 'Viewer') {
-            return;
-        }
-        
+    Object.values(projectUsersData).forEach(user => {
+        if (user.role === 'Viewer') return;
+
         const item = document.createElement('button');
         item.className = 'list-menu-item';
         item.style.display = 'flex';
@@ -318,12 +329,16 @@ function openUserSelectionMenu(event) {
     menu.style.top = (rect.bottom + 5) + 'px';
     menu.style.left = rect.left + 'px';
 
-    document.addEventListener('click', function closeMenu(e) {
-        if (!menu.contains(e.target) && e.target !== event.currentTarget) {
+    function closeMenu(e) {
+        if (!menu.contains(e.target)) {
             menu.remove();
-            document.removeEventListener('click', closeMenu);
+            document.removeEventListener('click', closeMenu, { capture: true });
         }
-    });
+    }
+
+    setTimeout(() => {
+        document.addEventListener('click', closeMenu, { capture: true });
+    }, 50);
 }
 
 async function assignUserToTask(userEmail) {
@@ -333,14 +348,11 @@ async function assignUserToTask(userEmail) {
     const taskId = currentOpenedTaskId;
     const sectionTitle = document.querySelector('.section-title') || document.querySelector('.task-group-title');
     const projectId = sectionTitle ? sectionTitle.getAttribute('project-id') : 0;
-
     const userId = sectionTitle ? sectionTitle.getAttribute('current-user-id') : 0;
 
     await fetch('/Task/AssignUser', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             UserEmail: userEmail,
             TaskId: taskId,
@@ -374,7 +386,6 @@ async function assignUserToTask(userEmail) {
                     if (!cardIcon) {
                         cardIcon = document.createElement('div');
                         cardIcon.className = 'assigned-to-profile-icon';
-
                         const titleEl = taskCard.querySelector('.Task-Title');
                         if(titleEl) titleEl.after(cardIcon);
                         else taskCard.appendChild(cardIcon);
@@ -383,6 +394,29 @@ async function assignUserToTask(userEmail) {
                     cardIcon.innerText = selectedUserInitials;
                     cardIcon.style.backgroundColor = selectedUserData.color;
                     cardIcon.style.display = 'flex';
+                }
+            }
+            else {
+                const assignedAvatar = document.getElementById('modalAssignedToAvatar');
+                const assignedName = document.getElementById('modalAssignedToName');
+
+                if (assignedAvatar && assignedName) {
+                    assignedAvatar.innerText = '+';
+                    assignedAvatar.style.backgroundColor = 'transparent';
+                    assignedAvatar.style.color = '#5e6c84';
+                    assignedAvatar.classList.add('unassigned-icon');
+
+                    assignedName.innerText = 'Kişi Ata';
+                    assignedName.style.color = '#5e6c84';
+                    assignedName.style.fontStyle = 'italic';
+                }
+
+                const taskCard = document.getElementById(taskId);
+                if (taskCard) {
+                    const cardIcon = taskCard.querySelector('.assigned-to-profile-icon');
+                    if (cardIcon) {
+                        cardIcon.remove();
+                    }
                 }
             }
 
@@ -1365,17 +1399,11 @@ function sectionNameClick(userId){
     window.location.href = `/Section/TaskFlow?userId=${userId}`
 }
 
-/* =========================================
-   DAVET LİNKİ İŞLEMLERİ (GENERATE / REVOKE / COPY)
-   ========================================= */
-
-// 1. LİNK OLUŞTURMA
 async function generateInviteLink(projectId) {
     const inactiveState = document.getElementById('link-inactive-state');
     const activeState = document.getElementById('link-active-state');
     const input = document.getElementById('generated-invite-link');
 
-    // Yükleniyor efekti verebiliriz (Opsiyonel)
     inactiveState.style.opacity = '0.5';
 
     try {
@@ -1384,36 +1412,29 @@ async function generateInviteLink(projectId) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            // Controller [FromBody] int beklediği için direkt sayıyı gönderiyoruz
             body: JSON.stringify(projectId)
         });
 
         if (response.ok) {
             const data = await response.json();
-            // Backend'den { url: "..." } formatında döner
-            const joinUrl = data.url;
-
-            // UI Güncelleme
-            input.value = joinUrl;
+            input.value = data.url;
             inactiveState.style.display = 'none';
             activeState.style.display = 'block';
 
-            // Kullanıcıya oluşturulduğunu hissettir
             input.select();
         } else {
-            alert("Link oluşturulurken bir hata meydana geldi.");
+            alert("An error occurred while creating the link.");
         }
     } catch (error) {
-        console.error("Hata:", error);
-        alert("Sunucuya ulaşılamadı.");
+        console.error("Error:", error);
+        alert("Could not reach the server.");
     } finally {
         inactiveState.style.opacity = '1';
     }
 }
 
-// 2. LİNKİ SİLME (İPTAL ETME)
 async function revokeInviteLink(projectId) {
-    if (!confirm("Bu paylaşım linkini silmek istediğinize emin misiniz? Linke sahip kişiler artık projeye katılamayacak.")) {
+    if (!confirm("Are you sure you want to delete this share link? People with the link will no longer be able to join the project.")) {
         return;
     }
 
@@ -1427,38 +1448,32 @@ async function revokeInviteLink(projectId) {
         });
 
         if (response.ok) {
-            // UI Sıfırlama
             document.getElementById('link-active-state').style.display = 'none';
             document.getElementById('link-inactive-state').style.display = 'block';
             document.getElementById('generated-invite-link').value = '';
 
-            alert("Link başarıyla iptal edildi.");
+            alert("Link successfully revoked.");
         } else {
-            alert("Link silinemedi.");
+            alert("Could not delete link.");
         }
     } catch (error) {
-        console.error("Hata:", error);
+        console.error("Error:", error);
     }
 }
 
-// 3. LİNKİ KOPYALAMA
 function copyInviteLink() {
     const copyText = document.getElementById("generated-invite-link");
 
-    // Mobil uyumluluk için seçim
     copyText.select();
     copyText.setSelectionRange(0, 99999);
 
-    // Panoya kopyala
     navigator.clipboard.writeText(copyText.value).then(() => {
-        // Kullanıcıya küçük bir geri bildirim (Toast kullanıyorsan onu çağırabilirsin)
-        // Eğer showToastNotification fonksiyonun global ise:
         if (typeof showToastNotification === 'function') {
-            showToastNotification("Başarılı", "Link panoya kopyalandı! 📋");
+            showToastNotification("Success", "Link copied to clipboard! 📋");
         } else {
-            alert("Link kopyalandı! 📋");
+            alert("Link copied! 📋");
         }
     }).catch(err => {
-        console.error('Kopyalama hatası: ', err);
+        console.error('Copy error: ', err);
     });
 }

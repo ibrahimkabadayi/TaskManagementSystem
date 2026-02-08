@@ -332,8 +332,22 @@ public class TaskService : ITaskService
     public async Task<int> AssignUserToTask(int userId, int taskId, int projectId, string userEmail)
     {
         var projectUser = await _projectUserRepository.FindFirstAsync(x => x.UserId == userId && x.ProjectId == projectId);
-
         if (projectUser!.Role != ProjectRole.Leader) return -1;
+
+        if (userEmail == "Unassigned")
+        {
+            var taskToUnassign = await _taskRepository.GetTaskWithDetailsAsync(taskId);
+            
+            if (taskToUnassign.AssignedToId == null) return taskId;
+            
+            taskToUnassign.AssignedTo!.AssignedTaskCount -= 1;
+            taskToUnassign.AssignedTo.PendingTaskCount -= 1;
+            await _projectUserRepository.UpdateAsync(taskToUnassign.AssignedTo);
+            
+            taskToUnassign.AssignedToId = null;
+            await _taskRepository.UpdateAsync(taskToUnassign);
+            return taskId;
+        }
         
         var user =  await _userRepository.FindFirstAsync(x => x.Email == userEmail);
         
@@ -353,6 +367,8 @@ public class TaskService : ITaskService
         }
         
         var task = await _taskRepository.GetTaskWithDetailsAsync(taskId);
+        
+        if (task.AssignedToId == assignUser.Id) return taskId;
         
         var currentAssignedProjectUser = task.AssignedTo;
 
@@ -375,9 +391,10 @@ public class TaskService : ITaskService
         await _projectUserRepository.UpdateAsync(assignUser);
         
         await _taskRepository.UpdateAsync(task);
-
-        await _notificationService.CreateNotificationAsync(assignUser.UserId, "Task Assigment",
-            "You have been assigned to: " + task.Title, taskId, null, NotificationType.Info);
+        
+        if (task.AssignedTo!.UserId != userId)
+            await _notificationService.CreateNotificationAsync(assignUser.UserId, "Task Assigment",
+                "You have been assigned to: " + task.Title, taskId, null, NotificationType.Info);
         
         return taskId;
     }
