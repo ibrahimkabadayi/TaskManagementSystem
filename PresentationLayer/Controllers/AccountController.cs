@@ -11,11 +11,13 @@ public class AccountController : Controller
 {
     private readonly IUserService _userService;
     private readonly IAuthenticationService _authService;
+    private readonly IProjectService _projectService;
     
-    public AccountController(IUserService userService, IAuthenticationService authService)
+    public AccountController(IUserService userService, IAuthenticationService authService, IProjectService projectService)
     {
         _userService = userService;
         _authService = authService;
+        _projectService = projectService;
     }
     
     [HttpGet]
@@ -29,8 +31,17 @@ public class AccountController : Controller
         }
         
         var userDto = await _userService.GetUserWithProjectUsersAsync(int.Parse(userIdString));
-
         if (userDto == null) return NotFound();
+        
+        if (userDto.ProjectUsers != null)
+        {
+            foreach (var pUser in userDto.ProjectUsers)
+            {
+                var project = await _projectService.GetProjectWithSectionAsync(pUser.ProjectId);
+
+                pUser.ProjectName = project != null ? project.Name : "Unknown Project";
+            }
+        }
         
         ViewBag.ReturnController = "Section";
         ViewBag.ReturnAction = "TaskFlow";

@@ -10,33 +10,33 @@
 <link rel="stylesheet" href="~/css/CreateAccountPageStyleSheet.css"/>
 
 <div style="margin-bottom: 15px;">
-    <a href="/Home/Home" style="text-decoration: none; color: #5e6c84; font-size: 14px;">
-        <i class="fa-solid fa-arrow-left"></i> Ana sayfaya geri dön
+    <a href="@Url.Action("Home", "Home")" style="text-decoration: none; color: #5e6c84; font-size: 14px;">
+        <i class="fa-solid fa-arrow-left"></i> Return Back To Home Page
     </a>
 </div>
 
-<h3 class="account-title">Hesap Oluştur</h3>
+<h3 class="account-title">Create Account</h3>
 
 <div class="input-group">
-    <label for="name-Input" class="input-label">Ad Soyad</label>
+    <label for="name-Input" class="input-label">Name</label>
     <i class="fa-solid fa-user input-icon"></i>
-    <input type="text" id="name-Input" class="txt-input" value="@userName" placeholder="Adınız Soyadınız">
+    <input type="text" id="name-Input" class="txt-input" value="@userName" placeholder="Your Name">
 </div>
 
 <div class="input-group">
-    <label for="email-input" class="input-label">E-Posta Adresi</label>
+    <label for="email-input" class="input-label">E-Mail Address</label>
     <i class="fa-solid fa-envelope input-icon"></i>
-    <input type="email" id="email-input" class="txt-input" value="@email" placeholder="ornek@email.com">
+    <input type="email" id="email-input" class="txt-input" value="@email" placeholder="example@email.com">
 </div>
 
 <div class="privacy-section">
     <i class="fa-solid fa-circle-info info-icon"></i>
     <div class="privacy-text">
-        Devam ederek, TaskFlow'un <span class="privacy-link">Hizmet Şartları</span>'nı ve 
-        <span class="privacy-link">Gizlilik Politikası</span>'nı kabul etmiş olursunuz.
+        By proceeding, you agree to TaskFlow's <span class="privacy-link">Terms of Service</span> and 
+        <span class="privacy-link">Privacy Policy</span>.
     </div>
 </div>
 
-<button class="btn-primary" onclick="nextButtonClick()">Devam Et</button>
+<button class="btn-primary" onclick="nextButtonClick()">Continue</button>
 
 <script src="~/js/CreateAccountPageScript.js"></script>

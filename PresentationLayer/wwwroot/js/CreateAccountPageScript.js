@@ -6,14 +6,14 @@ async function nextButtonClick() {
     const email = emailInput.value.trim();
 
     if (name.length < 3) {
-        alert("Lütfen geçerli bir ad soyad giriniz (En az 3 karakter).");
+        alert("Please enter a valid full name (at least 3 characters).");
         nameInput.focus();
         return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-        alert("Lütfen geçerli bir e-posta adresi giriniz.");
+        alert("Please enter a valid email address.");
         emailInput.focus();
         return;
     }
@@ -51,7 +51,7 @@ async function nextButtonClick() {
                 });
                 window.location.href = `/Home/EmailCodeVerification?${params.toString()}`;
             } else {
-                alert("Kod gönderilemedi: " + emailData.message);
+                alert("Could not send code: " + emailData.message);
                 btn.disabled = false;
                 btn.innerText = originalText;
             }
@@ -63,8 +63,8 @@ async function nextButtonClick() {
         }
 
     } catch (error) {
-        console.error("Hata:", error);
-        alert("Bir hata oluştu. Lütfen tekrar deneyin.");
+        console.error("Error:", error);
+        alert("An error occurred. Please try again.");
         btn.disabled = false;
         btn.innerText = originalText;
     }

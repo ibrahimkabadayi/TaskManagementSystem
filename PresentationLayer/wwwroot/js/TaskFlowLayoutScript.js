@@ -22,7 +22,7 @@ const connection = new signalR.HubConnectionBuilder()
     .build();
 
 connection.on("ReceiveNotification", function (title, message) {
-    console.log("🔔 Canlı Bildirim:", title, "-", message);
+    console.log("🔔 Live Notification:", title, "-", message);
 
     showToastNotification(title, message);
 
@@ -32,9 +32,7 @@ connection.on("ReceiveNotification", function (title, message) {
 async function startSignalR() {
     try {
         await connection.start();
-        console.log("✅ SignalR Bağlandı");
     } catch (err) {
-        console.error("❌ SignalR Hatası:", err);
         setTimeout(startSignalR, 5000);
     }
 }
@@ -63,7 +61,7 @@ function showToastNotification(title, message) {
     setTimeout(() => {
         if(toastElement) {
             toastElement.style.opacity = '0';
-            setTimeout(() => toastElement.remove(), 500); // Fade out efekti
+            setTimeout(() => toastElement.remove(), 500);
         }
     }, 5000);
 }
@@ -99,19 +97,17 @@ document.addEventListener('click', function(event) {
     }
 });
 
-// Menüyü Aç/Kapa
 function toggleNotificationMenu() {
     const menu = document.getElementById('notification-dropdown');
 
     if (menu.style.display === 'none') {
         menu.style.display = 'block';
-        loadNotifications(); // Menü açılınca verileri çek
+        loadNotifications();
     } else {
         menu.style.display = 'none';
     }
 }
 
-// Verileri Sunucudan Çek
 async function loadNotifications() {
     const listElement = document.getElementById('notification-list');
 
@@ -119,7 +115,6 @@ async function loadNotifications() {
         const response = await fetch('/Notification/GetUnreadNotifications');
 
         if (!response.ok) {
-            console.error("Bildirimler alınamadı.");
             return;
         }
 
@@ -127,20 +122,16 @@ async function loadNotifications() {
         renderNotifications(notifications);
 
     } catch (error) {
-        console.error("Hata:", error);
         listElement.innerHTML = '<li style="padding:10px; text-align:center;">Hata oluştu.</li>';
     }
 }
 
-// HTML Olarak Listele (GÜNCELLENMİŞ VERSİYON)
-// HTML Olarak Listele (GÜNCELLENMİŞ VERSİYON 2.0 - DAVET BUTONLU)
 function renderNotifications(data) {
     const listElement = document.getElementById('notification-list');
     const badgeElement = document.getElementById('notification-badge');
 
-    listElement.innerHTML = ''; // Listeyi temizle
+    listElement.innerHTML = ''; 
 
-    // Rozeti güncelle
     if (data.length > 0) {
         badgeElement.innerText = data.length;
         badgeElement.style.display = 'inline-block';
@@ -149,14 +140,12 @@ function renderNotifications(data) {
         listElement.innerHTML = `
             <li class="notification-empty">
                 <i class="fa-regular fa-bell-slash"></i>
-                <div>Hiç yeni bildirim yok.</div>
+                <div>There are no new notifications.</div>
             </li>`;
         return;
     }
 
-    // Her bir bildirimi listeye ekle
     data.forEach(item => {
-        // Tarihi formatla
         const dateObj = new Date(item.createdDate);
         const timeStr = dateObj.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
         const dateStr = dateObj.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
@@ -165,19 +154,10 @@ function renderNotifications(data) {
         const li = document.createElement('li');
         li.className = 'notification-item';
 
-        // --- KRİTİK DEĞİŞİKLİK BURADA ---
-
-        // NotificationType.Invitation olduğunu varsayıyoruz (Enum değerin neyse onu yaz: örn 2 veya 3)
-        // Backend'de Invitation = 2 ise buraya 2 yaz.
         const isInvitation = item.type === 4;
 
         if (isInvitation) {
-            // --- YENİ MODERN TASARIM ---
-            li.className = 'notification-item invite-type'; // Özel CSS sınıfı ekledik
-
-            // Proje isminin baş harfini almak için basit bir mantık
-            // Not: item.title veya message içinden proje ismini çekmek gerekebilir. 
-            // Şimdilik ikon olarak 'P' veya davet ikonunu kullanıyoruz.
+            li.className = 'notification-item invite-type';
 
             li.innerHTML = `
         <div class="invite-card">
@@ -208,7 +188,6 @@ function renderNotifications(data) {
     `;
         }
         else {
-            // ... Diğer standart bildirim kodları aynen kalacak ...
             li.onclick = () => markAsRead(item.id, item.relatedTaskId);
             li.innerHTML = `
         <div class="notification-unread-indicator"></div>
@@ -242,19 +221,19 @@ async function respondInvite(invitationId, isAccepted, btnElement) {
 
             loadNotifications();
 
-            alert(isAccepted ? "Projeye katıldınız! 🎉" : "Davet reddedildi.");
+            alert(isAccepted ? "You joined the project! 🎉" : "Invitation declined.");
 
             if(isAccepted) {
                 location.reload();
             }
         } else {
-            alert("Bir hata oluştu.");
+            alert("An error occurred.");
             parentDiv.style.opacity = "1";
             parentDiv.style.pointerEvents = "auto";
         }
     } catch (err) {
         console.error(err);
-        alert("Bağlantı hatası.");
+        alert("Connection error.");
     }
 }
 async function markAsRead(notifId, relatedTaskId) {
@@ -274,7 +253,7 @@ document.addEventListener('click', function(event) {
 async function sendInvitation(projectId) {
     const input = document.getElementById('share-email-input');
     const emailOrUsername = input.value;
-    
+
     let role = "Developer";
 
     const roleElement = document.querySelector('.invite-role-select');
@@ -283,11 +262,11 @@ async function sendInvitation(projectId) {
         role = roleElement.value;
     }
 
-    if (!emailOrUsername) return alert("Lütfen bir e-posta veya kullanıcı adı girin.");
+    if (!emailOrUsername) return alert("Please enter an email or username.");
 
-    const btn = document.querySelector('.btn-share-invite'); // Butonu bul
+    const btn = document.querySelector('.btn-share-invite');
     btn.disabled = true;
-    btn.innerText = "Gönderiliyor...";
+    btn.innerText = "Sending...";
 
     try {
         const response = await fetch('/Project/InviteUser', {
@@ -299,14 +278,14 @@ async function sendInvitation(projectId) {
         const result = await response.json();
 
         if (response.ok) {
-            alert("Davet başarıyla gönderildi! 🚀");
+            alert("Invitation sent successfully! 🚀");
             input.value = "";
         } else {
-            alert("Hata: " + result.message);
+            alert("Error: " + result.message);
         }
     } catch (err) {
         console.error(err);
-        alert("Bir hata oluştu.");
+        alert("An error occurred.");
     } finally {
         btn.disabled = false;
         btn.innerText = "Share";

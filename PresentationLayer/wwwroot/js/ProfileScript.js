@@ -56,19 +56,18 @@ async function changePassword() {
     const newPassword = document.getElementById('newPassword').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
 
-    // Basit Validasyonlar
     if (!currentPassword || !newPassword || !confirmPassword) {
-        alert("Lütfen tüm şifre alanlarını doldurun.");
+        alert("Please fill in all password fields.");
         return;
     }
 
     if (newPassword !== confirmPassword) {
-        alert("Yeni şifreler birbiriyle uyuşmuyor!");
+        alert("New passwords do not match!");
         return;
     }
 
     if (newPassword.length < 6) {
-        alert("Yeni şifreniz en az 6 karakter olmalıdır.");
+        alert("Your new password must be at least 6 characters long.");
         return;
     }
 
@@ -88,16 +87,16 @@ async function changePassword() {
         const result = await response.json();
 
         if (response.ok) {
-            alert("Başarılı! " + result.message);
+            alert("Success! " + result.message);
             document.getElementById('currentPassword').value = '';
             document.getElementById('newPassword').value = '';
             document.getElementById('confirmPassword').value = '';
         } else {
-            alert("Hata: " + (result.message || "Şifre değiştirilemedi."));
+            alert("Error: " + (result.message || "Could not change password."));
         }
 
     } catch (error) {
-        console.error("Hata:", error);
-        alert("Sunucu ile bağlantı kurulamadı.");
+        console.error("Error:", error);
+        alert("Could not connect to the server.");
     }
 }

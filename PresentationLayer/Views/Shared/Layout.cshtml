@@ -8,7 +8,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giriş Yap - TaskFlow</title>
+    <title>Sign In - TaskFlow</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="~/css/LayoutStyleSheet.css"/>
@@ -17,7 +17,7 @@
 
 <div class="container">
     <h2><i class="fa-solid fa-list-check"></i> TaskFlow</h2>
-    <p class="sub-header">Proje yönetiminizi kolaylaştırın</p>
+    <p class="sub-header">Simplify Project Management</p>
         
     <main>
         @RenderBody()
@@ -26,8 +26,8 @@
     
 <footer>
     <ul class="footer-links">
-        <li><a href="#">About Us</a></li>
-        <li><a href="#">Privacy</a></li>
+        <li><a href="@Url.Action("AboutUs", "Home")">About Us</a></li>
+        <li><a href="@Url.Action("Privacy", "Home")">Privacy</a></li>
     </ul>
     <p>&copy; @DateTime.Now.Year TaskFlow. All rights reserved.</p>
 </footer>

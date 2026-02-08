@@ -337,10 +337,10 @@
             <div class="link-details">
                 <div id="link-inactive-state" style="display: block;">
                     <div class="link-text">
-                        <strong>Paylaşım bağlantısı oluştur</strong>
+                        <strong>Create share link</strong>
                     </div>
                     <div class="link-actions">
-                        <span class="link-action-btn" onclick="generateInviteLink(@project.Id)">Link oluştur</span>
+                        <span class="link-action-btn" onclick="generateInviteLink(@project.Id)">Create link</span>
                     </div>
                 </div>
 
@@ -349,11 +349,11 @@
                         <input type="text" id="generated-invite-link" class="invite-link-input" readonly value="">
                     </div>
                     <div class="link-actions">
-                        <span class="link-action-btn" onclick="copyInviteLink()">Kopyala</span> •
-                        <span class="link-action-btn item-danger" onclick="revokeInviteLink(@project.Id)">Linki Sil</span>
+                        <span class="link-action-btn" onclick="copyInviteLink()">Copy</span> •
+                        <span class="link-action-btn item-danger" onclick="revokeInviteLink(@project.Id)">Delete link</span>
                     </div>
                     <div style="font-size: 11px; color: #6b778c; margin-top: 4px;">
-                        Linke sahip herkes üye olarak katılabilir.
+                        Anyone with the link can join as a member.
                     </div>
                 </div>
             </div>

@@ -1,5 +1,4 @@
-﻿/* General Settings */
-* {
+﻿* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -7,18 +6,14 @@
 }
 
 body {
-    background-color: #f4f5f7; /* Trello-style light gray background */
-    color: #172b4d; /* Readable dark navy text color */
+    background-color: #f4f5f7;
+    color: #172b4d;
 }
 
-/* Navbar Design */
-/* =========================================
-   NAVBAR (ÜST MENÜ) - SectionTasks ile Eşitlendi
-   ========================================= */
 .top-bar {
     height: 48px;
-    background-color: #0079bf; /* Şeffaf Koyu Arka Plan */
-    backdrop-filter: blur(4px); /* Buzlu cam efekti */
+    background-color: #0079bf;
+    backdrop-filter: blur(4px);
     border-bottom: 1px solid rgba(255,255,255,0.1);
     display: flex;
     align-items: center;
@@ -28,36 +23,33 @@ body {
     position: sticky;
     top: 0;
     z-index: 100;
-    color: white; /* Tüm yazı rengi beyaz */
+    color: white;
 }
 
-/* Logo Tasarımı */
 .logo-link {
-    text-decoration: none; /* Alt çizgiyi kaldır */
-    color: inherit;        /* Rengi kapsayıcıdan al */
-    display: flex;         /* Hizalamayı koru */
+    text-decoration: none;
+    color: inherit;
+    display: flex;
     align-items: center;
     transition: opacity 0.2s;
 }
 
 .logo-link:hover {
-    opacity: 0.8;          /* Tıklanabilir hissi ver */
+    opacity: 0.8;
 }
 
 .logo span {
     font-weight: bold;
     font-size: 18px;
-    color: white;          /* Rengi zorla beyaz yap */
+    color: white;
 }
 
-/* Sağ Taraf (Bildirim ve Profil) */
 .bar-account-section {
     display: flex;
     align-items: center;
     gap: 15px;
 }
 
-/* Bildirim İkonu */
 .notification-icon {
     cursor: pointer;
     color: white;
@@ -67,12 +59,11 @@ body {
 }
 .notification-icon:hover { opacity: 1; }
 
-/* Profil Yuvarlağı */
 .account {
-    background-color: #0079bf; /* TaskFlow Mavisi */
+    background-color: #0079bf;
     color: white;
     border-radius: 50%;
-    width: 30px; /* 32px'den 30px'e düşürüldü */
+    width: 30px;
     height: 30px;
     display: flex;
     align-items: center;
@@ -84,26 +75,23 @@ body {
 .account:hover {
     background-color: #026aa7;
 }
-/* Main Content Container */
 .main-container {
-    max-width: 1000px; /* Max-width to center content */
+    max-width: 1000px;
     margin: 0 auto;
     padding: 40px 20px;
 }
-/* Hesap Menüsü Özel Stili */
 .account-menu-style {
-    width: 300px; /* Genişliği sabitledik */
-    display: none; /* Başlangıçta gizli */
+    width: 300px;
+    display: none;
     position: absolute;
     background: white;
     border-radius: 8px;
     box-shadow: 0 8px 16px rgba(0,0,0,0.15);
     border: 1px solid #dfe1e6;
-    z-index: 10002; /* Diğer menülerin üstünde */
+    z-index: 10002;
     overflow: hidden;
 }
 
-/* Diğer tasarımsal detaylar */
 .account-header {
     background-color: #f4f5f7;
     padding: 15px;
@@ -115,13 +103,9 @@ body {
 .logout-item { color: #b04632; }
 .logout-item:hover { background-color: #ffebe6; }
 
-/* Göstermek için kullanılan sınıf */
 .popup-menu.show {
     display: block;
 }
-/* --- BİLDİRİM KUTUSU TASARIMI --- */
-
-/* 1. Ana Kapsayıcı ve Zil İkonu */
 .notification-container {
     position: relative;
     display: inline-block;
@@ -133,39 +117,36 @@ body {
     position: relative;
     transition: color 0.3s;
 }
-.notification-icon:hover { color: #007bff; /* Hover rengi (Opsiyonel) */ }
+.notification-icon:hover { color: #007bff; }
 
-/* Kırmızı Rozet (Badge) */
 .notification-badge {
     position: absolute;
     top: -5px;
     right: -8px;
-    background: #dc3545; /* Bootstrap danger rengi */
+    background: #dc3545;
     color: white;
     border-radius: 50%;
     padding: 2px 6px;
     font-size: 10px;
     font-weight: bold;
-    border: 2px solid #fff; /* Zilden ayırmak için beyaz kenarlık */
+    border: 2px solid #fff;
 }
 
-/* 2. Açılır Menü (Dropdown) */
 .notification-dropdown-menu {
-    display: none; /* Başlangıçta gizli */
+    display: none;
     position: absolute;
-    right: -10px; /* Sağa yasla ama biraz taşır */
+    right: -10px;
     top: 40px;
     background: white;
-    width: 350px; /* Biraz daha genişletelim */
+    width: 350px;
     max-height: 450px;
-    border-radius: 12px; /* Daha yuvarlak köşeler */
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15); /* Modern, yumuşak gölge */
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     z-index: 1050;
-    overflow: hidden; /* Köşelerin düzgün durması için */
+    overflow: hidden;
     border: 1px solid rgba(0,0,0,0.08);
 }
 
-/* Zile işaret eden yukarı ok (Üçgen) */
 .notification-dropdown-menu::before {
     content: '';
     position: absolute;
@@ -179,7 +160,6 @@ body {
     filter: drop-shadow(0 -2px 2px rgba(0,0,0,0.05));
 }
 
-/* Header Kısmı */
 .notification-header {
     padding: 15px;
     border-bottom: 1px solid #f0f0f0;
@@ -189,7 +169,6 @@ body {
     background-color: #fff;
 }
 
-/* Liste Kapsayıcısı ve Scrollbar */
 #notification-list {
     list-style: none;
     padding: 0;
@@ -198,14 +177,12 @@ body {
     max-height: 380px;
 }
 
-/* İnce Scrollbar Tasarımı (Webkit tarayıcılar için) */
 #notification-list::-webkit-scrollbar { width: 6px; }
 #notification-list::-webkit-scrollbar-track { background: #f1f1f1; }
 #notification-list::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
 #notification-list::-webkit-scrollbar-thumb:hover { background: #aaa; }
 
 
-/* 3. Tekil Bildirim Öğesi (Item) */
 .notification-item {
     padding: 15px;
     border-bottom: 1px solid #f5f5f5;
@@ -217,23 +194,20 @@ body {
     background-color: #fff;
 }
 
-/* Hover Efekti */
 .notification-item:hover {
-    background-color: #f8f9fa; /* Çok hafif gri */
+    background-color: #f8f9fa;
 }
 
-/* Okunmamış İndikatörü (Mavi Nokta) */
 .notification-unread-indicator {
     width: 10px;
     height: 10px;
     background-color: #007bff;
     border-radius: 50%;
     margin-right: 12px;
-    margin-top: 6px; /* Başlıkla hizalamak için */
-    flex-shrink: 0; /* Daralmasını engelle */
+    margin-top: 6px;
+    flex-shrink: 0;
 }
 
-/* İçerik Düzeni */
 .notification-content {
     flex-grow: 1;
 }
@@ -261,7 +235,6 @@ body {
 }
 .notification-time i { margin-right: 4px; font-size: 10px; }
 
-/* Boş Durum Mesajı */
 .notification-empty {
     padding: 30px;
     text-align: center;
@@ -272,7 +245,6 @@ body {
     align-items: center;
 }
 .notification-empty i { font-size: 2rem; margin-bottom: 10px; color: #ddd; }
-/* --- TOAST NOTIFICATION (SAĞ ALT) --- */
 .toast-notification {
     position: fixed;
     bottom: 20px;
@@ -286,7 +258,7 @@ body {
     gap: 15px;
     z-index: 9999;
     min-width: 300px;
-    border-left: 5px solid #007bff; /* Mavi şerit */
+    border-left: 5px solid #007bff;
     animation: slideIn 0.5s ease-out;
     transition: opacity 0.5s ease;
 }
@@ -325,7 +297,6 @@ body {
     color: #999;
 }
 .toast-close:hover { color: #333; }
-/* Davet Butonları İçin Özel Stil */
 .btn-action {
     border-radius: 6px;
     font-weight: 600;
@@ -335,12 +306,11 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px; /* İkon ile yazı arası boşluk */
+    gap: 6px;
 }
 
-/* Kabul Butonu: Hafif gölgeli ve canlı */
 .btn-accept {
-    background-color: #0d6efd; /* Veya senin tema rengin */
+    background-color: #0d6efd;
     color: white;
     border: none;
     box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
@@ -351,7 +321,6 @@ body {
     box-shadow: 0 4px 6px rgba(13, 110, 253, 0.3);
 }
 
-/* Red Butonu: Daha silik, çerçeveli (Ghost Button) */
 .btn-decline {
     background-color: transparent;
     border: 1px solid #dee2e6;
@@ -362,16 +331,12 @@ body {
     border-color: #dc3545;
     color: #dc3545;
 }
-/* --- MODERN DAVET KARTI TASARIMI --- */
-
-/* Davet Bildiriminin Kendisi */
 .notification-item.invite-type {
-    background-color: #f8fbff; /* Çok hafif mavi tonu, diğerlerinden ayrışsın */
-    border-left: 4px solid #0079bf; /* Sol tarafa TaskFlow mavisi çizgi */
+    background-color: #f8fbff;
+    border-left: 4px solid #0079bf;
     padding: 12px 16px;
 }
 
-/* Davet İçerik Kutusu */
 .invite-card {
     display: flex;
     flex-direction: column;
@@ -379,14 +344,12 @@ body {
     width: 100%;
 }
 
-/* Üst Kısım: Avatar ve Başlık */
 .invite-header {
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
-/* Proje Baş harfi için Yuvarlak İkon */
 .invite-project-avatar {
     width: 36px;
     height: 36px;
@@ -402,7 +365,6 @@ body {
     box-shadow: 0 2px 4px rgba(0, 82, 204, 0.2);
 }
 
-/* Metin Alanı */
 .invite-text-group {
     display: flex;
     flex-direction: column;
@@ -421,16 +383,14 @@ body {
     margin-top: 2px;
 }
 
-/* Buton Grubu */
 .invite-actions {
     display: flex;
     gap: 10px;
     margin-top: 4px;
 }
 
-/* Özel Butonlar */
 .btn-invite-action {
-    flex: 1; /* Butonlar eşit genişlikte yayılsın */
+    flex: 1;
     padding: 6px 0;
     border-radius: 6px;
     font-size: 12px;
@@ -444,7 +404,6 @@ body {
     gap: 6px;
 }
 
-/* Kabul Et Butonu (Yeşilimsi/Mavi) */
 .btn-invite-accept {
     background-color: #0079bf;
     color: white;

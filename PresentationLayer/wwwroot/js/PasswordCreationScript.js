@@ -20,25 +20,25 @@ async function ConfirmPassword(name, email) {
     const passwordAgain = passwordAgainInput.value;
 
     if (!password) {
-        alert("Lütfen bir şifre belirleyin.");
+        alert("Please set a password.");
         passwordInput.focus();
         return;
     }
 
     if (password.length < 6) {
-        alert("Şifreniz en az 6 karakter olmalıdır.");
+        alert("Your password must be at least 6 characters long.");
         passwordInput.focus();
         return;
     }
 
     if (password !== passwordAgain) {
-        alert("Şifreler uyuşmuyor, lütfen kontrol edin.");
+        alert("Passwords do not match, please check again.");
         passwordAgainInput.focus();
         return;
     }
 
     const btn = document.querySelector('.btn-finish');
-    btn.innerText = "Hesap Oluşturuluyor...";
+    btn.innerText = "Creating Account...";
     btn.disabled = true;
 
     try {
@@ -57,10 +57,10 @@ async function ConfirmPassword(name, email) {
         const data = await response.json();
 
         if (data.success) {
-            alert("Hesabınız başarıyla oluşturuldu! Giriş yapabilirsiniz.");
-            window.location.href = '/Home/SignIn'; // Direkt Home yerine SignIn'e atmak daha güvenlidir
+            alert("Account created successfully! You can now log in.");
+            window.location.href = '/Home/SignIn';
         } else {
-            alert("Kayıt Başarısız: " + (data.message || "Bilinmeyen hata"));
+            alert("Registration Failed: " + (data.message || "Unknown error"));
 
             if (data.errorCode === -9999) {
                 const params = new URLSearchParams({
@@ -72,14 +72,14 @@ async function ConfirmPassword(name, email) {
                 window.location.href = `/Home/Error?${params.toString()}`;
             } else {
                 btn.disabled = false;
-                btn.innerText = "Kaydı Tamamla";
+                btn.innerText = "Complete Registration";
             }
         }
     } catch (e) {
         console.error(e);
-        alert("Sunucu hatası oluştu.");
+        alert("A server error occurred.");
         btn.disabled = false;
-        btn.innerText = "Kaydı Tamamla";
+        btn.innerText = "Complete Registration";
     }
 }
 
@@ -88,7 +88,5 @@ function BackButtonClick(name, email) {
         UserName: name,
         Email: email
     });
-    // Önceki adım olan Kod Doğrulama yerine E-posta girmeye mi yoksa Kod'a mı döneceği size kalmış
-    // Genelde "Geri" butonu bir önceki sayfaya (CodeVerification) döner.
     window.location.href = `/User/EmailCodeVerification?${params.toString()}`;
 }
