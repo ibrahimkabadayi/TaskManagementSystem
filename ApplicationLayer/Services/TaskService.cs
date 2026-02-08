@@ -203,7 +203,7 @@ public class TaskService : ITaskService
         
         var task = await _taskRepository.GetTaskWithDetailsAsync(taskId);
 
-        if (task.AssignedToId != null)
+        if (task.AssignedToId != null && task.AssignedToId != task.FinishedById)
         {
             if(task.AssignedTo == null)
                 return "Task not deleted";
@@ -223,7 +223,7 @@ public class TaskService : ITaskService
                 );
         }
 
-        if (task.FinishedBy != null)
+        if (task.FinishedBy != null && task.AssignedToId != task.FinishedById)
         {
             task.FinishedBy.AssignedTaskCount -= 1;
             
@@ -236,6 +236,28 @@ public class TaskService : ITaskService
                     $"Your task {task.Title} has been deleted by: " + user.Name, taskId, null, NotificationType.Info
                 );
         }
+
+        if (task.AssignedToId == task.FinishedById && task is { AssignedToId: not null, FinishedById: not null })
+        {
+            task.FinishedBy!.AssignedTaskCount -= 1;
+            
+            task.FinishedBy.CompletedTaskCount -= 1;
+            
+            await _projectUserRepository.UpdateAsync(task.FinishedBy);
+
+            if (task.FinishedBy.UserId != userId)
+                await _notificationService.CreateNotificationAsync(task.FinishedBy.UserId, "Task Deletion",
+                    $"Your task {task.Title} has been deleted by: " + user.Name, taskId, null, NotificationType.Info
+                );
+        }
+        
+        if (task.AssignedToId != null) task.AssignedToId = null;
+        if (task.FinishedBy != null) task.FinishedBy = null;
+        
+        if (task.CreatedBy.UserId != userId)
+            await _notificationService.CreateNotificationAsync(task.CreatedBy.UserId, "Task Deletion",
+            $"Your task {task.Title} has been deleted by: " + user.Name, taskId, null, NotificationType.Info
+            );
         
         await _taskRepository.DeleteAsync(taskId);
         
@@ -270,6 +292,25 @@ public class TaskService : ITaskService
 
             finishedByUser.CompletedTaskCount += 1;
             await _projectUserRepository.UpdateAsync(finishedByUser);
+        }
+        else
+        {
+            var finishedByUser = task.FinishedBy;
+            
+            if (finishedByUser != null)
+            {
+                finishedByUser.CompletedTaskCount -= 1;
+                finishedByUser.AssignedTaskCount -= 1;
+                await _projectUserRepository.UpdateAsync(finishedByUser);
+            }
+            
+            var assignedToUser = task.AssignedTo;
+            
+            if (assignedToUser != null)
+            {
+                assignedToUser.PendingTaskCount += 1;
+                await _projectUserRepository.UpdateAsync(assignedToUser);
+            }
         }
         
         await _taskRepository.UpdateAsync(task);
