@@ -1,7 +1,4 @@
-﻿/* --- SignInStyleSheet.css --- */
-
-/* Giriş Başlığı */
-.signin-title {
+﻿.signin-title {
     font-size: 20px;
     font-weight: 600;
     color: #172b4d;
@@ -9,7 +6,6 @@
     text-align: center;
 }
 
-/* Form Grupları */
 .input-group {
     margin-bottom: 20px;
     position: relative;
@@ -23,11 +19,9 @@
     margin-bottom: 6px;
 }
 
-/* Input Alanı */
 .txt-input {
     width: 100%;
-    padding: 12px 15px;
-    padding-left: 40px; /* İkon için boşluk */
+    padding: 12px 15px 12px 40px;
     border: 2px solid #dfe1e6;
     border-radius: 6px;
     font-size: 14px;
@@ -42,16 +36,14 @@
     box-shadow: 0 0 0 3px rgba(0, 121, 191, 0.2);
 }
 
-/* Input İkonları */
 .input-icon {
     position: absolute;
-    top: 38px; /* Label yüksekliğine göre ayar */
+    top: 38px;
     left: 12px;
     color: #5e6c84;
     font-size: 14px;
 }
 
-/* Linkler ve Yardımcı Metinler */
 .form-footer {
     display: flex;
     justify-content: space-between;
@@ -67,10 +59,9 @@
 }
 .forgot-password:hover { text-decoration: underline; }
 
-/* Butonlar */
 .btn-primary {
     width: 100%;
-    background-color: #0079bf; /* TaskFlow Mavisi */
+    background-color: #0079bf;
     color: white;
     border: none;
     padding: 12px;

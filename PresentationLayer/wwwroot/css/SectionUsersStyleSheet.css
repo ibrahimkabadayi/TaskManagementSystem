@@ -68,7 +68,6 @@
     background-color: #f9fafb;
 }
 
-/* Avatar Tasarımı */
 .member-avatar {
     width: 48px;
     height: 48px;
@@ -96,7 +95,6 @@
 .status-active { background-color: #4bbf6b; }
 .status-inactive { background-color: #dfe1e6; }
 
-/* Kişi Bilgileri */
 .member-info {
     flex-grow: 1;
 }

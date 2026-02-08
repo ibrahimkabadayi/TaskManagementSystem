@@ -1135,7 +1135,7 @@ PAYLAŞIM MODALI CSS
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 8px 0;
+    padding: 8px 15px;
     border-bottom: 1px solid #f4f5f7;
 }
 
@@ -1146,6 +1146,26 @@ PAYLAŞIM MODALI CSS
     font-size: 12px;
     display: flex; align-items: center; justify-content: center;
     font-weight: bold;
+}
+
+/* Üye Listesi için Özel Scrollbar */
+.members-list::-webkit-scrollbar {
+    width: 6px; /* Daha ince bir çubuk */
+}
+
+.members-list::-webkit-scrollbar-track {
+    background: transparent; /* Arkaplan şeffaf olsun */
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.members-list::-webkit-scrollbar-thumb {
+    background-color: #dfe1e6; /* Açık gri, göze batmayan renk */
+    border-radius: 3px; /* Yuvarlak hatlar */
+}
+
+.members-list::-webkit-scrollbar-thumb:hover {
+    background-color: #c1c7d0; /* Üzerine gelince biraz koyulaşsın */
 }
 
 .member-info { flex: 1; }

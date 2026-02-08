@@ -1,8 +1,7 @@
-﻿/* --- TEMEL DEĞİŞKENLER VE AYARLAR --- */
-:root {
-    --primary: #2563eb;       /* Modern Mavi */
+﻿:root {
+    --primary: #2563eb;
     --primary-dark: #1e40af;
-    --bg-body: #f8fafc;       /* Çok açık gri/mavi zemin */
+    --bg-body: #f8fafc;
     --surface: #ffffff;
     --text-main: #0f172a;
     --text-muted: #64748b;
@@ -29,7 +28,6 @@ body {
     padding: 40px 24px;
 }
 
-/* --- SECTION HEADERS & BUTTONS --- */
 .section-header-container {
     display: flex;
     justify-content: space-between;
@@ -50,7 +48,6 @@ body {
 
 .section-header i { margin-right: 8px; }
 
-/* Yeni Proje Butonu */
 .btn-create-new-project {
     background-color: var(--primary);
     color: white;
@@ -65,7 +62,6 @@ body {
 }
 .btn-create-new-project:hover { background-color: var(--primary-dark); transform: translateY(-1px); }
 
-/* --- GRID VE KARTLAR --- */
 .boards-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -89,7 +85,6 @@ body {
 .board-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--primary); }
 .board-title-text { font-weight: 600; color: var(--text-main); z-index: 2; }
 
-/* Resimli Kartlar */
 .board-card.has-bg { border: none; }
 .board-card.has-bg .board-title-text { color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.6); }
 .board-card.has-bg::after {
@@ -98,7 +93,6 @@ body {
     z-index: 1;
 }
 
-/* Yeni Board Ekle Kartı */
 .board-card.new-board {
     background-color: transparent;
     border: 2px dashed var(--border);
@@ -107,7 +101,6 @@ body {
 }
 .board-card.new-board:hover { border-color: var(--primary); color: var(--primary); background-color: #eff6ff; }
 
-/* --- WORKSPACE ALANI --- */
 .workspace-item {
     background: var(--surface);
     border-radius: 16px;
@@ -140,9 +133,8 @@ body {
 }
 .ws-actions button:hover { background: #f1f5f9; color: var(--text-main); }
 
-/* --- MODAL ANA YAPISI --- */
 .modal-overlay {
-    display: none; /* Varsayılan olarak GİZLİ */
+    display: none;
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(15, 23, 42, 0.6);
@@ -175,7 +167,6 @@ body {
     display: flex; justify-content: flex-end; gap: 12px;
 }
 
-/* Form Elemanları */
 .form-group { margin-bottom: 16px; }
 .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-main); margin-bottom: 6px; }
 .form-input, .form-select, .form-textarea {
@@ -185,27 +176,20 @@ body {
     transition: border-color 0.2s; box-sizing: border-box;
 }
 .form-input:focus, .form-select:focus, .form-textarea:focus {
-    outline: none;              /* Tarayıcının standart çerçevesini kapat */
-    border-color: #94a3b8;      /* Mavi yerine, hafif koyu bir gri yapıyoruz */
-    box-shadow: none;           /* O etrafındaki mavi parlamayı (glow) SİLİYORUZ */
-    background-color: #fafafa;  /* Odaklanınca zemin çok hafif değişsin (Opsiyonel) */
+    outline: none;
+    border-color: #94a3b8;
+    box-shadow: none;
+    background-color: #fafafa;
 }
 
-/* Butonlar */
 .btn-confirm { background: var(--primary); color: white; padding: 10px 20px; border-radius: 8px; border:none; font-weight:600; cursor:pointer; }
 .btn-confirm:hover { background: var(--primary-dark); }
 .btn-cancel { background: white; border: 1px solid var(--border); color: var(--text-main); padding: 10px 20px; border-radius: 8px; font-weight:600; cursor:pointer; }
 .btn-cancel:hover { background: #f1f5f9; }
 
-/* -----------------------------------------------------------
-   MODAL İÇERİK ÖZEL STİLLERİ (Pano Oluştur Penceresi İçin)
-   Burası eksik olduğu için "..." şeklinde bozuk görünüyordu.
------------------------------------------------------------ */
-
-/* Üstteki Önizleme Kutusu */
 .board-preview-box {
     height: 120px;
-    background-color: var(--primary); /* Varsayılan */
+    background-color: var(--primary);
     background-size: cover; background-position: center;
     border-radius: 8px;
     display: flex; justify-content: center; align-items: center;
@@ -220,10 +204,8 @@ body {
 }
 .preview-col { flex: 1; background: rgba(255,255,255,0.4); border-radius: 4px; height: 100%; }
 
-/* Arkaplan Seçici Başlığı */
 .bg-picker-title { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
 
-/* Resim Seçici Grid (Üst Kısım) */
 .bg-grid-top {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -243,10 +225,9 @@ body {
     font-weight: bold; text-shadow: 0 1px 2px rgba(0,0,0,0.5);
 }
 
-/* Renk Seçici Grid (Alt Kısım) */
 .bg-grid-bot {
     display: grid;
-    grid-template-columns: repeat(8, 1fr); /* Küçük kutular */
+    grid-template-columns: repeat(8, 1fr);
     gap: 6px;
     margin-bottom: 16px;
 }
@@ -255,9 +236,8 @@ body {
     cursor: pointer; position: relative; padding: 0;
 }
 .bg-option-bot:hover { filter: brightness(0.9); }
-.bg-option-bot.selected { border-color: var(--text-main); } /* Renkte seçili olunca siyah çerçeve */
+.bg-option-bot.selected { border-color: var(--text-main); }
 
-/* "..." Butonu (Daha fazla) */
 .bg-option-bot:last-child {
     background-color: #e2e8f0; color: var(--text-muted);
     font-weight: bold; font-size: 12px;
@@ -266,14 +246,13 @@ body {
 
 .side-modal {
     position: fixed;
-    width: 320px; /* Genişlik */
+    width: 320px;
     background: white;
-    /* Sol tarafı düz, sağ tarafı oval yapıyoruz ki bütünleşik dursun */
     border-radius: 0 12px 12px 0;
-    box-shadow: 10px 0 25px -5px rgba(0, 0, 0, 0.1); /* Sadece sağa gölge */
+    box-shadow: 10px 0 25px -5px rgba(0, 0, 0, 0.1);
     border: 1px solid #e2e8f0;
-    border-left: none; /* Birleşme yerindeki çizgiyi kaldır */
-    z-index: 10000; /* Modalın (9999) hemen altında kalsın */
+    border-left: none;
+    z-index: 10000;
     display: none;
     padding: 0;
     overflow: hidden;
@@ -293,10 +272,9 @@ body {
     overflow-y: auto;
 }
 
-/* Yan Panel Izgarası (Her satırda 2 resim) */
 .side-grid-photos {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* 2 Sütun */
+    grid-template-columns: repeat(2, 1fr);
     gap: 10px;
     margin-bottom: 20px;
 }
@@ -316,25 +294,20 @@ body {
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 .side-photo-item.selected {
-    border-color: #2563eb; /* Seçili mavi çerçeve */
+    border-color: #2563eb;
 }
 
-/* Scrollbar'ı güzelleştirelim */
 .side-modal-body::-webkit-scrollbar { width: 6px; }
 .side-modal-body::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 3px; }
 .recently-viewed-section {
-    /* Bölümün kendisini üstten ve alttan ayıralım */
     margin-top: 20px;
     margin-bottom: 40px;
 }
 
 .recently-viewed-section .section-header {
-    /* Başlık (Yazı) ile aşağıdaki Kartlar arasına boşluk koyalım */
     margin-bottom: 24px;
 }
-/* --- AYARLAR MODALI & DANGER ZONE --- */
 
-/* Ayarlar içindeki silme alanı */
 .danger-zone {
     margin-top: 30px;
     padding: 20px;
@@ -357,7 +330,6 @@ body {
     margin-bottom: 15px;
 }
 
-/* Kırmızı Silme Butonu */
 .btn-danger {
     background-color: white;
     color: #dc2626;
@@ -374,35 +346,29 @@ body {
     background-color: #dc2626;
     color: white;
 }
-/* --- PROJE AÇIKLAMASI (Workspace Description) --- */
 
-/* İsim ve Açıklamayı kapsayan kutu */
 .ws-details {
     display: flex;
-    flex-direction: column; /* Alt alta sırala */
+    flex-direction: column;
     justify-content: center;
 }
 
-/* Açıklama Metni */
 .ws-description {
-    font-size: 0.85rem;      /* Başlıktan daha küçük */
-    color: var(--text-muted); /* Gri ton */
+    font-size: 0.85rem;
+    color: var(--text-muted);
     font-weight: 400;
-    margin-top: 2px;         /* Başlık ile arasına minik boşluk */
-    max-width: 600px;        /* Çok uzarsa taşmasın */
-
-    /* Uzun metinleri ... ile kısaltmak istersen (Opsiyonel) */
+    margin-top: 2px;
+    max-width: 600px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
-/* --- TARİH ETİKETLERİ (Date Badges) --- */
 
 .ws-meta {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-top: 8px; /* Açıklama ile arasına boşluk */
+    margin-top: 8px;
 }
 
 .date-badge {
@@ -412,18 +378,16 @@ body {
     font-size: 0.75rem;
     font-weight: 600;
     padding: 4px 10px;
-    border-radius: 20px; /* Hap şeklinde yuvarlak */
-    background-color: #f1f5f9; /* Açık gri zemin */
-    color: #64748b; /* Gri yazı */
+    border-radius: 20px;
+    background-color: #f1f5f9;
+    color: #64748b;
     border: 1px solid #e2e8f0;
 }
 
-/* Tarih ikonu rengi */
 .date-badge i {
     color: #94a3b8;
 }
 
-/* GECİKMİŞ PROJE STİLİ (Opsiyonel) */
 .date-badge.overdue {
     background-color: #fef2f2;
     color: #dc2626;
