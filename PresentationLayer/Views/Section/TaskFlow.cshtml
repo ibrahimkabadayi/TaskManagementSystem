@@ -14,7 +14,7 @@
         @if (ViewBag.LastVisitedSections is List<RecentSectionCookieDto> && ViewBag.LastVisitedSections.Count > 0)
         {
             <div class="section-header">
-                <i class="fa-regular fa-clock"></i> <span>SON GÖRÜNTÜLENENLER</span>
+                <i class="fa-regular fa-clock"></i> <span>Last Visited</span>
             </div>
         }
         
@@ -35,10 +35,10 @@
 
     <div class="section-header-container">
         <div class="section-header">
-            <i class="fa-solid fa-briefcase"></i> <span>ÇALIŞMA ALANLARI</span>
+            <i class="fa-solid fa-briefcase"></i> <span>Workspaces</span>
         </div>
         <button class="btn-create-new-project" onclick="NewWorkspaceClick()">
-            <i class="fa-solid fa-plus"></i> Yeni Çalışma Alanı
+            <i class="fa-solid fa-plus"></i> New Workspace
         </button>
     </div>
 
@@ -106,7 +106,7 @@
                         </div>
                     }
                     <div class="board-card new-board" onclick="NewSectionClick()">
-                        <span>+ Yeni Pano Oluştur</span>
+                        <span>+ Create New Section</span>
                     </div>
                 </div>
             </div>
@@ -118,14 +118,14 @@
 <div id="dynamicModal" class="modal-overlay">
     <div class="modal-content">
         <div class="modal-header">
-            <h3 id="modalTitle">Modal Başlığı</h3>
+            <h3 id="modalTitle">Workspace Title</h3>
             <button class="close-btn" onclick="closeModal()">×</button>
         </div>
         <div id="modalBody" class="modal-body">
             </div>
         <div class="modal-footer">
-            <button class="btn-cancel" onclick="closeModal()">İptal</button>
-            <button id="modalConfirmBtn" class="btn-confirm">Kaydet</button>
+            <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+            <button id="modalConfirmBtn" class="btn-confirm">Save</button>
         </div>
     </div>
 </div>
@@ -143,7 +143,7 @@
         </div>
 
         <div>
-            <div class="bg-picker-title">Arkaplan</div>
+            <div class="bg-picker-title">Background</div>
             
             <div class="bg-grid-top" id="modalTopImages"></div>
 
@@ -158,13 +158,13 @@
         </div>
 
         <div class="form-group">
-            <label>Pano Başlığı <span style="color:red">*</span></label>
-            <input type="text" id="newBoardName" class="form-input" placeholder="Örn: Yaz Stajı Planı">
-            <div id="inputError" style="color:red; font-size:12px; display:none; margin-top:5px;">⚠️ Pano başlığı gerekli</div>
+            <label>Section Title <span style="color:red">*</span></label>
+            <input type="text" id="newBoardName" class="form-input" placeholder="Example: Group Project Plan">
+            <div id="inputError" style="color:red; font-size:12px; display:none; margin-top:5px;">⚠️ Section Title Needed</div>
         </div>
 
         <div class="form-group">
-            <label>Çalışma Alanı (Proje)</label>
+            <label>Workspace (Project)</label>
             <select id="workspaceSelect" class="form-select">
                 @foreach (var project in Model)
                 {
@@ -174,49 +174,50 @@
         </div>
 
         <div class="form-group">
-            <label>Görünürlük</label>
+            <label>Visibility</label>
             <select class="form-select">
-                <option>🔒 Özel</option>
-                <option>💼 Çalışma Alanı</option>
+                <option>🔒 Private</option>
+                <option>💼 Workspace</option>
             </select>
         </div>
     </div>
 </template>
 <template id="settingsTemplate">
     <div class="settings-container">
-        
+    
         <input type="hidden" id="editWsId">
 
         <div class="form-group">
-            <label>Çalışma Alanı Adı</label>
+            <label>Workspace Name</label>
             <input type="text" id="editWsName" class="form-input">
         </div>
 
         <div class="form-group">
-            <label>Açıklama</label>
-            <textarea id="editWsDesc" class="form-textarea" placeholder="Açıklama..."></textarea>
+            <label>Description</label>
+            <textarea id="editWsDesc" class="form-textarea" placeholder="Description..."></textarea>
         </div>
 
         <div class="form-row" style="display: flex; gap: 15px;">
             <div class="form-group" style="flex: 1;">
-                <label>Başlangıç Tarihi</label>
+                <label>Start Date</label>
                 <input type="date" id="editWsStart" class="form-input">
             </div>
             <div class="form-group" style="flex: 1;">
-                <label>Bitiş Tarihi (Deadline)</label>
+                <label>End Date (Deadline)</label>
                 <input type="date" id="editWsEnd" class="form-input">
-                <small style="color: #64748b; font-size: 11px;">Opsiyonel</small>
+                <small style="color: #64748b; font-size: 11px;">Optional</small>
             </div>
         </div>
+
         <div class="danger-zone">
             <div class="danger-title">
-                <i class="fa-solid fa-triangle-exclamation"></i> Tehlikeli Bölge
+                <i class="fa-solid fa-triangle-exclamation"></i> Danger Zone
             </div>
             <div class="danger-desc">
-                Bu çalışma alanını sildiğinizde, içindeki tüm panolar ve görevler kalıcı olarak silinecektir. Geri alınamaz.
+                Deleting this workspace will permanently remove all associated boards and tasks. This action cannot be undone.
             </div>
             <button class="btn-danger" onclick="DeleteWorkspace()">
-                <i class="fa-solid fa-trash"></i> Bu Çalışma Alanını Sil
+                <i class="fa-solid fa-trash"></i> Delete This Workspace
             </button>
         </div>
     </div>

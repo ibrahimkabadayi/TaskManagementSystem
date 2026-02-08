@@ -40,12 +40,12 @@
             <div id="notification-dropdown" class="notification-dropdown-menu">
         
                 <div class="notification-header">
-                    Bildirimler
+                    Notifications
                 </div>
         
                 <ul id="notification-list">
                     <li style="padding: 20px; text-align: center; color: #999;">
-                        <i class="fa-solid fa-spinner fa-spin me-2"></i> Yükleniyor...
+                        <i class="fa-solid fa-spinner fa-spin me-2"></i> Loading...
                     </li>
                 </ul>
 
@@ -62,20 +62,6 @@
     @RenderBody()
 </main>
 
-<div id="accountMenu" class="popup-menu account-menu-style">
-    <div class="account-header">
-        <div class="account-name">İbrahim Kabadayı</div>
-        <div class="account-email">ibrahim@example.com</div>
-    </div>
-
-    <ul>
-        <li onclick="alert('Profil')">👤 Profil ve Görünürlük</li>
-        <li onclick="alert('Hareketler')">📊 Hareketler</li>
-        <li onclick="alert('Ayarlar')">⚙️ Ayarlar</li>
-        <hr class="menu-divider">
-        <li class="logout-item" onclick="window.location.href='/Logout'">🚪 Çıkış Yap</li>
-    </ul>
-</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
 <script src="~/js/TaskFlowLayoutScript.js"></script>
 </body>

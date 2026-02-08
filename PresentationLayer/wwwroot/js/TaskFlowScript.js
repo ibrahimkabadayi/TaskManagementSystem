@@ -1,18 +1,18 @@
 function NewWorkspaceClick() {
     const formHtml = `
-        <div class="form-group">
-            <label>Çalışma Alanı Adı <span style="color:red">*</span></label>
-            <input type="text" id="wsName" class="form-input" placeholder="Örn: TaskFlow Web Projesi, Pazarlama Ekibi...">
-            <div id="wsNameError" style="color:red; font-size:12px; display:none; margin-top:4px;">⚠️ Bu alan zorunludur</div>
-        </div>
+    <div class="form-group">
+        <label>Workspace Name <span style="color:red">*</span></label>
+        <input type="text" id="wsName" class="form-input" placeholder="e.g., TaskFlow Web Project, Marketing Team...">
+        <div id="wsNameError" style="color:red; font-size:12px; display:none; margin-top:4px;">⚠️ This field is required</div>
+    </div>
 
-        <div class="form-group">
-            <label>Açıklama (İsteğe Bağlı)</label>
-            <textarea id="wsDesc" class="form-textarea" placeholder="Ekibiniz burayı ne için kullanacak?"></textarea>
-        </div>
-    `;
+    <div class="form-group">
+        <label>Description (Optional)</label>
+        <textarea id="wsDesc" class="form-textarea" placeholder="What will your team use this workspace for?"></textarea>
+    </div>
+`;
 
-    showModal("Yeni Çalışma Alanı Oluştur", formHtml, async () => {
+    showModal("Create New Workspace", formHtml, async () => {
         const nameInput = document.getElementById('wsName');
         const descInput = document.getElementById('wsDesc');
 
@@ -49,10 +49,6 @@ function NewWorkspaceClick() {
 
         closeModal();
     });
-}
-
-function openModal() {
-    document.getElementById('dynamicModal').style.display = 'flex'; // Block yerine Flex ile ortalama
 }
 
 function closeModal() {
@@ -168,13 +164,12 @@ let selectedBackground = "#0079bf";
 function NewSectionClick() {
     const template = document.getElementById('createSectionTemplate');
     if (!template) {
-        console.error("Template bulunamadı!");
         return;
     }
 
     const formHtml = template.innerHTML;
 
-    showModal("Pano Oluştur", formHtml, async () => {
+    showModal("Create Section", formHtml, async () => {
         const nameInput = document.getElementById('newBoardName');
         const workspaceSelect = document.getElementById('workspaceSelect');
 
@@ -191,7 +186,7 @@ function NewSectionClick() {
                 ProjectId: workspaceSelect.value
             };
 
-             console.log("Gönderilen Veri:", payload);
+            console.log("Data Sent:", payload);
 
             const response = await fetch('/Section/CreateSection/', {
                 method: 'POST',
@@ -202,7 +197,7 @@ function NewSectionClick() {
             if(response.ok) {
                 window.location.reload();
             } else {
-                console.error("Hata oluştu");
+                console.error("An error occurred");
             }
 
         } catch (error) {
@@ -246,7 +241,7 @@ function SettingsButtonClick(id, currentName, currentDesc, start, end) {
 
     const formHtml = template.innerHTML;
 
-    showModal("Çalışma Alanı Ayarları", formHtml, async () => {
+    showModal("Workspace Settings", formHtml, async () => {
         const wsId = document.getElementById('editWsId').value;
         const newName = document.getElementById('editWsName').value;
         const newDesc = document.getElementById('editWsDesc').value;
@@ -254,12 +249,12 @@ function SettingsButtonClick(id, currentName, currentDesc, start, end) {
         const newEnd = document.getElementById('editWsEnd').value;
 
         if (!newName.trim()) {
-            alert("İsim boş olamaz!");
+            alert("Name cannot be empty!");
             return;
         }
 
         if (newEnd && newStart && newEnd < newStart) {
-            alert("Hata: Bitiş tarihi başlangıç tarihinden önce olamaz!");
+            alert("Error: End date cannot be earlier than the start date!");
             return;
         }
 
@@ -279,10 +274,10 @@ function SettingsButtonClick(id, currentName, currentDesc, start, end) {
             if (response.ok) {
                 window.location.reload();
             } else {
-                alert("Güncelleme sırasında bir hata oluştu.");
+                alert("An error occurred during the update.");
             }
         } catch (error) {
-            console.error("Hata:", error);
+            console.error("Error:", error);
         }
         closeModal();
     });
@@ -312,7 +307,7 @@ function SettingsButtonClick(id, currentName, currentDesc, start, end) {
 async function DeleteWorkspace() {
     const wsId = document.getElementById('editWsId').value;
 
-    if (!confirm("Bu çalışma alanını ve içindeki TÜM verileri silmek istediğinize emin misiniz? Bu işlem geri alınamaz!")) {
+    if (!confirm("Are you sure you want to delete this workspace and ALL data within it? This action cannot be undone!")) {
         return;
     }
 
@@ -324,12 +319,12 @@ async function DeleteWorkspace() {
         if (response.ok) {
             window.location.reload();
         } else {
-            alert("Silme işlemi başarısız oldu.");
+            alert("Delete operation failed.");
         }
-        
+
     } catch (error) {
-        console.error("Hata:", error);
-        alert("Bir hata oluştu.");
+        console.error("Error:", error);
+        alert("An error occurred.");
     }
 }
 
