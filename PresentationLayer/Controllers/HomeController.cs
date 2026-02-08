@@ -18,6 +18,24 @@ public class HomeController : Controller
         return View();
     }
 
+    public async Task<IActionResult> AboutUs()
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId)) return View();
+        
+        var user = await _userService.GetUserByIdAsync(int.Parse(userId));
+        if(user is null) return RedirectToAction("SignIn", "Home");
+        
+        ViewBag.ProfileLetters = user.ProfileLetters;
+        ViewBag.ProfileColor = user.ProfileColor;
+        
+        ViewBag.ReturnController = "Home";
+        ViewBag.ReturnAction = "Home";
+        ViewBag.ReturnUserId = user.Id;
+        
+        return View();
+    }
+
     public async Task<IActionResult> Home()
     {
         if (User.Identity?.IsAuthenticated != true) return View();
