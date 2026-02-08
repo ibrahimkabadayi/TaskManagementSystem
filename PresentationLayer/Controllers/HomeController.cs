@@ -53,11 +53,7 @@ public class HomeController : Controller
 
         return View();
     }
-    public IActionResult TaskFlow(UserDto user)
-    {
-        ViewData["User"] = user;
-        return View();
-    }
+    
     public IActionResult CreateAccount()
     {
         return View();
