@@ -1,0 +1,95 @@
+﻿/* Terms & Legal Page Styles */
+:root {
+    --tf-primary: #0079bf;
+    --tf-dark: #172b4d;
+    --tf-text: #42526e;
+    --tf-bg: #f4f5f7;
+    --tf-border: #dfe1e6;
+}
+
+body {
+    background-color: var(--tf-bg);
+    color: var(--tf-dark);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.legal-page-container {
+    max-width: 800px;
+    margin: 40px auto;
+    background-color: white;
+    padding: 60px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+
+/* Header */
+.legal-header {
+    margin-bottom: 40px;
+    border-bottom: 2px solid var(--tf-border);
+    padding-bottom: 20px;
+}
+
+.legal-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--tf-dark);
+    margin-bottom: 10px;
+}
+
+.last-updated {
+    font-size: 0.9rem;
+    color: #6b778c;
+    font-style: italic;
+}
+
+/* Content */
+.legal-content h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--tf-dark);
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+.legal-content p {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--tf-text);
+    margin-bottom: 15px;
+}
+
+.legal-content ul {
+    margin-bottom: 15px;
+    padding-left: 20px;
+}
+
+.legal-content li {
+    margin-bottom: 8px;
+    color: var(--tf-text);
+    line-height: 1.5;
+}
+
+.legal-content strong {
+    color: var(--tf-dark);
+}
+
+/* Linkler */
+.legal-content a {
+    color: var(--tf-primary);
+    text-decoration: none;
+}
+
+.legal-content a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .legal-page-container {
+        padding: 30px;
+        margin: 20px;
+    }
+    .legal-header h1 {
+        font-size: 2rem;
+    }
+}
