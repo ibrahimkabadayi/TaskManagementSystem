@@ -17,6 +17,11 @@ public class HomeController : Controller
     {
         return View();
     }
+    
+    public IActionResult Terms()
+    {
+        return View();
+    }
 
     public async Task<IActionResult> AboutUs()
     {

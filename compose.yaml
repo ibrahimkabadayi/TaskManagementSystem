@@ -1,0 +1,36 @@
+﻿version: '3.4'
+
+services:
+  # 1. Servis: SQL Server Veritabanı
+  taskflowdb:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: taskflow_sql_server
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=GucluBirSifre123! # Burayı değiştirebilirsin ama ConnectionString ile aynı olmalı
+    ports:
+      - "1433:1433"
+    networks:
+      - taskflow-network
+
+  # 2. Servis: Senin Uygulaman (PresentationLayer)
+  presentationlayer:
+    image: taskflow-app
+    container_name: taskflow_web_app
+    build:
+      context: .
+      dockerfile: PresentationLayer/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      # DİKKAT: 'Server=taskflowdb' kısmı yukarıdaki servis ismiyle aynı olmalı!
+      - ConnectionStrings__DefaultConnection=Server=taskflowdb,1433;Database=TaskFlowDb;User Id=sa;Password=GucluBirSifre123!;TrustServerCertificate=True;
+    ports:
+      - "5000:8080" # Tarayıcıdan http://localhost:5000 ile gireceksin
+    depends_on:
+      - taskflowdb # Veritabanı başlamadan uygulama başlamasın
+    networks:
+      - taskflow-network
+
+networks:
+  taskflow-network:
+    driver: bridge

@@ -108,24 +108,38 @@
 }
 
 .tech-badges {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 30px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    max-width: 900px;
+    margin: 30px auto 0;
 }
 
 .tech-badge {
     background-color: white;
-    padding: 10px 20px;
+    padding: 12px 20px;
     border-radius: 50px;
     font-weight: 600;
     color: var(--tf-dark);
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     transition: all 0.2s;
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .tech-badges {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .tech-badges {
+        grid-template-columns: 1fr;
+    }
 }
 
 .tech-badge:hover {

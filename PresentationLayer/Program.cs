@@ -85,4 +85,23 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Home}/{id?}");
 
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Home}/{id?}");
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<DataAccessLayer.Context.ApplicationDbContext>(); 
+        
+        Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.Migrate(context.Database);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("Veritabanı oluşturulurken hata: " + ex.Message);
+    }
+}
+
 app.Run();
