@@ -26,6 +26,7 @@ A multi-layered task management application built with .NET 9.0 ASP.NET Core MVC
 
 - [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
 - [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) (or LocalDB)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Optional, for containerized deployment)
 - IDE: Visual Studio 2022, JetBrains Rider, or VS Code
 
 ## ⚙️ Setup & Installation
@@ -56,6 +57,25 @@ A multi-layered task management application built with .NET 9.0 ASP.NET Core MVC
     ```bash
     dotnet run --project PresentationLayer
     ```
+
+## 🐳 Docker Support
+
+You can also run the entire system (Application + SQL Server) using Docker:
+
+1.  **Build and Start Containers**:
+    ```bash
+    docker-compose up -d
+    ```
+
+2.  **Access the Application**:
+    Open [http://localhost:5000](http://localhost:5000) in your browser.
+
+3.  **Stop Containers**:
+    ```bash
+    docker-compose down
+    ```
+
+*Note: The first run might take a few minutes as it pulls images and builds the application.*
 
 ## 📜 Scripts & Commands
 
@@ -101,4 +121,4 @@ TODO: Add license information (e.g., MIT, Apache 2.0).
 
 ---
 
-*Generated/Updated on: 2026-02-05*
+*Generated/Updated on: 2026-02-10*
