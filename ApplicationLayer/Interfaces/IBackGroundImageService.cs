@@ -1,4 +1,6 @@
-﻿namespace Application.Interfaces;
+﻿using System.Collections.Generic;
+
+namespace Application.Interfaces;
 
 public interface IBackGroundImageService
 {

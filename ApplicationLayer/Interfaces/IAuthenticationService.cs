@@ -1,4 +1,5 @@
-﻿using Application.DTOs;
+﻿using System.Threading.Tasks;
+using Application.DTOs;
 using Microsoft.AspNetCore.Http;
 
 namespace Application.Interfaces;
