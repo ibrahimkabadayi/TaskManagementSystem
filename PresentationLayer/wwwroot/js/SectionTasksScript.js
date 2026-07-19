@@ -11,7 +11,7 @@ async function openTaskModal(taskId) {
         });
 
         if (!response.ok) {
-            alert("Could not get task details.");
+            showToast("Could not get task details.", "error");
             return;
         }
 
@@ -221,7 +221,7 @@ async function saveTaskTitle(inputElement) {
     const taskId = currentOpenedTaskId;
 
     if (!newTitle) {
-        alert("Task title can't be empty!");
+        showToast("Task title can't be empty!", "warning");
         return;
     }
 
@@ -361,7 +361,7 @@ async function assignUserToTask(userEmail) {
         })
     }).then((response) => {
         if (!response.ok) {
-            alert("There was a problem assigning user to task. Please try again.");
+            showToast("There was a problem assigning user to task. Please try again.", "error");
         } else {
 
             if (selectedUserData) {
@@ -443,7 +443,7 @@ async function changeTaskDueDate(userId, projectId){
         })
     }).then((response) => {
         if (!response.ok) {
-            alert(response.message);
+            showToast(response.message, "error");
         }
     })
 }
@@ -466,7 +466,7 @@ async function changeTaskPriority() {
         })
     }).then((response) => {
         if (!response.ok) {
-            alert("Fetch error for changing task priority");
+            showToast("Fetch error for changing task priority", "error");
         } else {
             const taskCard = document.getElementById(currentOpenedTaskId) || document.querySelector(`.Task[data-id="${currentOpenedTaskId}"]`);
             if(taskCard) {
@@ -491,7 +491,7 @@ async function changeTaskState(userId, projectId) {
         })
     }).then((response) => {
         if (!response.ok) {
-            alert("Fetch error for changing task state");
+            showToast("Fetch error for changing task state", "error");
         } else {
             const taskCard = document.getElementById(currentOpenedTaskId) || document.querySelector(`.Task[data-id="${currentOpenedTaskId}"]`);
             if(taskCard) {
@@ -520,7 +520,7 @@ async function saveTaskDescription(userId, projectId){
         })
     }).then((response) => {
         if (!response.ok) {
-            alert("Fetch error for changing task priority");
+            showToast("Fetch error for changing task description", "error");
         }
 
         const taskCard = document.getElementById(taskId);
@@ -576,12 +576,12 @@ async function deleteTask(userId) {
             console.log(`Task ${taskId} successfully deleted.`);
 
         } else {
-            alert("There was a problem deleting task.!");
+            showToast("There was a problem deleting task!", "error");
         }
 
     } catch (error) {
         console.error("Deleting error:", error);
-        alert("Could not send api.");
+        showToast("Could not send api.", "error");
     }
 }
 
@@ -638,7 +638,7 @@ async function saveNewCard(btnElement, userId, sectionId) {
             })
             .then(async (response) => {
                 if (!response.ok) {
-                    alert("Could not add another task please try again.");
+                    showToast("Could not add another task please try again.", "error");
                 }
                 const data = await response.json();
                 
@@ -710,7 +710,7 @@ async function saveNewList(btnElement, sectionId, userId) {
         });
 
         if (!response.ok) {
-            alert("List could not be saved. Please try again.");
+            showToast("List could not be saved. Please try again.", "error");
             return;
         }
 
@@ -771,7 +771,7 @@ async function saveNewList(btnElement, sectionId, userId) {
 
     } catch (error) {
         console.error("List saving error:", error);
-        alert("There was a problem saving list. Please try again.");
+        showToast("There was a problem saving list. Please try again.", "error");
     }
 }
 
@@ -847,11 +847,11 @@ async function makeColumnDroppable(column) {
             });
 
             if (!response.ok) {
-                alert("Could not change task group.");
+                showToast("Could not change task group.", "error");
                 return false;
             }
         } catch (error) {
-            alert(error.message);
+            showToast(error.message, "error");
             return false;
         }
     });
@@ -927,7 +927,7 @@ async function setBackgroundImage(url, sectionId) {
             })
         }).then( response => {
             if (!response.ok) {
-                alert(response.message);
+                showToast(response.message, "error");
                 return false;
             }
     })
@@ -1013,7 +1013,7 @@ async function actionEditTitle() {
              })
          }).then(response => {
              if (!response.ok) {
-                alert("Could not change task group name.");
+                showToast("Could not change task group name.", "error");
                 return false;
              }
          })
@@ -1057,7 +1057,7 @@ async function actionDeleteList(taskGroupId) {
             }
         }).then(response => {
             if (!response.ok) {
-                alert("There was an error");
+                showToast("There was an error", "error");
                 return false;
             }
 
@@ -1423,11 +1423,11 @@ async function generateInviteLink(projectId) {
 
             input.select();
         } else {
-            alert("An error occurred while creating the link.");
+            showToast("An error occurred while creating the link.", "error");
         }
     } catch (error) {
         console.error("Error:", error);
-        alert("Could not reach the server.");
+        showToast("Could not reach the server.", "error");
     } finally {
         inactiveState.style.opacity = '1';
     }
@@ -1452,9 +1452,9 @@ async function revokeInviteLink(projectId) {
             document.getElementById('link-inactive-state').style.display = 'block';
             document.getElementById('generated-invite-link').value = '';
 
-            alert("Link successfully revoked.");
+            showToast("Link successfully revoked.", "success");
         } else {
-            alert("Could not delete link.");
+            showToast("Could not delete link.", "error");
         }
     } catch (error) {
         console.error("Error:", error);
@@ -1471,7 +1471,7 @@ function copyInviteLink() {
         if (typeof showToastNotification === 'function') {
             showToastNotification("Success", "Link copied to clipboard! 📋");
         } else {
-            alert("Link copied! 📋");
+            showToast("Link copied! 📋", "success");
         }
     }).catch(err => {
         console.error('Copy error: ', err);

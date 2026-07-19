@@ -22,8 +22,6 @@ const connection = new signalR.HubConnectionBuilder()
     .build();
 
 connection.on("ReceiveNotification", function (title, message) {
-    console.log("🔔 Live Notification:", title, "-", message);
-
     showToastNotification(title, message);
 
     refreshNotificationBadge();
@@ -221,19 +219,18 @@ async function respondInvite(invitationId, isAccepted, btnElement) {
 
             loadNotifications();
 
-            alert(isAccepted ? "You joined the project! 🎉" : "Invitation declined.");
+            showToast(isAccepted ? "You joined the project! 🎉" : "Invitation declined.", isAccepted ? "success" : "warning");
 
             if(isAccepted) {
                 location.reload();
             }
         } else {
-            alert("An error occurred.");
+            showToast("An error occurred.", "error");
             parentDiv.style.opacity = "1";
             parentDiv.style.pointerEvents = "auto";
         }
     } catch (err) {
-        console.error(err);
-        alert("Connection error.");
+        showToast("Connection error.", "error");
     }
 }
 async function markAsRead(notifId, relatedTaskId) {
@@ -262,7 +259,7 @@ async function sendInvitation(projectId) {
         role = roleElement.value;
     }
 
-    if (!emailOrUsername) return alert("Please enter an email or username.");
+    if (!emailOrUsername) return showToast("Please enter an email or username.", "warning");
 
     const btn = document.querySelector('.btn-share-invite');
     btn.disabled = true;
@@ -278,14 +275,13 @@ async function sendInvitation(projectId) {
         const result = await response.json();
 
         if (response.ok) {
-            alert("Invitation sent successfully! 🚀");
+            showToast("Invitation sent successfully! 🚀", "success");
             input.value = "";
         } else {
-            alert("Error: " + result.message);
+            showToast("Error: " + result.message, "error");
         }
     } catch (err) {
-        console.error(err);
-        alert("An error occurred.");
+        showToast("An error occurred.", "error");
     } finally {
         btn.disabled = false;
         btn.innerText = "Share";

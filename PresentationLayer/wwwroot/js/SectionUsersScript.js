@@ -17,16 +17,14 @@ async function updateMemberRole(selectElement, projectUserId, userId, projectId)
         });
 
         if (response.ok) {
-            console.log("Role Updated: " + newRole);
             selectElement.setAttribute('data-original', newRole);
 
         } else {
-            throw new Error("Update is unsuccessful. Please try again later.");
+            showToast("There was an error updating the role. Please try again later.", "error");
         }
 
     } catch (error) {
-        console.error(error);
-        alert("There was an error updating the role. Please try again later.");
+        showToast("There was an error updating the role. Please try again later.", "error");
         selectElement.value = originalValue;
     }
 }
@@ -49,17 +47,17 @@ async function removeMember(projectUserId, userName, currentUserId, projectId) {
             row.style.opacity = '0';
             setTimeout(() => row.remove(), 300);
         } else {
-            alert("Member removal failed. Please try again later.");
+            showToast("Member removal failed. Please try again later.", "error");
         }
 
     } catch (error) {
         console.error(error);
-        alert("There was an error removing the member. Please try again later. If the problem persists, please contact the site administrator.");
+        showToast("There was an error removing the member. Please try again later. If the problem persists, please contact the site administrator.", "error");
     }
 }
 
 function openShareModal() {
     const modal = document.getElementById('shareModalOverlay');
     if(modal) modal.style.display = 'flex';
-    else alert("Sharing is not yet available. Please try again later. If the problem persists, please contact the site administrator.");
+    else showToast("Sharing is not yet available. Please try again later. If the problem persists, please contact the site administrator.", "warning");
 }

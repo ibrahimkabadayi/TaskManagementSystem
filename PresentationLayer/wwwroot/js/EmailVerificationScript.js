@@ -3,7 +3,7 @@ async function VerifyEmailCode(email, name) {
     const userEnteredCode = codeInput.value.trim();
 
     if (!userEnteredCode) {
-        alert("Please enter the verification code.");
+        showToast("Please enter the verification code.", "warning");
         codeInput.focus();
         return false;
     }
@@ -32,13 +32,13 @@ async function VerifyEmailCode(email, name) {
             });
             window.location.href = `/Home/PasswordCreation?${params.toString()}`;
         } else {
-            alert('Invalid code! Please try again.');
+            showToast("Incorrect verification code.", "warning")
             btn.disabled = false;
             btn.innerText = "Verify and Continue";
         }
     } catch (e) {
         console.error(e);
-        alert("An error occurred.");
+        showToast("Server error.", "error");
         btn.disabled = false;
         btn.innerText = "Verify and Continue";
     }
@@ -59,13 +59,13 @@ async function SendEmailCodeAgain(email) {
         const data = await response.json();
 
         if (data.success) {
-            alert("Verification code resent.");
+            showToast("Verification code sent successfully.", "success");
         } else {
-            alert("Error: Code could not be sent.");
+            showToast("Failed to send verification code.", "error");
         }
     } catch (e) {
         console.error(e);
-        alert("Server error.");
+        showToast("Server error.", "error");
     } finally {
         btn.disabled = false;
         btn.innerText = "Resend Code";

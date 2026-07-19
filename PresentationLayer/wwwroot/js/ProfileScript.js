@@ -21,7 +21,7 @@ async function updateUserProfile() {
     const color = document.getElementById('profileColor').value;
 
     if (!name) {
-        alert("Name could not be empty. Please try again.!");
+        showToast("Please enter your name.", "warning");
         return;
     }
 
@@ -41,12 +41,11 @@ async function updateUserProfile() {
         if (response.ok) {
             window.location.reload();
         } else {
-            alert("There was an error updating your profile. Please try again later. If the problem persists, please contact the site administrator.");
+            showToast("There was an error updating your profile. Please try again later.", "error");
         }
 
     } catch (error) {
-        console.error("Error:", error);
-        alert("There was error with connecting to the server. Please try again later. If the problem persists, please contact the site administrator.");
+        showToast("Server error. Please try again later.", "error");
     }
 }
 
@@ -57,17 +56,17 @@ async function changePassword() {
     const confirmPassword = document.getElementById('confirmPassword').value;
 
     if (!currentPassword || !newPassword || !confirmPassword) {
-        alert("Please fill in all password fields.");
+        showToast("Please fill in all fields.", "warning");
         return;
     }
 
     if (newPassword !== confirmPassword) {
-        alert("New passwords do not match!");
+        showToast("Passwords do not match.", "warning");
         return;
     }
 
     if (newPassword.length < 6) {
-        alert("Your new password must be at least 6 characters long.");
+        showToast("Password must be at least 6 characters long.", "warning");
         return;
     }
 
@@ -87,16 +86,15 @@ async function changePassword() {
         const result = await response.json();
 
         if (response.ok) {
-            alert("Success! " + result.message);
+            showToast("Password changed successfully.", "success");
             document.getElementById('currentPassword').value = '';
             document.getElementById('newPassword').value = '';
             document.getElementById('confirmPassword').value = '';
         } else {
-            alert("Error: " + (result.message || "Could not change password."));
+            showToast(result.message, "error");
         }
 
     } catch (error) {
-        console.error("Error:", error);
-        alert("Could not connect to the server.");
+        showToast("Server error. Please try again later.", "error");
     }
 }
