@@ -1,4 +1,6 @@
-﻿using Application.DTOs;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Application.DTOs;
 
 namespace Application.Interfaces;
 

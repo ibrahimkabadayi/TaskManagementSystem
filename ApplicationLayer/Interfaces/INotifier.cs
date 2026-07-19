@@ -1,4 +1,6 @@
-﻿namespace Application.Interfaces;
+﻿using System.Threading.Tasks;
+
+namespace Application.Interfaces;
 
 public interface INotifier
 {
