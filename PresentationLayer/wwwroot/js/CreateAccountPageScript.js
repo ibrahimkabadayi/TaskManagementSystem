@@ -6,14 +6,14 @@ async function nextButtonClick() {
     const email = emailInput.value.trim();
 
     if (name.length < 3) {
-        alert("Please enter a valid full name (at least 3 characters).");
+        showToast("Invalid Name", "warning");
         nameInput.focus();
         return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-        alert("Please enter a valid email address.");
+        showToast("Invalid Email Address", "warning");
         emailInput.focus();
         return;
     }
@@ -51,20 +51,19 @@ async function nextButtonClick() {
                 });
                 window.location.href = `/Home/EmailCodeVerification?${params.toString()}`;
             } else {
-                alert("Could not send code: " + emailData.message);
+                showToast("Server Error", "error")
                 btn.disabled = false;
                 btn.innerText = originalText;
             }
 
         } else {
-            alert(checkData.message);
+            showToast(checkData.message, "warning");
             btn.disabled = false;
             btn.innerText = originalText;
         }
 
     } catch (error) {
-        console.error("Error:", error);
-        alert("An error occurred. Please try again.");
+        showToast("An error occurred. Please try again later.", "error")
         btn.disabled = false;
         btn.innerText = originalText;
     }

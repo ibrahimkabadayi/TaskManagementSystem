@@ -18,13 +18,13 @@ async function SignIn() {
     const password = passwordEl.value;
 
     if (email.length < 3 || !email.includes("@")) {
-        alert("Please enter a valid email address.");
+        showToast("Invalid Email Address", "warning");
         emailEl.focus();
         return;
     }
 
     if (password.length < 3) {
-        alert("Please enter a valid password. Password must be at least 3 characters long.");
+        showToast("Invalid Password", "warning");
         passwordEl.focus();
         return;
     }
@@ -55,16 +55,16 @@ async function SignIn() {
             btn.innerText = originalText;
 
             if (data.message === "Wrong password" || data.message === "User not found") {
-                alert("Email or password is incorrect..");
+                showToast("Email or password is incorrect", "warning");
                 return;
             }
 
-            alert("Error: " + data.message);
+            showToast(data.message, "warning");
         }
     }
     catch (e) {
         console.error("Login Error:", e);
-        alert("There was an error logging in.");
+        showToast("Server Error", "error");
 
         btn.disabled = false;
         btn.innerText = originalText;

@@ -78,3 +78,69 @@ footer {
     opacity: 1;
     text-decoration: underline;
 }
+/* LayoutStyleSheet.css - En alta ekle */
+
+/* --- TOAST NOTIFICATION STYLES --- */
+#toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toast {
+    min-width: 300px;
+    background-color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-left: 5px solid #ccc;
+    animation: slideIn 0.5s ease forwards;
+    opacity: 0; /* Animasyonla gelecek */
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: #172b4d;
+    font-weight: 500;
+}
+
+.toast-close {
+    cursor: pointer;
+    color: #5e6c84;
+    transition: color 0.2s;
+}
+.toast-close:hover { color: #172b4d; }
+
+/* Renk Temaları */
+.toast-success { border-left-color: #36B37E; }
+.toast-success .toast-icon { color: #36B37E; }
+
+.toast-error { border-left-color: #FF5630; }
+.toast-error .toast-icon { color: #FF5630; }
+
+.toast-warning { border-left-color: #FFAB00; }
+.toast-warning .toast-icon { color: #FFAB00; }
+
+.toast-info { border-left-color: #0065FF; }
+.toast-info .toast-icon { color: #0065FF; }
+
+/* Animasyonlar */
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}

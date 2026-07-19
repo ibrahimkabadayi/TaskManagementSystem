@@ -40,11 +40,11 @@ function NewWorkspaceClick() {
             if (response.ok) {
                 window.location.reload();
             }else{
-                console.log("Error:", response.statusText);   
+                showToast("Server Error", "error");
             }
 
         } catch (error) {
-
+            showToast("Could not connect with the server", "error");
         }
 
         closeModal();
@@ -197,11 +197,11 @@ function NewSectionClick() {
             if(response.ok) {
                 window.location.reload();
             } else {
-                console.error("An error occurred");
+                showToast("Server Error", "error");
             }
 
         } catch (error) {
-            console.error("Error:", error);
+            showToast("Could not connect with the server", "error");
         }
         closeModal();
     });
@@ -249,12 +249,12 @@ function SettingsButtonClick(id, currentName, currentDesc, start, end) {
         const newEnd = document.getElementById('editWsEnd').value;
 
         if (!newName.trim()) {
-            alert("Name cannot be empty!");
+            showToast("Workspace name cannot be empty!", "warning");
             return;
         }
 
         if (newEnd && newStart && newEnd < newStart) {
-            alert("Error: End date cannot be earlier than the start date!");
+            showToast("End date cannot be before start date!", "warning");
             return;
         }
 
@@ -274,7 +274,7 @@ function SettingsButtonClick(id, currentName, currentDesc, start, end) {
             if (response.ok) {
                 window.location.reload();
             } else {
-                alert("An error occurred during the update.");
+                showToast("Server Error", "error");
             }
         } catch (error) {
             console.error("Error:", error);
@@ -319,12 +319,11 @@ async function DeleteWorkspace() {
         if (response.ok) {
             window.location.reload();
         } else {
-            alert("Delete operation failed.");
+            showToast("Server Error", "error");
         }
 
     } catch (error) {
-        console.error("Error:", error);
-        alert("An error occurred.");
+        showToast("Could not connect with the server", "error");
     }
 }
 

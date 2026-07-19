@@ -20,19 +20,19 @@ async function ConfirmPassword(name, email) {
     const passwordAgain = passwordAgainInput.value;
 
     if (!password) {
-        alert("Please set a password.");
+        showToast("Please enter your password.", "warning");
         passwordInput.focus();
         return;
     }
 
     if (password.length < 6) {
-        alert("Your password must be at least 6 characters long.");
+        showToast("Password must be at least 6 characters long.", "warning");
         passwordInput.focus();
         return;
     }
 
     if (password !== passwordAgain) {
-        alert("Passwords do not match, please check again.");
+        showToast("Passwords do not match.", "warning");
         passwordAgainInput.focus();
         return;
     }
@@ -57,10 +57,10 @@ async function ConfirmPassword(name, email) {
         const data = await response.json();
 
         if (data.success) {
-            alert("Account created successfully! You can now log in.");
+            showToast("Registration Successful!", "success");
             window.location.href = '/Home/SignIn';
         } else {
-            alert("Registration Failed: " + (data.message || "Unknown error"));
+            showToast("Server Error", "error");
 
             if (data.errorCode === -9999) {
                 const params = new URLSearchParams({
@@ -77,7 +77,7 @@ async function ConfirmPassword(name, email) {
         }
     } catch (e) {
         console.error(e);
-        alert("A server error occurred.");
+        showToast("Server Error", "error");
         btn.disabled = false;
         btn.innerText = "Complete Registration";
     }
