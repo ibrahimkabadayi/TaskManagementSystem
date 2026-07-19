@@ -1,7 +1,12 @@
+using System;
 using Application;
 using Application.Interfaces;
 using DataAccessLayer;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using TaskManagementSystem.Hubs;
 using TaskManagementSystem.Services;
 

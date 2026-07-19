@@ -1,4 +1,5 @@
-﻿using Application.Interfaces;
+﻿using System.Threading.Tasks;
+using Application.Interfaces;
 using Microsoft.AspNetCore.SignalR;
 using TaskManagementSystem.Hubs;
 
