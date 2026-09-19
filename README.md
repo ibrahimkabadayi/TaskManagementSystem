@@ -2,7 +2,7 @@
 
 A multi-layered task management application built with .NET 9.0 ASP.NET Core MVC. This system allows users to manage projects, sections, and tasks with real-time updates and an intuitive "TaskFlow" interface.
 
-## 🚀 Features
+## Features
 
 - **Project & Task Management**: Organize work into projects, sections, and tasks.
 - **TaskFlow Interface**: A streamlined view for managing and tracking tasks.
@@ -11,7 +11,7 @@ A multi-layered task management application built with .NET 9.0 ASP.NET Core MVC
 - **Project Invitations**: Generate and manage invite links to bring team members into projects.
 - **Email Notifications**: Integrated email service for account verification and notifications.
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Language**: C# 13.0
 - **Framework**: ASP.NET Core MVC (net9.0)
@@ -22,17 +22,17 @@ A multi-layered task management application built with .NET 9.0 ASP.NET Core MVC
 - **Mapping**: AutoMapper
 - **Testing**: xUnit
 
-## 📋 Requirements
+## Requirements
 
 - [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
 - [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) (or LocalDB)
 - IDE: Visual Studio 2022, JetBrains Rider, or VS Code
 
-## ⚙️ Setup & Installation
+## Setup & Installation
 
 1.  **Clone the repository**:
     ```bash
-    git clone https://github.com/yourusername/TaskManagementSystem.git
+    git clone https://github.com/ibrahimkabadayi/TaskManagementSystem.git
     cd TaskManagementSystem
     ```
 
@@ -57,14 +57,14 @@ A multi-layered task management application built with .NET 9.0 ASP.NET Core MVC
     dotnet run --project PresentationLayer
     ```
 
-## 📜 Scripts & Commands
+## Scripts & Commands
 
 - **Build Solution**: `dotnet build`
 - **Run Tests**: `dotnet test`
 - **Add Migration**: `dotnet ef migrations add <MigrationName> --project DataAccessLayer --startup-project PresentationLayer`
 - **Update Database**: `dotnet ef database update --project DataAccessLayer --startup-project PresentationLayer`
 
-## 🔑 Environment Variables & Configuration
+## Environment Variables & Configuration
 
 The application uses `appsettings.json` for configuration:
 
@@ -76,7 +76,7 @@ The application uses `appsettings.json` for configuration:
 | `EmailSettings` | `Username` | SMTP username |
 | `EmailSettings` | `Password` | SMTP password (use App Passwords for Gmail) |
 
-## 🧪 Testing
+## Testing
 
 Unit tests are located in the `TaskManagementSystem.Tests` project.
 To run all tests:
@@ -84,7 +84,7 @@ To run all tests:
 dotnet test
 ```
 
-## 📂 Project Structure
+## Project Structure
 
 ```text
 TaskManagementSystem/
@@ -94,11 +94,3 @@ TaskManagementSystem/
 ├── PresentationLayer/     # ASP.NET Core MVC (Controllers, Views, Hubs, wwwroot)
 └── TaskManagementSystem.Tests/ # Unit tests (xUnit)
 ```
-
-## 📄 License
-
-TODO: Add license information (e.g., MIT, Apache 2.0).
-
----
-
-*Generated/Updated on: 2026-02-05*
